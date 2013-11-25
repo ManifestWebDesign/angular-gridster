@@ -1,0 +1,63 @@
+/*! gridster.js - v0.2.1 - 2013-10-28
+* http://gridster.net/
+* Copyright (c) 2013 ducksboard; Licensed MIT */
+
+.gridster {
+    position:relative;
+	min-height: 700px;
+	width: 80%;
+	margin: auto;
+	background: rgba(0, 0, 0, .1);
+}
+
+.gridster ul {
+	margin: 0;
+	list-style: none;
+	padding: 0;
+}
+
+.gridster .gridster-item {
+	box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	margin: 0;
+	list-style: none;
+	z-index: 2;
+	position: absolute;
+	text-align: center;
+	background: #ffffff;
+	color: #004756;
+	padding: 10px;
+    -webkit-transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
+    -moz-transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
+    -o-transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
+    transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
+}
+
+.gridster-loading .gridster-item, .gridster .gridster-preview-holder {
+	display: none;
+    -webkit-transition: opacity 0s, left 0s, top 0s, width .3s, height .3s;
+    -moz-transition: opacity 0s, left 0s, top 0s, width .3s, height .3s;
+    -o-transition: opacity 0s, left 0s, top 0s, width .3s, height .3s;
+    transition: opacity 0s, left 0s, top 0s, width .3s, height .3s;
+}
+
+.gridster .gridster-preview-holder {
+    z-index: 1;
+    position: absolute;
+    background-color: #fff;
+    border-color: #fff;
+    opacity: 0.2;
+}
+
+.gridster .ui-draggable-dragging, .gridster .ui-resizable-resizing {
+/*	box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	-webkit-box-sizing: content-box;
+	padding: 0;*/
+	z-index: 3;
+    -webkit-transition: opacity 0s, left 0s, top 0s, width 0s, height 0s;
+    -moz-transition: opacity 0s, left 0s, top 0s, width 0s, height 0s;
+    -o-transition: opacity 0s, left 0s, top 0s, width 0s, height 0s;
+    transition: opacity 0s, left 0s, top 0s, width 0s, height 0s;
+}
