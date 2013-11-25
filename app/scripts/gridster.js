@@ -27,27 +27,17 @@ angular.module('gridster', [])
 				columns: 5,
 				colWidth: null,
 				rowHeight: null,
+				gridHeight: 2,
 				margins: [10, 10],
 				initializing: true,
+				isMobile: false,
 
 				// construct, configure, destruct
 				init: function($element, $preview, opts) {
 					this.opts = opts;
 					this.$element = $element;
 					this.$preview = $preview;
-
-					if (opts.margins) {
-						this.margins = opts.margins;
-					}
-					if (opts.columns) {
-						this.setColumns(opts.columns);
-					}
-					if (opts.colWidth) {
-						this.setColWidth(opts.colWidth);
-					}
-					if (opts.rowHeight) {
-						this.setRowHeight(opts.rowHeight);
-					}
+					this.redraw();
 				},
 				setMargins: function(margins) {
 					this.margins = margins;
@@ -78,6 +68,37 @@ angular.module('gridster', [])
 				destroy: function() {
 					this.grid && (this.grid.length = 0);
 					this.opts = this.margins = this.grid = this.$element = this.$preview = null;
+				},
+
+				redraw: function(){
+					if (this.opts.margins) {
+						this.margins = this.opts.margins;
+					}
+					if (this.opts.columns) {
+						this.setColumns(this.opts.columns);
+					}
+					if (this.opts.colWidth) {
+						this.setColWidth(this.opts.colWidth);
+					}
+					if (this.opts.rowHeight) {
+						this.setRowHeight(this.opts.rowHeight);
+					}
+					this.isMobile = $(window).width() <= this.opts.mobileBreakPoint;
+					for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
+						var columns = this.grid[rowIndex];
+						if (!columns) {
+							continue;
+						}
+						for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
+							if (columns[colIndex]) {
+								var item = columns[colIndex];
+								var $el = item.$element;
+								this.setElementPosition($el, item.position);
+								this.setElementHeight($el, item.height);
+								this.setElementWidth($el, item.width);
+							}
+						}
+					}
 				},
 
 				// grid management
@@ -219,6 +240,7 @@ angular.module('gridster', [])
 						]);
 					}
 					this.floatItemsUp();
+					this.updateHeight(item.dragging ? item.height : 0);
 				},
 				floatItemsUp: function() {
 					if (this.initializing) {
@@ -254,6 +276,24 @@ angular.module('gridster', [])
 						this.putItem(item, bestPosition);
 					}
 				},
+				updateHeight: function(plus) {
+					var maxHeight = this.opts.minRows;
+					if (!plus) {
+						plus = 0;
+					}
+					for (var rowIndex = this.grid.length; rowIndex >= 0; --rowIndex) {
+						var columns = this.grid[rowIndex];
+						if (!columns) {
+							continue;
+						}
+						for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
+							if (columns[colIndex]) {
+								maxHeight = Math.max(maxHeight, rowIndex + plus + columns[colIndex].height);
+							}
+						}
+					}
+					this.gridHeight = Math.min(this.opts.maxRows, maxHeight);
+				},
 
 				// css helpers
 				pixelsToRows: function(pixels, ceil) {
@@ -270,18 +310,35 @@ angular.module('gridster', [])
 				},
 				setElementPosition: function($el, position) {
 					$el.removeClass('ui-draggable-dragging');
-					$el.css({
-						top: position[0] * this.rowHeight + this.margins[0],
-						left: position[1] * this.colWidth + this.margins[1]
-					});
+					if (this.isMobile) {
+						$el.css({
+							margin: this.margins[0] + 'px',
+							top: 'auto',
+							left: 'auto'
+						});
+					} else {
+						$el.css({
+							margin: 0,
+							top: position[0] * this.rowHeight + this.margins[0],
+							left: position[1] * this.colWidth + this.margins[1]
+						});
+					}
 				},
 				setElementHeight: function($el, rows) {
 					$el.removeClass('ui-resizable-resizing');
-					$el.css('height', (rows * this.rowHeight) - this.margins[0] + 'px');
+					if (this.isMobile) {
+						$el.css('height', 'auto');
+					} else {
+						$el.css('height', (rows * this.rowHeight) - this.margins[0] + 'px');
+					}
 				},
 				setElementWidth: function($el, columns) {
 					$el.removeClass('ui-resizable-resizing');
-					$el.css('width', (columns * this.colWidth) - this.margins[1] + 'px');
+					if (this.isMobile) {
+						$el.css('width', 'auto');
+					} else {
+						$el.css('width', (columns * this.colWidth) - this.margins[1] + 'px');
+					}
 //					$el.css('width', (width * 20) + '%');
 				}
 			};
@@ -294,7 +351,10 @@ angular.module('gridster', [])
 					columns: 6,
 					margins: [10, 10],
 					defaultHeight: 1,
-					defaultWidth: 2
+					defaultWidth: 2,
+					minRows: 2,
+					maxRows: 3,
+					mobileBreakPoint: 600
 				},
 				optsGetter = $parse(optsKey);
 			if (optsKey) {
@@ -305,6 +365,36 @@ angular.module('gridster', [])
 			$elem.addClass('gridster-loading');
 			var $preview =  $('<div class="gridster-item gridster-preview-holder"></div>')
 				.appendTo($elem);
+
+			scope.$watch(function(){
+				return controller.gridHeight;
+			}, function(height){
+				controller.$element.css('height', (height * controller.rowHeight) + controller.margins[0] + 'px');
+			});
+
+			scope.$watch(function(){
+				return controller.isMobile;
+			}, function(isMobile){
+				if (isMobile) {
+					controller.$element.addClass('gridster-mobile');
+				} else {
+					controller.$element.removeClass('gridster-mobile');
+				}
+			});
+
+			$(window).on('resize', function(){
+				$elem.addClass('gridster-loading');
+				controller.redraw();
+				$elem.removeClass('gridster-loading');
+				scope.$apply();
+			});
+			scope.$watch(function(){
+				return $elem.width();
+			}, function(){
+				$elem.addClass('gridster-loading');
+				controller.redraw();
+				$elem.removeClass('gridster-loading');
+			});
 
 			$elem.bind('$destroy', function() {
 				try {
@@ -319,7 +409,7 @@ angular.module('gridster', [])
 				controller.initializing = false;
 				controller.floatItemsUp();
 				$elem.removeClass('gridster-loading');
-			}, 100);
+			}, 0);
 		}
 	};
 })
@@ -400,13 +490,14 @@ angular.module('gridster', [])
 
 			$el.addClass('gridster-item');
 			$el.draggable({
-				containment: '.gridster',
+//				containment: '.gridster',
 				refreshPositions: true,
 				start: function(e, widget) {
 					item.dragging = true;
 					controller.$preview.show();
 					controller.setElementWidth(controller.$preview, item.width);
 					controller.setElementHeight(controller.$preview, item.height);
+					controller.updateHeight(item.height);
 					scope.$apply();
 				},
 				drag: function(e, widget) {
@@ -418,6 +509,7 @@ angular.module('gridster', [])
 					item.position = getPosition(widget);
 					item.dragging = false;
 					controller.$preview.hide();
+					controller.updateHeight();
 					scope.$apply();
 				}
 			});
