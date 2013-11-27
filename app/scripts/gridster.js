@@ -2,20 +2,6 @@
 
 angular.module('gridster', [])
 
-.directive('integer', function(){
-    return {
-        require: 'ngModel',
-        link: function(scope, ele, attr, ctrl){
-            ctrl.$parsers.unshift(function(viewValue){
-				if (viewValue === '' || viewValue === null || typeof viewValue === 'undefined') {
-					return null;
-				}
-                return parseInt(viewValue, 10);
-            });
-        }
-    };
-})
-
 .controller('GridsterCtrl', function(){
 	return {
 		grid: [],
@@ -132,21 +118,18 @@ angular.module('gridster', [])
 					var item = this.getItem([
 						row + h,
 						column + w
-					]);
-					if (item && item !== excludeItem) {
+					], excludeItem);
+					if (item && item !== excludeItem && items.indexOf(item) === -1) {
 						items.push(item);
 					}
 				}
 			}
 			return items;
 		},
-		getItem: function(position) {
+		getItem: function(position, excludeItem) {
 			var rowIndex = position[0],
-				colIndex = position[1];
-			if (!this.grid[rowIndex]) {
-				return null;
-			}
-			var height = 1;
+				colIndex = position[1],
+				height = 1;
 			while (rowIndex > -1) {
 				var width = 1,
 					col = colIndex;
@@ -155,6 +138,7 @@ angular.module('gridster', [])
 						var item = this.grid[rowIndex][col];
 						if (
 							item
+							&& item !== excludeItem
 							&& item.width >= width
 							&& item.height >= height
 						) {
@@ -169,10 +153,18 @@ angular.module('gridster', [])
 			}
 			return null;
 		},
+		putItems: function(items) {
+			for (var i = 0, l = items.length; i < l; ++i) {
+				this.putItem(items[i]);
+			}
+		},
 		putItem: function(item, position) {
 			if (!position) {
-				this.autoSetItemPosition(item);
-				return;
+				position = item.position;
+				if (typeof position === 'undefined') {
+					this.autoSetItemPosition(item);
+					return;
+				}
 			}
 			if (!this.canItemOccupy(item, position)) {
 				var column = position[1] < 0 ? 0 : this.columns - item.width;
@@ -192,6 +184,7 @@ angular.module('gridster', [])
 					item.oldPosition[0] === position[0]
 					&& item.oldPosition[1] === position[1]
 				) {
+					// nothing changed
 					return;
 				} else {
 					var oldRow = this.grid[item.oldPosition[0]];
@@ -262,15 +255,16 @@ angular.module('gridster', [])
 				colIndex = position[1],
 				height = item.height,
 				width = item.width,
-				bestPosition = null;
-			for (var rowIndex = position[0]; rowIndex >= 0; --rowIndex) {
-				var newPosition = [rowIndex, colIndex];
-				var items = this.getItems(newPosition, width, height, item);
-				if (items.length === 0) {
-					bestPosition = newPosition;
-				} else {
+				bestPosition = null,
+				rowIndex = position[0] - 1;
+			while (rowIndex > -1) {
+				var newPosition = [rowIndex, colIndex],
+					items = this.getItems(newPosition, width, height, item);
+				if (items.length !== 0) {
 					break;
 				}
+				bestPosition = newPosition;
+				 --rowIndex;
 			}
 			if (bestPosition) {
 				this.putItem(item, bestPosition);
@@ -423,197 +417,5 @@ angular.module('gridster', [])
 		}
 	};
 })
-
-.directive('gridsterItem', function($parse) {
-	return {
-		restrict: 'EAC',
-		scope: true,
-		require: '^gridster',
-		link: function(scope, $el, attrs, controller) {
-			var optsKey = attrs.gridsterItem,
-				opts = {};
-
-			if (optsKey) {
-				opts = $parse(optsKey)(scope);
-			}
-
-			var item = {
-				$element: $el,
-				dragging: false,
-				resizing: false,
-				position: null,
-				width: controller.opts.defaultWidth,
-				height: controller.opts.defaultHeight,
-				toJSON: function() {
-					return {
-						position: this.position,
-						height: this.height,
-						width: this.width
-					};
-				}
-			};
-
-			function getPosition(widget) {
-				var pos =  [
-					controller.pixelsToRows(widget.position.top),
-					controller.pixelsToColumns(widget.position.left)
-				];
-				return pos;
-			}
-
-			function setPosition(position) {
-				controller.putItem(item, position);
-
-				if (item.dragging) {
-					controller.setElementPosition(controller.$preview, item.position);
-				} else {
-					controller.setElementPosition($el, item.position);
-				}
-			}
-			function setDimension(key, value) {
-				var lower = key.toLowerCase(),
-					f = lower.charAt(0).toUpperCase(),
-					ucfirst = f + lower.substr(1);
-				if (value === '') {
-					return;
-				}
-				if (!value) {
-					value = controller.opts['default' + ucfirst];
-				}
-				value = parseInt(value, 10);
-				var changed = !(
-					item[lower] === value
-					&& item['old' + ucfirst]
-					&& item['old' + ucfirst] === value
-				);
-				item['old' + ucfirst] = item[lower] = value;
-
-				if (item.resizing) {
-					controller.setElementPosition(controller.$preview, item.position);
-					controller['setElement' + ucfirst](controller.$preview, value);
-				} else {
-					controller['setElement' + ucfirst]($el, value);
-				}
-				if (changed) {
-					controller.moveOverlappingItems(item);
-				}
-			}
-			function setHeight(rows) {
-				setDimension('height', rows);
-			}
-			function setWidth(columns) {
-				setDimension('width', columns);
-			}
-
-			$el.addClass('gridster-item');
-			$el.draggable({
-//				containment: '.gridster',
-				refreshPositions: true,
-				start: function(e, widget) {
-					item.dragging = true;
-					controller.$preview.show();
-					controller.setElementWidth(controller.$preview, item.width);
-					controller.setElementHeight(controller.$preview, item.height);
-					controller.updateHeight(item.height);
-					scope.$apply();
-				},
-				drag: function(e, widget) {
-					item.position = getPosition(widget);
-					item.dragging = true;
-					scope.$apply();
-				},
-				stop: function (e, widget) {
-					item.position = getPosition(widget);
-					item.dragging = false;
-					controller.$preview.hide();
-					controller.updateHeight();
-					scope.$apply();
-				}
-			});
-
-			$el.resizable({
-				minHeight: controller.rowHeight,
-				minWidth: controller.colWidth,
-				start: function(e, widget) {
-					item.resizing = true;
-					controller.$preview.fadeIn(300);
-					controller.setElementWidth(controller.$preview, item.width);
-					controller.setElementHeight(controller.$preview, item.height);
-					scope.$apply();
-				},
-				resize: function(e, widget) {
-					item.width = controller.pixelsToColumns(widget.size.width, true);
-					item.height = controller.pixelsToRows(widget.size.height, true);
-					item.resizing = true;
-					scope.$apply();
-				},
-				stop: function (e, widget) {
-					item.width = controller.pixelsToColumns(widget.size.width, true);
-					item.height = controller.pixelsToRows(widget.size.height, true);
-					item.resizing = false;
-					controller.$preview.fadeOut(300);
-					setHeight(item.height);
-					setWidth(item.width);
-					scope.$apply();
-				}
-			});
-
-			scope.$watch(function() {
-				return item.position;
-			}, function(position) {
-				setPosition(position);
-			});
-			scope.$watch(function() {
-				return item.height;
-			}, function(height) {
-				setHeight(height);
-			});
-			scope.$watch(function() {
-				return item.width;
-			}, function(width) {
-				setWidth(width);
-			});
-
-			if (opts.width) {
-				scope.$watch(opts.width, function(width){
-					setWidth(width);
-				});
-				setWidth($parse(opts.width)(scope));
-			}
-			if (opts.height) {
-				scope.$watch(opts.height, function(height){
-					setHeight(height);
-				});
-				setHeight($parse(opts.height)(scope));
-			}
-			if (opts.position) {
-				var posGetter = $parse(opts.position);
-				scope.$watch(function(){
-					var pos = posGetter(scope);
-					if (pos) {
-						return pos.join(',');
-					}
-				}, function(position){
-					if (position) {
-						var pos = position.split(',');
-						pos[0] = parseInt(pos[0], 10);
-						pos[1] = parseInt(pos[1], 10);
-						setPosition(pos);
-					}
-				});
-				setPosition($parse(opts.position)(scope));
-			}
-
-			return $el.bind('$destroy', function() {
-				try {
-					$el.draggable('destroy');
-				} catch (e) {}
-				try {
-					$el.resizable('destroy');
-				} catch (e) {}
-			});
-		}
-	};
-});
 
 ;

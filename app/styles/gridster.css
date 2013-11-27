@@ -4,7 +4,7 @@
 
 .gridster {
 	position:relative;
-	width: 80%;
+	width: 1000px;
 	margin: auto;
 	background: rgba(0, 0, 0, .1);
 	height: 0;
@@ -36,6 +36,9 @@
 	box-sizing:border-box;
 	-moz-box-sizing:border-box;
 	-webkit-box-sizing:border-box;
+	box-shadow: 0 0 5px rgba(0,0,0,0.3);
+	-webkit-box-shadow: 0 0 5px rgba(0,0,0,0.3);
+	-moz-box-shadow: 0 0 5px rgba(0,0,0,0.3);
 }
 
 .gridster-loaded .gridster-item  {
