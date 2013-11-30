@@ -13,7 +13,6 @@ angular.module('gridster', [])
 		rowHeight: null,
 		gridHeight: 2,
 		margins: [10, 10],
-		initializing: true,
 		isMobile: false,
 
 		// construct, configure, destruct
@@ -76,7 +75,7 @@ angular.module('gridster', [])
 					if (columns[colIndex]) {
 						var item = columns[colIndex];
 						var $el = item.$element;
-						this.setElementPosition($el, item.position);
+						this.setElementPosition($el, item.row, item.column);
 						this.setElementHeight($el, item.height);
 						this.setElementWidth($el, item.width);
 					}
@@ -85,70 +84,69 @@ angular.module('gridster', [])
 		},
 
 		// grid management
-		canItemOccupy: function(item, position) {
-			return position[1] > -1 && item.width + position[1] <= this.columns;
+		canItemOccupy: function(item, row, column) {
+			return row > -1 && column > -1 && item.width + column <= this.columns;
 		},
 		autoSetItemPosition: function(item) {
-			var rowIndex = 0,
-				colIndex = 0;
-			var position = [];
-			for (rowIndex = 0; rowIndex < 100; ++rowIndex) {
-				for (colIndex = 0; colIndex < this.columns; ++colIndex) {
-					position[0] = rowIndex;
-					position[1] = colIndex;
-					var occupied = this.getItem(position),
-						canFit = this.canItemOccupy(item, position);
+			// walk through each row and column looking for a place it will fit
+			for (var rowIndex = 0; rowIndex < 100; ++rowIndex) {
+				for (var colIndex = 0; colIndex < this.columns; ++colIndex) {
+					var occupied = this.getItem(rowIndex, colIndex),
+						canFit = this.canItemOccupy(item, rowIndex, colIndex);
 					if (!occupied && canFit) {
-						this.putItem(item, position);
+						this.putItem(item, rowIndex, colIndex);
 						return;
 					}
 				}
 			}
 			throw new Error('Unable to place item!');
 		},
-		getItems: function(position, width, height, excludeItem) {
-			if (!position || !width || !height) {
-				return [];
+		getItems: function(row, column, width, height, excludeItems) {
+			var items = [];
+			if (!width || !height) {
+				width = height = 1;
 			}
-			var items = [],
-				row = position[0],
-				column = position[1];
+			if (excludeItems && !(excludeItems instanceof Array)) {
+				excludeItems = [excludeItems];
+			}
 			for (var h = 0; h < height; ++h) {
 				for (var w = 0; w < width; ++w) {
-					var item = this.getItem([
-						row + h,
-						column + w
-					], excludeItem);
-					if (item && item !== excludeItem && items.indexOf(item) === -1) {
+					var item = this.getItem(row + h, column + w, excludeItems);
+					if (
+						item
+						&& (!excludeItems || excludeItems.indexOf(item) === -1)
+						&& items.indexOf(item) === -1
+					) {
 						items.push(item);
 					}
 				}
 			}
 			return items;
 		},
-		getItem: function(position, excludeItem) {
-			var rowIndex = position[0],
-				colIndex = position[1],
-				height = 1;
-			while (rowIndex > -1) {
+		getItem: function(row, column, excludeItems) {
+			if (excludeItems && !(excludeItems instanceof Array)) {
+				excludeItems = [excludeItems];
+			}
+			var height = 1;
+			while (row > -1) {
 				var width = 1,
-					col = colIndex;
+					col = column;
 				while (col > -1) {
-					if (this.grid[rowIndex]) {
-						var item = this.grid[rowIndex][col];
+					if (this.grid[row]) {
+						var item = this.grid[row][col];
 						if (
 							item
-							&& item !== excludeItem
+							&& (!excludeItems || excludeItems.indexOf(item) === -1)
 							&& item.width >= width
 							&& item.height >= height
 						) {
-							return this.grid[rowIndex][col];
+							return this.grid[row][col];
 						}
 					}
 					++width;
 					--col;
 				}
-				--rowIndex;
+				--row;
 				++height;
 			}
 			return null;
@@ -158,86 +156,79 @@ angular.module('gridster', [])
 				this.putItem(items[i]);
 			}
 		},
-		putItem: function(item, position) {
-			if (!position) {
-				position = item.position;
-				if (typeof position === 'undefined') {
+		putItem: function(item, row, column) {
+			if (typeof row === 'undefined' || row === null) {
+				row = item.row;
+				column = item.column;
+				if (typeof row === 'undefined' || row === null) {
 					this.autoSetItemPosition(item);
 					return;
 				}
 			}
-			if (!this.canItemOccupy(item, position)) {
-				var column = position[1] < 0 ? 0 : this.columns - item.width;
-				if (
-					!item.position
-					|| item.position[0] !== position[0]
-				) {
-					position = [
-						position[0]
-					];
-				}
-				position[1] = column;
+			if (!this.canItemOccupy(item, row, column)) {
+				column = Math.min(this.columns - item.width, Math.max(0, column));
+				row = Math.max(0, row);
 			}
 
-			if (item && item.oldPosition) {
-				if (
-					item.oldPosition[0] === position[0]
-					&& item.oldPosition[1] === position[1]
-				) {
-					// nothing changed
+			if (item && item.oldRow !== null && typeof item.oldRow !== 'undefined') {
+				if (item.oldRow === row && item.oldColumn === column) {
+					item.row = row;
+					item.column = column;
 					return;
 				} else {
-					var oldRow = this.grid[item.oldPosition[0]];
-					if (oldRow && oldRow[item.oldPosition[1]] === item) {
-						oldRow[item.oldPosition[1]] = null;
+					// remove from old position
+					var oldRow = this.grid[item.oldRow];
+					if (oldRow && oldRow[item.oldColumn] === item) {
+						oldRow[item.oldColumn] = null;
 					}
 				}
 			}
 
-			var rowIndex = position[0],
-				colIndex = position[1],
-				displacedItems = this.getItems(
-					position,
-					item.width,
-					item.height,
-					item
-				);
+			item.oldRow = item.row = row;
+			item.oldColumn = item.column = column;
 
-			if (!this.grid[rowIndex]) {
-				this.grid[rowIndex] = [];
+			this.moveOverlappingItems(item);
+
+			if (!this.grid[row]) {
+				this.grid[row] = [];
 			}
-			this.grid[rowIndex][colIndex] = item;
-
-			item.oldPosition = [position[0], position[1]];
-			item.position = position;
-			this.moveOverlappingItems(item, displacedItems);
+			this.grid[row][column] = item;
 		},
-		moveOverlappingItems: function(item, displacedItems) {
-			if (!item.position) {
+		moveOverlappingItems: function(item) {
+			var items = this.getItems(
+				item.row,
+				item.column,
+				item.width,
+				item.height,
+				item
+			);
+			this.moveItemsDown(items, item.row + item.height);
+		},
+		moveItemsDown: function(items, toRow) {
+			if (!items || items.length === 0) {
 				return;
 			}
-			if (!displacedItems) {
-				displacedItems = this.getItems(
-					item.position,
-					item.width,
-					item.height,
-					item
+			var topRows = {}, item, i, l;
+			// calculate the top rows in each column
+			for (i = 0, l = items.length; i < l; ++i) {
+				item = items[i];
+				var topRow = topRows[item.column];
+				if (typeof topRow === 'undefined' || item.row < topRow) {
+					topRows[item.column] = item.row;
+				}
+			}
+			// move each item down from the top row in its column to the toRow
+			for (i = 0, l = items.length; i < l; ++i) {
+				item = items[i];
+				var columnOffset = toRow - topRows[item.column];
+				this.putItem(
+					item,
+					item.row + columnOffset,
+					item.column
 				);
 			}
-			for (var i = 0, l = displacedItems.length; i < l; ++i) {
-				var displacedItem = displacedItems[i];
-				this.putItem(displacedItem, [
-					item.position[0] + item.height,
-					displacedItem.position[1]
-				]);
-			}
-			this.floatItemsUp();
-			this.updateHeight(item.dragging ? item.height : 0);
 		},
 		floatItemsUp: function() {
-			if (this.initializing) {
-				return;
-			}
 			for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 				var columns = this.grid[rowIndex];
 				if (!columns) {
@@ -251,23 +242,23 @@ angular.module('gridster', [])
 			}
 		},
 		floatItemUp: function(item) {
-			var position = item.position,
-				colIndex = position[1],
+			var colIndex = item.column,
 				height = item.height,
 				width = item.width,
-				bestPosition = null,
-				rowIndex = position[0] - 1;
+				bestRow = null,
+				bestColumn = null,
+				rowIndex = item.row - 1;
 			while (rowIndex > -1) {
-				var newPosition = [rowIndex, colIndex],
-					items = this.getItems(newPosition, width, height, item);
+				var items = this.getItems(rowIndex, colIndex, width, height, item);
 				if (items.length !== 0) {
 					break;
 				}
-				bestPosition = newPosition;
+				bestRow = rowIndex;
+				bestColumn = colIndex;
 				 --rowIndex;
 			}
-			if (bestPosition) {
-				this.putItem(item, bestPosition);
+			if (bestRow !== null) {
+				this.putItem(item, bestRow, bestColumn);
 			}
 		},
 		updateHeight: function(plus) {
@@ -302,7 +293,7 @@ angular.module('gridster', [])
 			}
 			return Math.round(pixels / this.colWidth);
 		},
-		setElementPosition: function($el, position) {
+		setElementPosition: function($el, row, column) {
 			$el.removeClass('ui-draggable-dragging');
 			if (this.isMobile) {
 				$el.css({
@@ -313,8 +304,8 @@ angular.module('gridster', [])
 			} else {
 				$el.css({
 					margin: 0,
-					top: position[0] * this.rowHeight + this.margins[0],
-					left: position[1] * this.colWidth + this.margins[1]
+					top: row * this.rowHeight + this.margins[0],
+					left: column * this.colWidth + this.margins[1]
 				});
 			}
 		},
@@ -410,7 +401,6 @@ angular.module('gridster', [])
 			controller.init($elem, $preview, opts);
 
 			$timeout(function(){
-				controller.initializing = false;
 				controller.floatItemsUp();
 				$elem.addClass('gridster-loaded');
 			}, 0);

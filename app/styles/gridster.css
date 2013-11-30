@@ -3,7 +3,7 @@
 * Copyright (c) 2013 ducksboard; Licensed MIT */
 
 .gridster {
-	position:relative;
+	position: relative;
 	width: 1000px;
 	margin: auto;
 	background: rgba(0, 0, 0, .1);
@@ -12,6 +12,9 @@
 
 .gridster-loaded {
 	-webkit-transition: height .3s;
+}
+
+.gridster-loaded {
     -moz-transition: height .3s;
     -o-transition: height .3s;
     transition: height .3s;
@@ -24,6 +27,15 @@
 }
 
 .gridster .gridster-item {
+	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+	-webkit-box-sizing: border-box;
+}
+
+.gridster .gridster-item {
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 	list-style: none;
 	text-align: center;
 	background: #ffffff;
@@ -33,20 +45,20 @@
 	z-index: 2;
 	position: absolute;
 	display: none;
-	box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	-webkit-box-sizing:border-box;
-	box-shadow: 0 0 5px rgba(0,0,0,0.3);
-	-webkit-box-shadow: 0 0 5px rgba(0,0,0,0.3);
-	-moz-box-shadow: 0 0 5px rgba(0,0,0,0.3);
 }
 
 .gridster-loaded .gridster-item  {
 	display: block;
+}
+
+.gridster-loaded .gridster-item {
 	-webkit-transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
-	-moz-transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
-	-o-transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
-	transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
+}
+
+.gridster-loaded .gridster-item {
+    -moz-transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
+    -o-transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
+    transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
 }
 
 .gridster-mobile {
@@ -71,6 +83,11 @@
 .gridster .ui-resizable-resizing,
 .gridster .gridster-preview-holder {
 	-webkit-transition: opacity 0s, left 0s, top 0s, width 0s, height 0s;
+}
+
+.gridster .ui-draggable-dragging,
+.gridster .ui-resizable-resizing,
+.gridster .gridster-preview-holder {
     -moz-transition: opacity 0s, left 0s, top 0s, width 0s, height 0s;
     -o-transition: opacity 0s, left 0s, top 0s, width 0s, height 0s;
     transition: opacity 0s, left 0s, top 0s, width 0s, height 0s;

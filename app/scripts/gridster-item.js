@@ -8,7 +8,8 @@ angular.module('gridster')
 		gridster: null,
 		dragging: false,
 		resizing: false,
-		position: null,
+		row: null,
+		column: null,
 		width: null,
 		height: null,
 		init: function($element, gridster, itemOpts) {
@@ -19,23 +20,25 @@ angular.module('gridster')
 		},
 		destroy: function() {
 			this.gridster = null;
-			this.position = null;
 			this.$element = null;
 		},
 		toJSON: function() {
 			return {
-				position: this.position,
+				row: this.row,
+				column: this.column,
 				height: this.height,
 				width: this.width
 			};
 		},
-		setPosition: function (position) {
-			this.gridster.putItem(this, position);
+		setPosition: function (row, column) {
+			this.gridster.putItem(this, row, column);
+			this.gridster.floatItemsUp();
+			this.gridster.updateHeight(this.dragging ? this.height : 0);
 
 			if (this.dragging) {
-				this.gridster.setElementPosition(this.gridster.$preview, this.position);
+				this.gridster.setElementPosition(this.gridster.$preview, this.row, this.column);
 			} else {
-				this.gridster.setElementPosition(this.$element, this.position);
+				this.gridster.setElementPosition(this.$element, this.row, this.column);
 			}
 		},
 		setDimension: function (key, value) {
@@ -57,13 +60,15 @@ angular.module('gridster')
 			this['old' + ucfirst] = this[lower] = value;
 
 			if (this.resizing) {
-				this.gridster.setElementPosition(this.gridster.$preview, this.position);
+				this.gridster.setElementPosition(this.gridster.$preview, this.row, this.column);
 				this.gridster['setElement' + ucfirst](this.gridster.$preview, value);
 			} else {
 				this.gridster['setElement' + ucfirst](this.$element, value);
 			}
 			if (changed) {
 				this.gridster.moveOverlappingItems(this);
+				this.gridster.floatItemsUp();
+				this.gridster.updateHeight(this.dragging ? this.height : 0);
 			}
 		},
 		setHeight: function (rows) {
@@ -93,14 +98,6 @@ angular.module('gridster')
 
 			item.init($el, gridster, opts);
 
-			function getPosition(widget) {
-				var pos =  [
-					gridster.pixelsToRows(widget.position.top),
-					gridster.pixelsToColumns(widget.position.left)
-				];
-				return pos;
-			}
-
 			$el.addClass('gridster-item');
 
 			$el.draggable({
@@ -111,18 +108,22 @@ angular.module('gridster')
 					gridster.$preview.show();
 					gridster.setElementWidth(gridster.$preview, item.width);
 					gridster.setElementHeight(gridster.$preview, item.height);
+					gridster.setElementPosition(gridster.$preview, item.row, item.column);
 					gridster.updateHeight(item.height);
 					scope.$apply();
 				},
 				drag: function(e, widget) {
-					item.position = getPosition(widget);
+					item.row = gridster.pixelsToRows(widget.position.top);
+					item.column = gridster.pixelsToColumns(widget.position.left);
 					item.dragging = true;
 					scope.$apply();
 				},
 				stop: function (e, widget) {
-					item.position = getPosition(widget);
+					item.row = gridster.pixelsToRows(widget.position.top);
+					item.column = gridster.pixelsToColumns(widget.position.left);
 					item.dragging = false;
 					gridster.$preview.hide();
+					item.setPosition(item.row, item.column);
 					gridster.updateHeight();
 					scope.$apply();
 				}
@@ -156,9 +157,14 @@ angular.module('gridster')
 			});
 
 			scope.$watch(function() {
-				return item.position;
-			}, function(position) {
-				item.setPosition(position);
+				return item.row;
+			}, function() {
+				item.setPosition(item.row, item.column);
+			});
+			scope.$watch(function() {
+				return item.column;
+			}, function() {
+				item.setPosition(item.row, item.column);
 			});
 			scope.$watch(function() {
 				return item.height;
@@ -173,32 +179,27 @@ angular.module('gridster')
 
 			if (opts.width) {
 				scope.$watch(opts.width, function(width){
-					item.setWidth(width);
+					item.width = width;
 				});
-				item.setWidth($parse(opts.width)(scope));
+				item.width = $parse(opts.width)(scope);
 			}
 			if (opts.height) {
 				scope.$watch(opts.height, function(height){
-					item.setHeight(height);
+					item.height = height;
 				});
-				item.setHeight($parse(opts.height)(scope));
+				item.height = $parse(opts.height)(scope);
 			}
-			if (opts.position) {
-				var posGetter = $parse(opts.position);
-				scope.$watch(function(){
-					var pos = posGetter(scope);
-					if (pos) {
-						return pos.join(',');
-					}
-				}, function(position){
-					if (position) {
-						var pos = position.split(',');
-						pos[0] = parseInt(pos[0], 10);
-						pos[1] = parseInt(pos[1], 10);
-						item.setPosition(pos);
-					}
+			if (opts.row) {
+				scope.$watch(opts.row, function(row){
+					item.row = row;
 				});
-				item.setPosition($parse(opts.position)(scope));
+				item.row = $parse(opts.row)(scope);
+			}
+			if (opts.column) {
+				scope.$watch(opts.column, function(column){
+					item.column = column;
+				});
+				item.column = $parse(opts.column)(scope);
 			}
 
 			return $el.bind('$destroy', function() {
