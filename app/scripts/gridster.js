@@ -123,6 +123,21 @@ angular.module('gridster', [])
 			}
 			return items;
 		},
+		removeItem: function(item) {
+			for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
+				var columns = this.grid[rowIndex];
+				if (!columns) {
+					continue;
+				}
+				var index = columns.indexOf(item);
+				if (index !== -1) {
+					columns[index] = null;
+					break;
+				}
+			}
+			this.floatItemsUp();
+			updateHeight();
+		},
 		getItem: function(row, column, excludeItems) {
 			if (excludeItems && !(excludeItems instanceof Array)) {
 				excludeItems = [excludeItems];
@@ -505,6 +520,7 @@ angular.module('gridster', [])
 			$el.addClass('gridster-item');
 
 			$el.draggable({
+				handle: gridster.opts.draggable && gridster.opts.draggable.handle ? gridster.opts.draggable.handle : null,
 //				containment: '.gridster',
 				refreshPositions: true,
 				start: function(e, widget) {
@@ -548,6 +564,10 @@ angular.module('gridster', [])
 					item.height = gridster.pixelsToRows(widget.size.height, true);
 					item.resizing = true;
 					scope.$apply();
+					if (gridster.opts.resize && gridster.opts.resize.resize) {
+						gridster.opts.resize.resize(e, widget, $el);
+						scope.$apply();
+					}
 				},
 				stop: function (e, widget) {
 					item.width = gridster.pixelsToColumns(widget.size.width, true);
@@ -557,6 +577,10 @@ angular.module('gridster', [])
 					item.setHeight(item.height);
 					item.setWidth(item.width);
 					scope.$apply();
+					if (gridster.opts.resize && gridster.opts.resize.stop) {
+						gridster.opts.resize.stop(e, widget, $el);
+						scope.$apply();
+					}
 				}
 			});
 
@@ -630,6 +654,9 @@ angular.module('gridster', [])
 			});
 
 			return $el.bind('$destroy', function() {
+				try {
+					gridster.removeItem(item);
+				} catch (e) {}
 				try {
 					item.destroy();
 				} catch (e) {}
