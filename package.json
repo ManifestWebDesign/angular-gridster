@@ -1,6 +1,7 @@
 {
-  "name": "gridsterangular",
-  "version": "0.0.0",
+  "name": "angular-gridster",
+  "version": "0.0.1",
+  "description": "This directive gives you gridster behavior",
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.1",
@@ -44,5 +45,10 @@
   },
   "scripts": {
     "test": "grunt test"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ManifestWebDesign/angular-gridster.git"
+  },
+  "main": "./app/scripts/gridster.js"
 }

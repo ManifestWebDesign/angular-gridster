@@ -55,7 +55,7 @@ angular.module('app')
 		width: 'item.size.width',
 		height: 'item.size.height',
 		row: 'item.position[0]',
-		column: 'item.position[1]',
+		column: 'item.position[1]'
 	};
 
 	$scope.gridsterOpts = {

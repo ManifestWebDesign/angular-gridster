@@ -11,12 +11,18 @@
 		<meta name="viewport" content="width=device-width" />
 		<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-        <!-- build:css({.tmp,app}) styles/main.css -->
+        <!-- build:css({.tmp,app}) styles/jquery-ui.min.css -->
 		<link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery.ui.core.css" />
 		<link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery.ui.resizable.css" />
-        <link rel="stylesheet" href="styles/main.css" />
+		<!-- endbuild -->
+
+		<!-- build:css({.tmp,app}) styles/gridster.min.css -->
 		<link rel="stylesheet" href="styles/gridster.css" />
         <!-- endbuild -->
+
+		<!-- build:css({.tmp,app}) styles/main.min.css -->
+		<link rel="stylesheet" href="styles/main.css" />
+		<!-- endbuild -->
 	</head>
 	<body ng-app="app" id="ng-app">
 		<!--[if lt IE 7]>
@@ -30,12 +36,12 @@
 			ng-include=" 'views/main.html' ">
 		</div>
 
-		<!-- build:js scripts/shims.js -->
+		<!-- build:js scripts/shims.min.js -->
 		<script src="bower_components/es5-shim/es5-shim.js"></script>
 		<script src="bower_components/json3/lib/json3.min.js"></script>
 		<!-- endbuild -->
 
-        <!-- build:js scripts/modules.js -->
+        <!-- build:js scripts/modules.min.js -->
 		<script src="bower_components/jquery/jquery.js"></script>
 		<script src="bower_components/jquery-ui/ui/jquery.ui.core.js"></script>
 		<script src="bower_components/jquery-ui/ui/jquery.ui.widget.js"></script>
@@ -45,12 +51,11 @@
 		<script src="bower_components/angular/angular.js"></script>
         <!-- endbuild -->
 
-        <!-- build:js({.tmp,app}) scripts/gridster.js -->
+        <!-- build:js({.tmp,app}) scripts/gridster.min.js -->
 		<script src="scripts/gridster.js"></script>
-		<script src="scripts/gridster-item.js"></script>
 		<!-- endbuild -->
 
-		<!-- build:js({.tmp,app}) scripts/scripts.js -->
+		<!-- build:js({.tmp,app}) scripts/app.min.js -->
         <script src="scripts/app.js"></script>
         <script src="scripts/controllers/main.js"></script>
         <!-- endbuild -->
