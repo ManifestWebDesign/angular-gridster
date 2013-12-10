@@ -553,6 +553,7 @@ angular.module('gridster', [])
 			});
 
 			$el.resizable({
+				autoHide: true,
 				handles: 'n, e, s, w, ne, se, sw, nw',
 				minHeight: gridster.rowHeight,
 				minWidth: gridster.colWidth,
