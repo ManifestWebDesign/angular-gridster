@@ -296,15 +296,19 @@ angular.module('gridster', [])
 		},
 
 		// css helpers
-		pixelsToRows: function(pixels, ceil) {
-			if (ceil) {
+		pixelsToRows: function(pixels, ceilOrFloor) {
+			if (ceilOrFloor === true) {
 				return Math.ceil(pixels / this.rowHeight);
+			} else if (ceilOrFloor === false) {
+				return Math.floor(pixels / this.rowHeight);
 			}
 			return Math.round(pixels / this.rowHeight);
 		},
-		pixelsToColumns: function(pixels, ceil) {
-			if (ceil) {
+		pixelsToColumns: function(pixels, ceilOrFloor) {
+			if (ceilOrFloor === true) {
 				return Math.ceil(pixels / this.colWidth);
+			} else if (ceilOrFloor === false) {
+				return Math.floor(pixels / this.colWidth);
 			}
 			return Math.round(pixels / this.colWidth);
 		},
@@ -535,7 +539,6 @@ angular.module('gridster', [])
 				drag: function(e, widget) {
 					item.row = gridster.pixelsToRows(widget.position.top);
 					item.column = gridster.pixelsToColumns(widget.position.left);
-					item.dragging = true;
 					scope.$apply();
 				},
 				stop: function (e, widget) {
@@ -550,19 +553,22 @@ angular.module('gridster', [])
 			});
 
 			$el.resizable({
+				handles: 'n, e, s, w, ne, se, sw, nw',
 				minHeight: gridster.rowHeight,
 				minWidth: gridster.colWidth,
 				start: function(e, widget) {
 					item.resizing = true;
+					item.dragging = true;
 					gridster.$preview.fadeIn(300);
 					gridster.setElementWidth(gridster.$preview, item.width);
 					gridster.setElementHeight(gridster.$preview, item.height);
 					scope.$apply();
 				},
 				resize: function(e, widget) {
+					item.row = gridster.pixelsToRows(widget.position.top, false);
+					item.column = gridster.pixelsToColumns(widget.position.left, false);
 					item.width = gridster.pixelsToColumns(widget.size.width, true);
 					item.height = gridster.pixelsToRows(widget.size.height, true);
-					item.resizing = true;
 					scope.$apply();
 					if (gridster.opts.resize && gridster.opts.resize.resize) {
 						gridster.opts.resize.resize(e, widget, $el);
@@ -570,10 +576,14 @@ angular.module('gridster', [])
 					}
 				},
 				stop: function (e, widget) {
+					item.row = gridster.pixelsToRows(widget.position.top, false);
+					item.column = gridster.pixelsToColumns(widget.position.left, false);
 					item.width = gridster.pixelsToColumns(widget.size.width, true);
 					item.height = gridster.pixelsToRows(widget.size.height, true);
 					item.resizing = false;
+					item.dragging = false;
 					gridster.$preview.fadeOut(300);
+					item.setPosition(item.row, item.column);
 					item.setHeight(item.height);
 					item.setWidth(item.width);
 					scope.$apply();
