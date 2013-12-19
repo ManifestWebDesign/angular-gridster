@@ -1,5 +1,5 @@
 {
-	"name": "gridster-angular",
+	"name": "angular-gridster",
 	"version": "0.5.1",
 	"dependencies": {
 		"angular": "~1.2.0",
