@@ -472,10 +472,10 @@ angular.module('gridster', [])
 			if (value === '') {
 				return;
 			}
-			if (!value) {
+			value = parseInt(value, 10);
+			if (isNaN(value) || value === 0) {
 				value = this.gridster.opts['default' + ucfirst];
 			}
-			value = parseInt(value, 10);
 			var changed = !(
 				this[lower] === value
 				&& this['old' + ucfirst]
@@ -621,7 +621,10 @@ angular.module('gridster', [])
 					}
 					$getters[aspect] = $parse(key);
 					scope.$watch(key, function(newVal){
-						item[aspect] = newVal;
+						newVal = parseInt(newVal, 10);
+						if (!isNaN(newVal)) {
+							item[aspect] = newVal;
+						}
 					});
 					var val = $getters[aspect](scope);
 					if (typeof val === 'number') {
