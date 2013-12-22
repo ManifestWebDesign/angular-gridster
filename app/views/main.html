@@ -1,24 +1,24 @@
 <h2>Standard Items</h2>
 <p>
-	Each item provides its own dimensions and position using the standard fields: { row: row, column: column, width: width, height: height }.
+	Each item provides its own dimensions and position using the standard fields: { row: row, col: col, sizeX: sizeX, sizeY: sizeY }.
 </p>
 <div gridster="gridsterOpts">
 	<ul>
 		<li gridster-item="item" ng-repeat="item in standardItems">
 			<input type="text" integer ng-model="item.row" size="1" />
 			,
-			<input type="text" integer ng-model="item.column" size="1" />
+			<input type="text" integer ng-model="item.col" size="1" />
 			<br />
-			<input type="text" integer ng-model="item.width" size="1" />
+			<input type="text" integer ng-model="item.sizeX" size="1" />
 			x
-			<input type="text" integer ng-model="item.height" size="1" />
+			<input type="text" integer ng-model="item.sizeY" size="1" />
 		</li>
 	</ul>
 </div>
 
 <h2>Custom Items</h2>
 <p>
-	Each item provides its own dimensions but with custom fields: { position: [row, column], size: { x: width, y: height }}
+	Each item provides its own dimensions but with custom fields defined using customItemMap: { position: [row, col], size: { x: sizeX, y: sizeY }}
 </p>
 <div gridster="gridsterOpts">
 	<ul>
@@ -34,20 +34,45 @@
 	</ul>
 </div>
 
+<h2>Custom Items2</h2>
+<p>
+	Each item provides its own dimensions but with custom fields indicated using html attributes: row, col, sizex, sizey.  Size can also be in the form of data-size-x or data-sizex.
+</p>
+<div gridster="gridsterOpts">
+	<ul>
+		<li
+			gridster-item
+			row="item.position[0]"
+			col="item.position[1]"
+			size-x="item.size.x"
+			size-y="item.size.y"
+			ng-repeat="item in customItems"
+			>
+			<input type="text" integer ng-model="item.position[0]" size="1" />
+			,
+			<input type="text" integer ng-model="item.position[1]" size="1" />
+			<br />
+			<input type="text" integer ng-model="item.size.x" size="1" />
+			x
+			<input type="text" integer ng-model="item.size.y" size="1" />
+		</li>
+	</ul>
+</div>
+
 <h2>Empty Items</h2>
 <p>
-	Each item stores the standard options as an object within itself: { grid: {row: row, column: column, width: width, height: height }}
+	Each item stores the standard options as an object within itself: { grid: {row: row, col: col, sizeX: sizeX, sizeY: sizeY }}
 </p>
 <div gridster="gridsterOpts">
 	<ul>
 		<li gridster-item="item.grid" ng-repeat="item in emptyItems">
 			<input type="text" integer ng-model="item.grid.row" size="1" />
 			,
-			<input type="text" integer ng-model="item.grid.column" size="1" />
+			<input type="text" integer ng-model="item.grid.col" size="1" />
 			<br />
-			<input type="text" integer ng-model="item.grid.width" size="1" />
+			<input type="text" integer ng-model="item.grid.sizeX" size="1" />
 			x
-			<input type="text" integer ng-model="item.grid.height" size="1" />
+			<input type="text" integer ng-model="item.grid.sizeY" size="1" />
 		</li>
 	</ul>
 </div>

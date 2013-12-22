@@ -30,10 +30,10 @@ describe('Controller: GridsterCtrl', function() {
 			maxRows: 100,
 			mobileBreakPoint: 600
 		};
-		item1x1 = { width: 1, height: 1 };
-		item2x1 = { width: 2, height: 1 };
-		item2x2 = { width: 2, height: 2 };
-		item1x2 = { width: 1, height: 2 };
+		item1x1 = { sizeX: 1, sizeY: 1 };
+		item2x1 = { sizeX: 2, sizeY: 1 };
+		item2x2 = { sizeX: 2, sizeY: 2 };
+		item1x2 = { sizeX: 1, sizeY: 2 };
 		gridster.init(null, null, opts);
 	}));
 
@@ -56,7 +56,7 @@ describe('Controller: GridsterCtrl', function() {
 			gridster.putItem(item1x1, -1, -1);
 			expect(gridster.getItem(0, 0)).toBe(item1x1);
 			expect(item1x1.row).toBe(0);
-			expect(item1x1.column).toBe(0);
+			expect(item1x1.col).toBe(0);
 		});
 
 		it('should not float items until told to', function() {
@@ -150,7 +150,7 @@ describe('Controller: GridsterCtrl', function() {
 			expect(gridster.getItem(0, 2)).toBe(item2x2);
 			expect(gridster.getItem(1, 0)).toBe(item2x1);
 
-			item2x1.width = 3;
+			item2x1.sizeX = 3;
 			gridster.moveOverlappingItems(item2x1);
 			expect(gridster.getItem(1, 2)).toBe(item2x1);
 

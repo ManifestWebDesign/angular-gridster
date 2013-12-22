@@ -10,17 +10,17 @@ angular.module('app')
 
 	// these map directly to gridsterItem options
 	$scope.standardItems = [
-		{ width: 2, height: 1, row: 0, column: 0 },
-		{ width: 2, height: 2, row: 0, column: 2 },
-		{ width: 1, height: 1, row: 0, column: 4 },
-		{ width: 1, height: 1, row: 0, column: 5 },
-		{ width: 2, height: 1, row: 1, column: 0 },
-		{ width: 1, height: 1, row: 1, column: 4 },
-		{ width: 1, height: 2, row: 1, column: 5 },
-		{ width: 1, height: 1, row: 2, column: 0 },
-		{ width: 2, height: 1, row: 2, column: 1 },
-		{ width: 1, height: 1, row: 2, column: 3 },
-		{ width: 1, height: 1, row: 2, column: 4 }
+		{ sizeX: 2, sizeY: 1, row: 0, col: 0 },
+		{ sizeX: 2, sizeY: 2, row: 0, col: 2 },
+		{ sizeX: 1, sizeY: 1, row: 0, col: 4 },
+		{ sizeX: 1, sizeY: 1, row: 0, col: 5 },
+		{ sizeX: 2, sizeY: 1, row: 1, col: 0 },
+		{ sizeX: 1, sizeY: 1, row: 1, col: 4 },
+		{ sizeX: 1, sizeY: 2, row: 1, col: 5 },
+		{ sizeX: 1, sizeY: 1, row: 2, col: 0 },
+		{ sizeX: 2, sizeY: 1, row: 2, col: 1 },
+		{ sizeX: 1, sizeY: 1, row: 2, col: 3 },
+		{ sizeX: 1, sizeY: 1, row: 2, col: 4 }
 	];
 
 	// these are non-standard, so they require mapping options
@@ -47,10 +47,10 @@ angular.module('app')
 
 	// map the gridsterItem to the custom item structure
 	$scope.customItemMap = {
-		width: 'item.size.x',
-		height: 'item.size.y',
+		sizeX: 'item.size.x',
+		sizeY: 'item.size.y',
 		row: 'item.position[0]',
-		column: 'item.position[1]'
+		col: 'item.position[1]'
 	};
 
 });
