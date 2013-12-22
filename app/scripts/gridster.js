@@ -546,11 +546,19 @@ angular.module('gridster', [])
 					gridster.setElementPosition(gridster.$preview, item.row, item.column);
 					gridster.updateHeight(item.height);
 					scope.$apply();
+					if (gridster.opts.draggable && gridster.opts.draggable.start) {
+						gridster.opts.draggable.start(e, widget, $el);
+						scope.$apply();
+					}
 				},
 				drag: function(e, widget) {
 					item.row = gridster.pixelsToRows(widget.position.top);
 					item.column = gridster.pixelsToColumns(widget.position.left);
 					scope.$apply();
+					if (gridster.opts.draggable && gridster.opts.draggable.drag) {
+						gridster.opts.draggable.drag(e, widget, $el);
+						scope.$apply();
+					}
 				},
 				stop: function (e, widget) {
 					$el.removeClass('gridster-item-moving');
@@ -561,6 +569,10 @@ angular.module('gridster', [])
 					item.setPosition(item.row, item.column);
 					gridster.updateHeight();
 					scope.$apply();
+					if (gridster.opts.draggable && gridster.opts.draggable.stop) {
+						gridster.opts.draggable.stop(e, widget, $el);
+						scope.$apply();
+					}
 				}
 			});
 
@@ -577,6 +589,10 @@ angular.module('gridster', [])
 					gridster.setElementWidth(gridster.$preview, item.width);
 					gridster.setElementHeight(gridster.$preview, item.height);
 					scope.$apply();
+					if (gridster.opts.resize && gridster.opts.resize.start) {
+						gridster.opts.resize.start(e, widget, $el);
+						scope.$apply();
+					}
 				},
 				resize: function(e, widget) {
 					item.row = gridster.pixelsToRows(widget.position.top, false);
