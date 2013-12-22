@@ -89,7 +89,7 @@ angular.module('gridster', [])
 		},
 		autoSetItemPosition: function(item) {
 			// walk through each row and column looking for a place it will fit
-			for (var rowIndex = 0; rowIndex < 100; ++rowIndex) {
+			for (var rowIndex = 0; rowIndex < 50; ++rowIndex) {
 				for (var colIndex = 0; colIndex < this.columns; ++colIndex) {
 					var occupied = this.getItem(rowIndex, colIndex),
 						canFit = this.canItemOccupy(item, rowIndex, colIndex);
@@ -515,7 +515,17 @@ angular.module('gridster', [])
 			var item = $controller('GridsterItemCtrl');
 
 			if (optsKey) {
-				opts = $parse(optsKey)(scope);
+				var $opts = $parse(optsKey);
+				opts = $opts(scope);
+				if (!opts && $opts.assign) {
+					opts = {
+						row: item.row,
+						colum: item.column,
+						width: item.width,
+						height: item.height
+					};
+					$opts.assign(scope, opts);
+				}
 			}
 
 			item.init($el, gridster, opts);
@@ -599,72 +609,57 @@ angular.module('gridster', [])
 				}
 			});
 
-			var $width, $height, $row, $column;
-			if (opts.width) {
-				$width = $parse(opts.width);
-				scope.$watch(opts.width, function(width){
-					item.width = width;
-				});
-				item.width = $width(scope);
-			}
-			if (opts.height) {
-				$height = $parse(opts.height);
-				scope.$watch(opts.height, function(height){
-					item.height = height;
-				});
-				item.height = $height(scope);
-			}
-			if (opts.row) {
-				$row = $parse(opts.row);
-				scope.$watch(opts.row, function(row){
-					item.row = row;
-				});
-				item.row = $row(scope);
-			}
-			if (opts.column) {
-				$column = $parse(opts.column);
-				scope.$watch(opts.column, function(column){
-					item.column = column;
-				});
-				item.column = $column(scope);
+			var aspects = ['width', 'height', 'row', 'column'],
+				$getters = {};
+			for (var i = 0, l = aspects.length; i < l; ++i) {
+				(function(aspect){
+					var key;
+					if (typeof opts[aspect] === 'string') {
+						key = opts[aspect];
+					} else {
+						key = $parse(optsKey + '.' + aspect);
+					}
+					$getters[aspect] = $parse(key);
+					scope.$watch(key, function(newVal){
+						item[aspect] = newVal;
+					});
+					var val = $getters[aspect](scope);
+					if (typeof val === 'number') {
+						item[aspect] = val;
+					}
+				})(aspects[i]);
 			}
 
+			function positionChanged() {
+				item.setPosition(item.row, item.column);
+				if ($getters['row'] && $getters['row'].assign) {
+					$getters['row'].assign(scope, item.row);
+				}
+				if ($getters['column'] && $getters['column'].assign) {
+					$getters['column'].assign(scope, item.column);
+				}
+			}
 			scope.$watch(function() {
 				return item.row;
-			}, function() {
-				item.setPosition(item.row, item.column);
-				if ($row) {
-					$row.assign(scope, item.row);
-				}
-				if ($column) {
-					$column.assign(scope, item.column);
-				}
-			});
+			}, positionChanged);
 			scope.$watch(function() {
 				return item.column;
-			}, function() {
-				item.setPosition(item.row, item.column);
-				if ($row) {
-					$row.assign(scope, item.row);
-				}
-				if ($column) {
-					$column.assign(scope, item.column);
-				}
-			});
+			}, positionChanged);
+
 			scope.$watch(function() {
 				return item.height;
 			}, function(height) {
 				item.setHeight(height);
-				if ($height) {
-					$height.assign(scope, item.height);
+				if ($getters['height'] && $getters['height'].assign) {
+					$getters['height'].assign(scope, item.height);
 				}
 			});
 			scope.$watch(function() {
 				return item.width;
 			}, function(width) {
 				item.setWidth(width);
-				if ($width) {
-					$width.assign(scope, item.width);
+				if ($getters['width'] && $getters['width'].assign) {
+					$getters['width'].assign(scope, item.width);
 				}
 			});
 

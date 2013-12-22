@@ -1,6 +1,6 @@
 {
 	"name": "angular-gridster",
-	"version": "0.5.1",
+	"version": "0.6.0",
 	"dependencies": {
 		"angular": "~1.2.0",
 		"es5-shim": "~2.1.0",

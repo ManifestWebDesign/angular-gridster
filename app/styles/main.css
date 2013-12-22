@@ -3,6 +3,7 @@ body {
 	padding: 0;
 	background: #004756;
 	font-family: 'Helvetica Neue', Arial, sans-serif;
+	color: #fff;
 }
 
 input {
@@ -11,7 +12,8 @@ input {
 	padding: 4px;
 }
 
-.gridster {
+.container {
+	margin: auto;
 	max-width: 1000px;
 }
 
@@ -22,6 +24,7 @@ input {
 .gridster .gridster-item {
 	-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+	color: #004756;
 }
 
 .gridster .gridster-item {
