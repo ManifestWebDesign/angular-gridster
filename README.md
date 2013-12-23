@@ -82,11 +82,11 @@ This expects a scope similar to the previous example, but with customItemMap als
     
 The gridsterItem directive can be configured like this:
 
-<div gridster="gridsterOpts">
-	<ul>
-		<li gridster-item="item" ng-repeat="item in standardItems"></li>
-	</ul>
-</div>
+    <div gridster="gridsterOpts">
+        <ul>
+            <li gridster-item="item" ng-repeat="item in standardItems"></li>
+        </ul>
+    </div>
 
 With a scope like:
 
@@ -102,16 +102,16 @@ With a scope like:
       mobileBreakPoint: 600, // if the screen is not wider that this, remove the grid layout and stack the items
       resize: {
          enabled: true,
-         start: function() {}, // optional callback fired when resize is started,
-         drag: function() {}, // optional callback fired when item is resized,
-         stop: function() {} // optional callback fired when item is finished resizing
+         start: function(event, uiWidget, $element) {}, // optional callback fired when resize is started,
+         drag: function(event, uiWidget, $element) {}, // optional callback fired when item is resized,
+         stop: function(event, uiWidget, $element) {} // optional callback fired when item is finished resizing
       },
       draggable: {
          enabled: true, // whether dragging items is supported
          handle: '.my-class', // optional selector for resize handle
-         start: function() {}, // optional callback fired when drag is started,
-         drag: function() {}, // optional callback fired when item is moved,
-         stop: function() {} // optional callback fired when item is finished dragging
+         start: function(event, uiWidget, $element) {}, // optional callback fired when drag is started,
+         drag: function(event, uiWidget, $element) {}, // optional callback fired when item is moved,
+         stop: function(event, uiWidget, $element) {} // optional callback fired when item is finished dragging
       }
     };
     
