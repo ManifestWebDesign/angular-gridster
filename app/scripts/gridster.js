@@ -3,11 +3,49 @@
 angular.module('gridster', [])
 
 .controller('GridsterCtrl', function(){
+
+	function deepExtend(destination, source) {
+		for (var property in source) {
+			if (
+				source[property] && source[property].constructor
+				&& source[property].constructor === Object
+			) {
+				destination[property] = destination[property] || {};
+				deepExtend(destination[property], source[property]);
+			} else if (
+				source[property] && source[property].constructor
+				&& source[property].constructor === Array
+			) {
+				destination[property] = destination[property] || [];
+				deepExtend(destination[property], source[property]);
+			} else {
+				destination[property] = source[property];
+			}
+		}
+		return destination;
+	}
+
 	return {
 		grid: [],
 		$preview: null,
 		$element: null,
-		opts: null,
+		opts: {
+			colWidth: 'auto',
+			rowHeight: 'match',
+			columns: 6,
+			margins: [10, 10],
+			defaultSizeX: 2,
+			defaultSizeY: 1,
+			minRows: 2,
+			maxRows: 100,
+			mobileBreakPoint: 600,
+			resize: {
+				enabled: true
+			},
+			draggable: {
+				enabled: true
+			}
+		},
 		columns: 5,
 		colWidth: null,
 		rowHeight: null,
@@ -16,10 +54,9 @@ angular.module('gridster', [])
 		isMobile: false,
 
 		// construct, configure, destruct
-		init: function($element, $preview, opts) {
+		init: function($element, $preview) {
 			this.$element = $element;
 			this.$preview = $preview;
-			this.setOpts(opts);
 		},
 		setMargins: function(margins) {
 			this.margins = margins;
@@ -52,8 +89,9 @@ angular.module('gridster', [])
 			this.opts = this.margins = this.grid = this.$element = this.$preview = null;
 		},
 		setOpts: function(opts) {
-			this.opts = opts;
-			this.redraw();
+			if (opts) {
+				deepExtend(this.opts, opts);
+			}
 		},
 		redraw: function(){
 			if (this.opts.margins) {
@@ -68,7 +106,7 @@ angular.module('gridster', [])
 			if (this.opts.rowHeight) {
 				this.setRowHeight(this.opts.rowHeight);
 			}
-			this.isMobile = $(window).width() <= this.opts.mobileBreakPoint;
+			this.isMobile = this.$element.width() <= this.opts.mobileBreakPoint;
 			for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 				var columns = this.grid[rowIndex];
 				if (!columns) {
@@ -150,15 +188,16 @@ angular.module('gridster', [])
 				var sizeX = 1,
 					col = column;
 				while (col > -1) {
-					if (this.grid[row]) {
-						var item = this.grid[row][col];
+					var items = this.grid[row];
+					if (items) {
+						var item = items[col];
 						if (
 							item
 							&& (!excludeItems || excludeItems.indexOf(item) === -1)
 							&& item.sizeX >= sizeX
 							&& item.sizeY >= sizeY
 						) {
-							return this.grid[row][col];
+							return item;
 						}
 					}
 					++sizeX;
@@ -197,7 +236,7 @@ angular.module('gridster', [])
 					// remove from old position
 					var oldRow = this.grid[item.oldRow];
 					if (oldRow && oldRow[item.oldColumn] === item) {
-						oldRow[item.oldColumn] = null;
+						delete oldRow[item.oldColumn];
 					}
 				}
 			}
@@ -351,91 +390,81 @@ angular.module('gridster', [])
 	return {
 		restrict: 'EAC',
 		controller: 'GridsterCtrl',
-		link: function(scope, $elem, attrs, controller) {
-			var optsKey = attrs.gridster,
-				init = true,
-				opts = {
-					colWidth: 'auto',
-					rowHeight: 'match',
-					columns: 6,
-					margins: [10, 10],
-					defaultSizeX: 2,
-					defaultSizeY: 1,
-					minRows: 2,
-					maxRows: 100,
-					mobileBreakPoint: 600,
-					resize: {
-						enabled: true
-					},
-					draggable: {
-						enabled: true
+		compile: function compile(tElement, tAttrs, transclude) {
+			return {
+				pre: function(scope, $elem, attrs, controller) {
+					var optsKey = attrs.gridster,
+						opts = {};
+					if (optsKey) {
+						var optsGetter = $parse(optsKey);
+						opts = optsGetter(scope);
+						scope.$watch(optsKey, function(newOpts, oldOpts){
+							if (newOpts === oldOpts) {
+								return;
+							}
+							controller.setOpts(newOpts);
+							controller.redraw();
+							updateHeight();
+						}, true);
 					}
-				};
-			if (optsKey) {
-				var optsGetter = $parse(optsKey);
-				opts = $.extend(true, opts, optsGetter(scope));
-				scope.$watch(optsKey, function(newOpts){
-					if (init) {
-						return;
-					}
-					opts = $.extend(true, opts, newOpts);
+
 					controller.setOpts(opts);
-					updateHeight();
-				}, true);
-			}
+				},
+				post: function(scope, $elem, attrs, controller) {
+					$elem.addClass('gridster');
+					$elem.removeClass('gridster-loaded');
+					var $preview =  angular.element('<div class="gridster-item gridster-preview-holder"></div>')
+						.appendTo($elem);
 
-			$elem.addClass('gridster');
-			$elem.removeClass('gridster-loaded');
-			var $preview =  $('<div class="gridster-item gridster-preview-holder"></div>')
-				.appendTo($elem);
+					function updateHeight() {
+						controller.$element.css('height', (controller.gridHeight * controller.rowHeight) + controller.margins[0] + 'px');
+					}
 
-			function updateHeight() {
-				controller.$element.css('height', (controller.gridHeight * controller.rowHeight) + controller.margins[0] + 'px');
-			}
+					scope.$watch(function(){
+						return controller.gridHeight;
+					}, updateHeight);
 
-			scope.$watch(function(){
-				return controller.gridHeight;
-			}, updateHeight);
+					scope.$watch(function(){
+						return controller.isMobile;
+					}, function(isMobile){
+						if (isMobile) {
+							controller.$element.addClass('gridster-mobile');
+						} else {
+							controller.$element.removeClass('gridster-mobile');
+						}
+					});
 
-			scope.$watch(function(){
-				return controller.isMobile;
-			}, function(isMobile){
-				if (isMobile) {
-					controller.$element.addClass('gridster-mobile');
-				} else {
-					controller.$element.removeClass('gridster-mobile');
+					var prevWidth = $elem.width();
+					angular.element(window).on('resize', function(){
+						var width = $elem.width();
+						if (
+							width === prevWidth
+							|| $elem.find('.gridster-item-moving').length > 0
+						) {
+							return;
+						}
+						$elem.removeClass('gridster-loaded');
+						controller.redraw();
+						$elem.addClass('gridster-loaded');
+						scope.$apply();
+					});
+
+					$elem.bind('$destroy', function() {
+						try {
+							this.$preview.remove();
+							controller.destroy();
+						} catch (e) {}
+					});
+
+					controller.init($elem, $preview);
+					controller.redraw();
+
+					$timeout(function(){
+						controller.floatItemsUp();
+						$elem.addClass('gridster-loaded');
+					}, 100);
 				}
-			});
-
-			var windowWidth = $(window).width();
-			$(window).on('resize', function(){
-				var width = $(window).width();
-				if (
-					width === windowWidth
-					|| $elem.find('.gridster-item-moving').length > 0
-				) {
-					return;
-				}
-				$elem.removeClass('gridster-loaded');
-				controller.redraw();
-				$elem.addClass('gridster-loaded');
-				scope.$apply();
-			});
-
-			$elem.bind('$destroy', function() {
-				try {
-					this.$preview.remove();
-					controller.destroy();
-				} catch (e) {}
-			});
-
-			controller.init($elem, $preview, opts);
-
-			$timeout(function(){
-				init = false;
-				controller.floatItemsUp();
-				$elem.addClass('gridster-loaded');
-			}, 100);
+			};
 		}
 	};
 }])
@@ -450,7 +479,7 @@ angular.module('gridster', [])
 		col: null,
 		sizeX: null,
 		sizeY: null,
-		init: function($element, gridster, itemOpts) {
+		init: function($element, gridster) {
 			this.$element = $element;
 			this.gridster = gridster;
 			this.sizeX = gridster.opts.defaultSizeX;
@@ -524,27 +553,27 @@ angular.module('gridster', [])
 		require: '^gridster',
 		link: function(scope, $el, attrs, gridster) {
 			var optsKey = attrs.gridsterItem,
-				opts = {};
+				opts;
 
 			var item = $controller('GridsterItemCtrl');
 
 			if (optsKey) {
-				var $opts = $parse(optsKey);
-				opts = $opts(scope);
-				if (!opts && $opts.assign) {
+				var $optsGetter = $parse(optsKey);
+				opts = $optsGetter(scope) || {};
+				if (!opts && $optsGetter.assign) {
 					opts = {
 						row: item.row,
 						col: item.col,
 						sizeX: item.sizeX,
 						sizeY: item.sizeY
 					};
-					$opts.assign(scope, opts);
+					$optsGetter.assign(scope, opts);
 				}
 			} else {
 				opts = attrs;
 			}
 
-			item.init($el, gridster, opts);
+			item.init($el, gridster);
 
 			$el.addClass('gridster-item');
 			$el.addClass('gridster-item-moving');
@@ -656,6 +685,8 @@ angular.module('gridster', [])
 						key = opts[aspect.toLowerCase()];
 					} else if (optsKey) {
 						key = $parse(optsKey + '.' + aspect);
+					} else {
+						return;
 					}
 					$getters[aspect] = $parse(key);
 					scope.$watch(key, function(newVal){

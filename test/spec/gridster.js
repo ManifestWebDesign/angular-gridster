@@ -30,10 +30,10 @@ describe('Controller: GridsterCtrl', function() {
 			maxRows: 100,
 			mobileBreakPoint: 600
 		};
-		item1x1 = { sizeX: 1, sizeY: 1 };
-		item2x1 = { sizeX: 2, sizeY: 1 };
-		item2x2 = { sizeX: 2, sizeY: 2 };
-		item1x2 = { sizeX: 1, sizeY: 2 };
+		item1x1 = { sizeX: 1, sizeY: 1, id: '1x1' };
+		item2x1 = { sizeX: 2, sizeY: 1, id: '2x1' };
+		item2x2 = { sizeX: 2, sizeY: 2, id: '2x2' };
+		item1x2 = { sizeX: 1, sizeY: 2, id: '1x2' };
 		gridster.init(null, null, opts);
 	}));
 
@@ -68,9 +68,9 @@ describe('Controller: GridsterCtrl', function() {
 		it('should not create two references to the same item', function() {
 			gridster.putItem(item1x1, 0, 0);
 			expect(gridster.getItem(0, 0)).toBe(item1x1);
-			gridster.putItem(item1x1, 0, 5);
+			gridster.putItem(item1x1, 0, 4);
+			expect(gridster.getItem(0, 4)).toBe(item1x1);
 			expect(gridster.getItem(0, 0)).toBe(null);
-			expect(gridster.getItem(0, 5)).toBe(item1x1);
 		});
 	});
 
