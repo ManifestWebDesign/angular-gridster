@@ -11,6 +11,12 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+	  'app/bower_components/jquery/jquery.js',
+      'app/bower_components/angular/angular.js',
+      'app/bower_components/angular-mocks/angular-mocks.js',
+      'app/scripts/*.js',
+      'app/scripts/**/*.js',
+      'test/mock/**/*.js',
       'test/e2e/**/*.js'
     ],
 
@@ -26,7 +32,7 @@ module.exports = function(config) {
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
+    autoWatch: true,
 
 
     // Start these browsers, currently available:
@@ -39,16 +45,15 @@ module.exports = function(config) {
     // - IE (only Windows)
     browsers: ['Chrome'],
 
-
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
-    singleRun: false
+    singleRun: false,
 
     // Uncomment the following lines if you are using grunt's server to run the tests
-    // proxies: {
-    //   '/': 'http://localhost:9000/'
-    // },
-    // URL root prevent conflicts with the site root
-    // urlRoot: '_karma_'
+     proxies: {
+       '/': 'http://localhost:9000/'
+     },
+//     URL root prevent conflicts with the site root
+     urlRoot: '/_karma_/'
   });
 };

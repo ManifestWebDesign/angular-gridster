@@ -12,9 +12,9 @@ Here is an example of the default usage:
     		<li gridster-item="item" ng-repeat="item in standardItems"></li>
     	</ul>
     </div>
-    
+
 Which expects a scope setup like the following:
-    
+
     // these map directly to gridsterItem directive options
     $scope.standardItems = [
       { sizeX: 2, sizeY: 1, row: 0, col: 0 },
@@ -29,7 +29,7 @@ Which expects a scope setup like the following:
       { sizeX: 1, sizeY: 1, row: 2, col: 3 },
       { sizeX: 1, sizeY: 1, row: 2, col: 4 }
     ];
-    
+
 Alternatively, you can use the html attributes, similar to the original gridster plugin, but with two-way data binding:
 
     <div gridster>
@@ -37,7 +37,7 @@ Alternatively, you can use the html attributes, similar to the original gridster
     		<li gridster-item row="item.position[0]" col="item.position[1]" size-x="item.size.x" size-y="item.size.y" ng-repeat="item in customItems"></li>
     	</ul>
     </div>
-    
+
 or:
 
     <div data-gridster>
@@ -45,7 +45,7 @@ or:
     		<li data-gridster-item data-row="item.position[0]" data-col="item.position[1]" data-sizex="item.size.x" data-sizey="item.size.y" ng-repeat="item in customItems"></li>
     	</ul>
     </div>
-    
+
 This allows the items to provide their own structure for row, col, and size:
 
     $scope.customItems = [
@@ -61,7 +61,7 @@ This allows the items to provide their own structure for row, col, and size:
       { size: { x: 1, y: 1 }, position: [2, 3] },
       { size: { x: 1, y: 1 }, position: [2, 4] }
     ];
-    
+
 Instead of using attributes for row, col, and size, you can also just use a mapping object for the gridster-item directive:
 
     <div gridster="gridsterOpts">
@@ -69,7 +69,7 @@ Instead of using attributes for row, col, and size, you can also just use a mapp
     		<li gridster-item="customItemMap" ng-repeat="item in customItems"></li>
     	</ul>
     </div>
-    
+
 This expects a scope similar to the previous example, but with customItemMap also defined in the scope:
 
     // maps the item from customItems in the scope to the gridsterItem options
@@ -79,7 +79,7 @@ This expects a scope similar to the previous example, but with customItemMap als
         row: 'item.position[0]',
         col: 'item.position[1]'
     };
-    
+
 The gridsterItem directive can be configured like this:
 
     <div gridster="gridsterOpts">
@@ -114,7 +114,7 @@ With a scope like:
          stop: function(event, uiWidget, $element) {} // optional callback fired when item is finished dragging
       }
     };
-    
+
 This directive/plugin does not generate style tags, like the jQuery plugin.  It also uses standard camalCase for variables and object properties, while the original plugin used lower\_case\_with_underscores.  These options have not and may never be implemented:
 
 * widget_class - not necessary since directives already whatever classes and attributes you want to add
@@ -137,4 +137,4 @@ This directive/plugin does not generate style tags, like the jQuery plugin.  It 
 * collision.on\_overlap\_start
 * collision.on_overlap
 * collision.on\_overlap\_stop
-    
+
