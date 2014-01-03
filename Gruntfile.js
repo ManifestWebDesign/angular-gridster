@@ -33,8 +33,12 @@ module.exports = function (grunt) {
       },
       jsTest: {
         files: ['test/spec/{,*/}*.js'],
-        tasks: ['newer:jshint:test', 'karma']
+        tasks: ['newer:jshint:test', 'karma:unit']
       },
+	  e2eTest: {
+		  files: ['test/e2e/{,*/}*.js'],
+		  tasks: ['karma:e2e']
+	  },
       styles: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.css'],
         tasks: ['newer:copy:styles', 'autoprefixer']
