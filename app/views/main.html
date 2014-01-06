@@ -1,4 +1,6 @@
 <h2>Standard Items</h2>
+<input type="button" ng-click="gridsterOpts.draggable.enabled = !gridsterOpts.draggable.enabled" value="{{gridsterOpts.draggable.enabled ? 'Disable' : 'Enable' }} Draggability" />
+<input type="button" ng-click="gridsterOpts.resizable.enabled = !gridsterOpts.resizable.enabled" value="{{gridsterOpts.resizable.enabled ? 'Disable' : 'Enable' }} Resizability" />
 <p>
 	Each item provides its own dimensions and position using the standard fields: { row: row, col: col, sizeX: sizeX, sizeY: sizeY }.
 </p>

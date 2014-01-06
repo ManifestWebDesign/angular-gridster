@@ -5,7 +5,13 @@ angular.module('app')
 .controller('MainCtrl', function($scope) {
 
 	$scope.gridsterOpts = {
-		margins: [20, 20]
+		margins: [20, 20],
+		draggable: {
+			enabled: false
+		},
+		resizable: {
+			enabled: false
+		}
 	};
 
 	// these map directly to gridsterItem options
