@@ -1,4 +1,6 @@
 <h2>Standard Items</h2>
+<input type="button" ng-click="gridsterOpts.draggable.enabled = !gridsterOpts.draggable.enabled" value="{{gridsterOpts.draggable.enabled ? 'Disable' : 'Enable' }} Draggability">
+<input type="button" ng-click="gridsterOpts.resizable.enabled = !gridsterOpts.resizable.enabled" value="{{gridsterOpts.resizable.enabled ? 'Disable' : 'Enable' }} Resizability">
 <p>
 	Each item provides its own dimensions and position using the standard fields: { row: row, col: col, sizeX: sizeX, sizeY: sizeY }.
 </p>
@@ -67,5 +69,15 @@
 			x
 			<input type="text" integer="" ng-model="item.grid.sizeY" size="1">
 		</li>
+	</ul>
+</div>
+
+<h2>No Configuration or Binding</h2>
+<p>
+	No data binding or configuration provided.
+</p>
+<div gridster="">
+	<ul>
+		<li gridster-item=""></li>
 	</ul>
 </div>
