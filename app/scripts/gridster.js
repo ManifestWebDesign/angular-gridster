@@ -409,8 +409,8 @@ angular.module('gridster', [])
 							if(typeof newOpts.draggable !== 'undefined' && typeof oldOpts.draggable !== 'undefined' && newOpts.draggable !== oldOpts.draggable) {
 								scope.$broadcast('draggable-changed', newOpts.draggable);
 							}
-							if(typeof newOpts.resizable !== 'undefined' && typeof oldOpts.resizable !== 'undefined' && newOpts.resizable !== oldOpts.resizable) {
-								scope.$broadcast('resizable-changed', newOpts.resizable);
+							if(typeof newOpts.resize !== 'undefined' && typeof oldOpts.resize !== 'undefined' && newOpts.resize !== oldOpts.resize) {
+								scope.$broadcast('resizable-changed', newOpts.resize);
 							}
 							controller.redraw();
 							updateHeight();
@@ -750,6 +750,9 @@ angular.module('gridster', [])
 			scope.$on('resizable-changed', function(event, resizable) {
 				setResizable(resizable.enabled);
 			});
+
+			setDraggable(typeof gridster.opts.draggable !== 'undefined' && typeof gridster.opts.draggable.enabled !== 'undefined' && gridster.opts.draggable.enabled);
+			setResizable(typeof gridster.opts.resize !== 'undefined' &&typeof gridster.opts.resize.enabled !== 'undefined' && gridster.opts.resize.enabled);
 
 			scope.$watch(function() {
 				return item.sizeY;
