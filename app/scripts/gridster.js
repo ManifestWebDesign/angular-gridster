@@ -406,10 +406,10 @@ angular.module('gridster', [])
 								return;
 							}
 							controller.setOpts(newOpts);
-							if(newOpts.draggable !== oldOpts.draggable) {
+							if(typeof newOpts.draggable !== 'undefined' && typeof oldOpts.draggable !== 'undefined' && newOpts.draggable !== oldOpts.draggable) {
 								scope.$broadcast('draggable-changed', newOpts.draggable);
 							}
-							if(newOpts.resizable !== oldOpts.resizable) {
+							if(typeof newOpts.resizable !== 'undefined' && typeof oldOpts.resizable !== 'undefined' && newOpts.resizable !== oldOpts.resizable) {
 								scope.$broadcast('resizable-changed', newOpts.resizable);
 							}
 							controller.redraw();
