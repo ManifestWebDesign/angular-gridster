@@ -103,7 +103,7 @@ With a scope like:
       resize: {
          enabled: true,
          start: function(event, uiWidget, $element) {}, // optional callback fired when resize is started,
-         drag: function(event, uiWidget, $element) {}, // optional callback fired when item is resized,
+         resize: function(event, uiWidget, $element) {}, // optional callback fired when item is resized,
          stop: function(event, uiWidget, $element) {} // optional callback fired when item is finished resizing
       },
       draggable: {
