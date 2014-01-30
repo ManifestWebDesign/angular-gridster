@@ -1,6 +1,6 @@
 {
   "name": "angular-gridster",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "This directive gives you gridster behavior",
   "devDependencies": {
     "grunt": "~0.4.1",
@@ -37,9 +37,8 @@
     "karma-requirejs": "~0.2.0",
     "karma-phantomjs-launcher": "~0.1.0",
     "karma": "~0.10.5",
-    "karma-ng-scenario": "~0.1.0",
-    "grunt-karma": "~0.6.2",
-    "grunt-bump": "0.0.13"
+	"karma-ng-scenario": "~0.1.0",
+    "grunt-karma": "~0.6.2"
   },
   "engines": {
     "node": ">=0.8.0"
