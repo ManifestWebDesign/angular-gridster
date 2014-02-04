@@ -31,23 +31,23 @@ Which expects a scope setup like the following:
     ];
 ```
 Alternatively, you can use the html attributes, similar to the original gridster plugin, but with two-way data binding:
-
+```HTML
     <div gridster>
     	<ul>
     		<li gridster-item row="item.position[0]" col="item.position[1]" size-x="item.size.x" size-y="item.size.y" ng-repeat="item in customItems"></li>
     	</ul>
     </div>
-
+```
 or:
-
+```HTML
     <div data-gridster>
     	<ul>
     		<li data-gridster-item data-row="item.position[0]" data-col="item.position[1]" data-sizex="item.size.x" data-sizey="item.size.y" ng-repeat="item in customItems"></li>
     	</ul>
     </div>
-
+```
 This allows the items to provide their own structure for row, col, and size:
-
+```JavaScript
     $scope.customItems = [
       { size: { x: 2, y: 1 }, position: [0, 0] },
       { size: { x: 2, y: 2 }, position: [0, 2] },
@@ -61,17 +61,17 @@ This allows the items to provide their own structure for row, col, and size:
       { size: { x: 1, y: 1 }, position: [2, 3] },
       { size: { x: 1, y: 1 }, position: [2, 4] }
     ];
-
+```
 Instead of using attributes for row, col, and size, you can also just use a mapping object for the gridster-item directive:
-
+```HTML
     <div gridster="gridsterOpts">
     	<ul>
     		<li gridster-item="customItemMap" ng-repeat="item in customItems"></li>
     	</ul>
     </div>
-
+```
 This expects a scope similar to the previous example, but with customItemMap also defined in the scope:
-
+```JavaScript
     // maps the item from customItems in the scope to the gridsterItem options
     $scope.customItemMap = {
         sizeX: 'item.size.x',
@@ -79,17 +79,17 @@ This expects a scope similar to the previous example, but with customItemMap als
         row: 'item.position[0]',
         col: 'item.position[1]'
     };
-
+```
 The gridsterItem directive can be configured like this:
-
+```HTML
     <div gridster="gridsterOpts">
         <ul>
             <li gridster-item="item" ng-repeat="item in standardItems"></li>
         </ul>
     </div>
-
+```
 With a scope like:
-
+```JavaScript
     $scope.gridsterOpts = {
       minRows: 2, // the minimum height of the grid, in rows
       maxRows: 100,
@@ -114,7 +114,7 @@ With a scope like:
          stop: function(event, uiWidget, $element) {} // optional callback fired when item is finished dragging
       }
     };
-
+```
 This directive/plugin does not generate style tags, like the jQuery plugin.  It also uses standard camalCase for variables and object properties, while the original plugin used lower\_case\_with_underscores.  These options have not and may never be implemented:
 
 * widget_class - not necessary since directives already whatever classes and attributes you want to add
