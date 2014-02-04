@@ -6,15 +6,15 @@ An implementation of gridster-like widgets for Angular JS.  This is not a wrappe
 Demo html/css/js is included and can be executed by running "grunt serve" or by opening app/index.html in a web browser.
 
 Here is an example of the default usage:
-
+```HTML
     <div gridster>
     	<ul>
     		<li gridster-item="item" ng-repeat="item in standardItems"></li>
     	</ul>
     </div>
-
+```
 Which expects a scope setup like the following:
-
+``` JavaScript
     // these map directly to gridsterItem directive options
     $scope.standardItems = [
       { sizeX: 2, sizeY: 1, row: 0, col: 0 },
@@ -29,7 +29,7 @@ Which expects a scope setup like the following:
       { sizeX: 1, sizeY: 1, row: 2, col: 3 },
       { sizeX: 1, sizeY: 1, row: 2, col: 4 }
     ];
-
+```
 Alternatively, you can use the html attributes, similar to the original gridster plugin, but with two-way data binding:
 
     <div gridster>
