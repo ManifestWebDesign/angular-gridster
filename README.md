@@ -138,3 +138,34 @@ This directive/plugin does not generate style tags, like the jQuery plugin.  It 
 * collision.on_overlap
 * collision.on\_overlap\_stop
 
+
+Watching item size and position:
+
+The typical Angular way would be to do a $scope.$watch on your item or items in the scope.  Example:
+
+```JavaScript
+// two objects, converted to gridster items in the view via ng-repeat
+$scope.items = [{},{}];
+
+$scope.$watch('items', function(items){
+   // one of the items changed
+}, true);
+```
+
+or
+
+```JavaScript
+$scope.watch('items[0]', function(){
+   // item0 changed
+}, true);
+```
+
+or
+
+```JavaScript
+$scope.watch('items[0].sizeX', function(){
+   // item0 sizeX changed
+}, true);
+```
+
+The third argument, true, is to make the watch based on the value of the object, rather than just matching the reference to the object.
