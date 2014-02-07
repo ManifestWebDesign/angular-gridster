@@ -50,6 +50,7 @@ angular.module('gridster', [])
 		colWidth: null,
 		rowHeight: null,
 		gridHeight: 2,
+		maxRows: 100,
 		margins: [10, 10],
 		isMobile: false,
 
@@ -81,6 +82,9 @@ angular.module('gridster', [])
 				this.rowHeight = parseInt(pixels, 10);
 			}
 		},
+		setMaxRows: function(rows) {
+			this.maxRows = rows;
+		},
 		getRowHeight: function() {
 			return this.rowHeight;
 		},
@@ -106,6 +110,9 @@ angular.module('gridster', [])
 			if (this.opts.rowHeight) {
 				this.setRowHeight(this.opts.rowHeight);
 			}
+			if (this.opts.maxRows) {
+				this.setMaxRows(this.opts.maxRows);
+			}
 			this.isMobile = this.$element.width() <= this.opts.mobileBreakPoint;
 			for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 				var columns = this.grid[rowIndex];
@@ -130,7 +137,7 @@ angular.module('gridster', [])
 		},
 		autoSetItemPosition: function(item) {
 			// walk through each row and column looking for a place it will fit
-			for (var rowIndex = 0; rowIndex < this.opts.maxRows; ++rowIndex) {
+			for (var rowIndex = 0; rowIndex < this.maxRows; ++rowIndex) {
 				for (var colIndex = 0; colIndex < this.columns; ++colIndex) {
 					var occupied = this.getItem(rowIndex, colIndex),
 						canFit = this.canItemOccupy(item, rowIndex, colIndex);
@@ -334,7 +341,7 @@ angular.module('gridster', [])
 					}
 				}
 			}
-			this.gridHeight = Math.min(this.opts.maxRows, maxHeight);
+			this.gridHeight = Math.min(this.maxRows, maxHeight);
 		},
 
 		// css helpers
