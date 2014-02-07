@@ -130,7 +130,7 @@ angular.module('gridster', [])
 		},
 		autoSetItemPosition: function(item) {
 			// walk through each row and column looking for a place it will fit
-			for (var rowIndex = 0; rowIndex < 50; ++rowIndex) {
+			for (var rowIndex = 0; rowIndex < this.opts.maxRows; ++rowIndex) {
 				for (var colIndex = 0; colIndex < this.columns; ++colIndex) {
 					var occupied = this.getItem(rowIndex, colIndex),
 						canFit = this.canItemOccupy(item, rowIndex, colIndex);
