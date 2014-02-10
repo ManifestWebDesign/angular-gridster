@@ -15,6 +15,9 @@ Here is an example of the default usage:
 ```
 Which expects a scope setup like the following:
 ``` JavaScript
+    // IMPORTANT: Items should be placed in the grid in the order in which they should appear.
+    // In most cases the sorting should be by row ASC, col ASC
+
     // these map directly to gridsterItem directive options
     $scope.standardItems = [
       { sizeX: 2, sizeY: 1, row: 0, col: 0 },
