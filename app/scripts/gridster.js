@@ -46,9 +46,10 @@ angular.module('gridster', [])
 				enabled: true
 			}
 		},
+		width: 1000,
 		columns: 5,
-		colWidth: null,
-		rowHeight: null,
+		colWidth: 'auto',
+		rowHeight: 'match',
 		gridHeight: 2,
 		maxRows: 100,
 		margins: [10, 10],
@@ -62,28 +63,49 @@ angular.module('gridster', [])
 		setMargins: function(margins) {
 			this.margins = margins;
 		},
-		setColumns: function(columns) {
-			this.columns = columns;
-		},
 		getColumns: function() {
 			return this.columns;
 		},
+		setInteger: function(prop, value) {
+			if (!value) {
+				return;
+			}
+			value = parseInt(value, 10);
+			if (!isNaN(value)) {
+				this[prop] = value;
+			}
+		},
+		setFloat: function(prop, value) {
+			if (!value) {
+				return;
+			}
+			value = parseFloat(value, 10);
+			if (!isNaN(value)) {
+				this[prop] = value;
+			}
+		},
+		setColumns: function(columns) {
+			this.setInteger('columns', columns);
+		},
+		setWidth: function(pixels) {
+			this.setFloat('width', pixels);
+		},
 		setColWidth: function(pixels) {
 			if (pixels === 'auto') {
-				this.colWidth = (this.$element.width() - this.margins[1]) / this.columns;
+				this.colWidth = (this.width - this.margins[1]) / this.columns;
 			} else {
-				this.colWidth = parseInt(pixels, 10);
+				this.setFloat('colWidth', pixels);
 			}
 		},
 		setRowHeight: function(pixels) {
 			if (pixels === 'match') {
 				this.rowHeight = this.colWidth;
 			} else {
-				this.rowHeight = parseInt(pixels, 10);
+				this.setFloat('rowHeight', pixels);
 			}
 		},
 		setMaxRows: function(rows) {
-			this.maxRows = rows;
+			this.setInteger('maxRows', rows);
 		},
 		getRowHeight: function() {
 			return this.rowHeight;
@@ -96,13 +118,16 @@ angular.module('gridster', [])
 			if (opts) {
 				deepExtend(this.opts, opts);
 			}
-		},
-		redraw: function(){
 			if (this.opts.margins) {
 				this.margins = this.opts.margins;
 			}
 			if (this.opts.columns) {
 				this.setColumns(this.opts.columns);
+			}
+			if (this.opts.width) {
+				this.setWidth(this.opts.width);
+			} else if (this.$element) {
+				this.setWidth(this.$element.width());
 			}
 			if (this.opts.colWidth) {
 				this.setColWidth(this.opts.colWidth);
@@ -113,7 +138,13 @@ angular.module('gridster', [])
 			if (this.opts.maxRows) {
 				this.setMaxRows(this.opts.maxRows);
 			}
-			this.isMobile = this.$element.width() <= this.opts.mobileBreakPoint;
+		},
+		redraw: function(){
+			this.setOpts();
+
+			this.isMobile = this.width <= this.opts.mobileBreakPoint;
+
+			// loop through all items and reset their CSS
 			for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 				var columns = this.grid[rowIndex];
 				if (!columns) {
@@ -403,22 +434,35 @@ angular.module('gridster', [])
 					function updateHeight() {
 						controller.$element.css('height', (controller.gridHeight * controller.rowHeight) + controller.margins[0] + 'px');
 					}
+
 					var optsKey = attrs.gridster,
 						opts = {};
 					if (optsKey) {
 						var optsGetter = $parse(optsKey);
 						opts = optsGetter(scope);
+
 						scope.$watch(optsKey, function(newOpts, oldOpts){
 							if (newOpts === oldOpts) {
 								return;
 							}
 							controller.setOpts(newOpts);
-							if(typeof newOpts.draggable !== 'undefined' && typeof oldOpts.draggable !== 'undefined' && newOpts.draggable !== oldOpts.draggable) {
+
+							if (
+								typeof newOpts.draggable !== 'undefined'
+								&& typeof oldOpts.draggable !== 'undefined'
+								&& newOpts.draggable !== oldOpts.draggable
+							) {
 								scope.$broadcast('draggable-changed', newOpts.draggable);
 							}
-							if(typeof newOpts.resizable !== 'undefined' && typeof oldOpts.resizable !== 'undefined' && newOpts.resizable !== oldOpts.resizable) {
+
+							if (
+								typeof newOpts.resizable !== 'undefined'
+								&& typeof oldOpts.resizable !== 'undefined'
+								&& newOpts.resizable !== oldOpts.resizable
+							) {
 								scope.$broadcast('resizable-changed', newOpts.resizable);
 							}
+
 							controller.redraw();
 							updateHeight();
 						}, true);
@@ -571,7 +615,9 @@ angular.module('gridster', [])
 			var optsKey = attrs.gridsterItem,
 				opts;
 
-			var item = $controller('GridsterItemCtrl'), draggablePossible = typeof $el.draggable === 'function', resizablePossible = typeof $el.resizable === 'function';
+			var item = $controller('GridsterItemCtrl'),
+				draggablePossible = typeof $el.draggable === 'function',
+				resizablePossible = typeof $el.resizable === 'function';
 
 			if (optsKey) {
 				var $optsGetter = $parse(optsKey);
@@ -758,8 +804,16 @@ angular.module('gridster', [])
 				setResizable(resizable.enabled);
 			});
 
-			setDraggable(typeof gridster.opts.draggable !== 'undefined' && typeof gridster.opts.draggable.enabled !== 'undefined' && gridster.opts.draggable.enabled);
-			setResizable(typeof gridster.opts.resizable !== 'undefined' &&typeof gridster.opts.resizable.enabled !== 'undefined' && gridster.opts.resizable.enabled);
+			setDraggable(
+				typeof gridster.opts.draggable !== 'undefined'
+				&& typeof gridster.opts.draggable.enabled !== 'undefined'
+				&& gridster.opts.draggable.enabled
+			);
+			setResizable(
+				typeof gridster.opts.resizable !== 'undefined'
+				&& typeof gridster.opts.resizable.enabled !== 'undefined'
+				&& gridster.opts.resizable.enabled
+			);
 
 			scope.$watch(function() {
 				return item.sizeY;

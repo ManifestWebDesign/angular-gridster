@@ -10,8 +10,7 @@ describe('Controller: GridsterCtrl', function() {
 		item1x1,
 		item2x1,
 		item1x2,
-		item2x2,
-		opts;
+		item2x2;
 
 	// Initialize the controller and a mock scope
 	beforeEach(inject(function($controller, $rootScope) {
@@ -19,27 +18,100 @@ describe('Controller: GridsterCtrl', function() {
 		gridster = $controller('GridsterCtrl', {
 			$scope: scope
 		});
-		opts = {
-			colWidth: 100,
-			rowHeight: 100,
-			columns: 6,
-			margins: [10, 10],
-			defaultHeight: 1,
-			defaultWidth: 2,
-			minRows: 2,
-			maxRows: 100,
-			mobileBreakPoint: 600
-		};
 		item1x1 = { sizeX: 1, sizeY: 1, id: '1x1' };
 		item2x1 = { sizeX: 2, sizeY: 1, id: '2x1' };
 		item2x2 = { sizeX: 2, sizeY: 2, id: '2x2' };
 		item1x2 = { sizeX: 1, sizeY: 2, id: '1x2' };
-		gridster.init(null, null);
-		gridster.setOpts(opts);
 	}));
 
 	it('should have a grid Array', function() {
 		expect(gridster.grid.constructor).toBe(Array);
+	});
+
+	describe('setOpts', function(){
+		it('should set properties', function() {
+			gridster.setOpts({
+				width: 1200,
+				colWidth: 120,
+				rowHeight: 120,
+				columns: 7,
+				margins: [15, 15],
+				maxRows: 500
+			});
+
+			expect(gridster.width).toBe(1200);
+			expect(gridster.colWidth).toBe(120);
+			expect(gridster.rowHeight).toBe(120);
+			expect(gridster.columns).toBe(7);
+			expect(gridster.margins).toEqual([15, 15]);
+			expect(gridster.maxRows).toBe(500);
+		});
+	});
+
+	describe('setRowHeight', function(){
+		it('should set the value if valid integer or "match"', function() {
+			var oldColWidth = gridster.rowHeight;
+			gridster.setRowHeight('abc');
+			expect(gridster.rowHeight).toBe(oldColWidth);
+
+			gridster.setColumns(6);
+			gridster.setMargins([0, 0]);
+			gridster.setWidth(1200);
+			gridster.setColWidth('auto');
+
+			gridster.setRowHeight('match');
+			expect(gridster.rowHeight).toBe(200);
+
+			gridster.setRowHeight(100);
+			expect(gridster.rowHeight).toBe(100);
+		});
+
+		it('should only set the value if not falsey', function() {
+			var oldColWidth = gridster.rowHeight;
+			gridster.setRowHeight(0);
+			expect(gridster.rowHeight).toBe(oldColWidth);
+		});
+	});
+
+	describe('setColWidth', function(){
+		it('should set the value if valid integer or "auto"', function() {
+			var oldColWidth = gridster.colWidth;
+			gridster.setColWidth('abc');
+			expect(gridster.colWidth).toBe(oldColWidth);
+
+			gridster.setColumns(6);
+			gridster.setMargins([0, 0]);
+			gridster.setWidth(1200);
+			gridster.setColWidth('auto');
+			expect(gridster.colWidth).toBe(200);
+
+			gridster.setColWidth(100);
+			expect(gridster.colWidth).toBe(100);
+		});
+
+		it('should only set the value if not falsey', function() {
+			var oldColWidth = gridster.colWidth;
+			gridster.setColWidth(0);
+			expect(gridster.colWidth).toBe(oldColWidth);
+		});
+	});
+
+	describe('setMaxRows', function(){
+		it('should only set the value if valid integer', function() {
+			var oldMaxRows = gridster.maxRows;
+			gridster.setMaxRows('abc');
+			expect(gridster.maxRows).toBe(oldMaxRows);
+
+			gridster.setMaxRows(123);
+			expect(gridster.maxRows).not.toBe(oldMaxRows);
+			expect(gridster.maxRows).toBe(123);
+		});
+
+		it('should only set the value if not falsey', function() {
+			var oldMaxRows = gridster.maxRows;
+			gridster.setMaxRows(0);
+			expect(gridster.maxRows).toBe(oldMaxRows);
+		});
 	});
 
 	describe('putItem', function(){
