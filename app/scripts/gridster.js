@@ -495,7 +495,7 @@ angular.module('gridster', [])
 					});
 
 					var prevWidth = $elem.width();
-					angular.element(window).on('resize', function(){
+					function resize() {
 						var width = $elem.width();
 						if (
 							width === prevWidth
@@ -503,11 +503,18 @@ angular.module('gridster', [])
 						) {
 							return;
 						}
+						prevWidth = width;
 						$elem.removeClass('gridster-loaded');
 						controller.redraw();
+						updateHeight();
 						$elem.addClass('gridster-loaded');
 						scope.$apply();
-					});
+					}
+
+					angular.element(window).on('resize', resize);
+					scope.$watch(function() {
+						return $elem.width();
+					}, resize);
 
 					$elem.bind('$destroy', function() {
 						try {
