@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Angular-gridster by ManifestWebDesign</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Angular-gridster</h1>
+        <h2>An implementation of gidster-like widgets for Angular JS</h2>
+        <a href="https://github.com/ManifestWebDesign/angular-gridster" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="angular-gridster" class="anchor" href="#angular-gridster"><span class="octicon octicon-link"></span></a>angular-gridster</h1>
+
+<p>An implementation of gridster-like widgets for Angular JS.  This is not a wrapper on the original gridster jQuery plugin (<a href="http://gridster.net/">http://gridster.net/</a>).  It is instead completely rewritten as Angular directives.  Rewriting allowed for some additional features and better use of Angular data binding.  Even more importantly, the original plugin had unpredictable behavior and crashed when wrapped with an Angular directive in my initial tests.</p>
+
+<p>Demo html/css/js is included and can be executed by running "grunt serve" or by opening app/index.html in a web browser.</p>
+
+<p>Here is an example of the default usage:</p>
+
+<div class="highlight highlight-HTML"><pre>    <span class="nt">&lt;div</span> <span class="na">gridster</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ul&gt;</span>
+            <span class="nt">&lt;li</span> <span class="na">gridster-item=</span><span class="s">"item"</span> <span class="na">ng-repeat=</span><span class="s">"item in standardItems"</span><span class="nt">&gt;&lt;/li&gt;</span>
+        <span class="nt">&lt;/ul&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+<p>Which expects a scope setup like the following:</p>
+
+<div class="highlight highlight-JavaScript"><pre>    <span class="c1">// IMPORTANT: Items should be placed in the grid in the order in which they should appear.</span>
+    <span class="c1">// In most cases the sorting should be by row ASC, col ASC</span>
+
+    <span class="c1">// these map directly to gridsterItem directive options</span>
+    <span class="nx">$scope</span><span class="p">.</span><span class="nx">standardItems</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="nx">sizeX</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">sizeY</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">row</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">col</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">sizeX</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">sizeY</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">row</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">col</span><span class="o">:</span> <span class="mi">2</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">sizeX</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">sizeY</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">row</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">col</span><span class="o">:</span> <span class="mi">4</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">sizeX</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">sizeY</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">row</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">col</span><span class="o">:</span> <span class="mi">5</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">sizeX</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">sizeY</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">row</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">col</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">sizeX</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">sizeY</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">row</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">col</span><span class="o">:</span> <span class="mi">4</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">sizeX</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">sizeY</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">row</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">col</span><span class="o">:</span> <span class="mi">5</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">sizeX</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">sizeY</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">row</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">col</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">sizeX</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">sizeY</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">row</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">col</span><span class="o">:</span> <span class="mi">1</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">sizeX</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">sizeY</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">row</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">col</span><span class="o">:</span> <span class="mi">3</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">sizeX</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">sizeY</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">row</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">col</span><span class="o">:</span> <span class="mi">4</span> <span class="p">}</span>
+    <span class="p">];</span>
+</pre></div>
+
+<p>Alternatively, you can use the html attributes, similar to the original gridster plugin, but with two-way data binding:</p>
+
+<div class="highlight highlight-HTML"><pre>    <span class="nt">&lt;div</span> <span class="na">gridster</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ul&gt;</span>
+            <span class="nt">&lt;li</span> <span class="na">gridster-item</span> <span class="na">row=</span><span class="s">"item.position[0]"</span> <span class="na">col=</span><span class="s">"item.position[1]"</span> <span class="na">size-x=</span><span class="s">"item.size.x"</span> <span class="na">size-y=</span><span class="s">"item.size.y"</span> <span class="na">ng-repeat=</span><span class="s">"item in customItems"</span><span class="nt">&gt;&lt;/li&gt;</span>
+        <span class="nt">&lt;/ul&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+<p>or:</p>
+
+<div class="highlight highlight-HTML"><pre>    <span class="nt">&lt;div</span> <span class="na">data-gridster</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ul&gt;</span>
+            <span class="nt">&lt;li</span> <span class="na">data-gridster-item</span> <span class="na">data-row=</span><span class="s">"item.position[0]"</span> <span class="na">data-col=</span><span class="s">"item.position[1]"</span> <span class="na">data-sizex=</span><span class="s">"item.size.x"</span> <span class="na">data-sizey=</span><span class="s">"item.size.y"</span> <span class="na">ng-repeat=</span><span class="s">"item in customItems"</span><span class="nt">&gt;&lt;/li&gt;</span>
+        <span class="nt">&lt;/ul&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+<p>This allows the items to provide their own structure for row, col, and size:</p>
+
+<div class="highlight highlight-JavaScript"><pre>    <span class="nx">$scope</span><span class="p">.</span><span class="nx">customItems</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="nx">size</span><span class="o">:</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">1</span> <span class="p">},</span> <span class="nx">position</span><span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">size</span><span class="o">:</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">2</span> <span class="p">},</span> <span class="nx">position</span><span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">size</span><span class="o">:</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">1</span> <span class="p">},</span> <span class="nx">position</span><span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">size</span><span class="o">:</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">1</span> <span class="p">},</span> <span class="nx">position</span><span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">size</span><span class="o">:</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">1</span> <span class="p">},</span> <span class="nx">position</span><span class="o">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">size</span><span class="o">:</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">1</span> <span class="p">},</span> <span class="nx">position</span><span class="o">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">size</span><span class="o">:</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">2</span> <span class="p">},</span> <span class="nx">position</span><span class="o">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">size</span><span class="o">:</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">1</span> <span class="p">},</span> <span class="nx">position</span><span class="o">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">size</span><span class="o">:</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">1</span> <span class="p">},</span> <span class="nx">position</span><span class="o">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">size</span><span class="o">:</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">1</span> <span class="p">},</span> <span class="nx">position</span><span class="o">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="nx">size</span><span class="o">:</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">1</span> <span class="p">},</span> <span class="nx">position</span><span class="o">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="p">}</span>
+    <span class="p">];</span>
+</pre></div>
+
+<p>Instead of using attributes for row, col, and size, you can also just use a mapping object for the gridster-item directive:</p>
+
+<div class="highlight highlight-HTML"><pre>    <span class="nt">&lt;div</span> <span class="na">gridster=</span><span class="s">"gridsterOpts"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ul&gt;</span>
+            <span class="nt">&lt;li</span> <span class="na">gridster-item=</span><span class="s">"customItemMap"</span> <span class="na">ng-repeat=</span><span class="s">"item in customItems"</span><span class="nt">&gt;&lt;/li&gt;</span>
+        <span class="nt">&lt;/ul&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+<p>This expects a scope similar to the previous example, but with customItemMap also defined in the scope:</p>
+
+<div class="highlight highlight-JavaScript"><pre>    <span class="c1">// maps the item from customItems in the scope to the gridsterItem options</span>
+    <span class="nx">$scope</span><span class="p">.</span><span class="nx">customItemMap</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nx">sizeX</span><span class="o">:</span> <span class="s1">'item.size.x'</span><span class="p">,</span>
+        <span class="nx">sizeY</span><span class="o">:</span> <span class="s1">'item.size.y'</span><span class="p">,</span>
+        <span class="nx">row</span><span class="o">:</span> <span class="s1">'item.position[0]'</span><span class="p">,</span>
+        <span class="nx">col</span><span class="o">:</span> <span class="s1">'item.position[1]'</span>
+    <span class="p">};</span>
+</pre></div>
+
+<p>The gridsterItem directive can be configured like this:</p>
+
+<div class="highlight highlight-HTML"><pre>    <span class="nt">&lt;div</span> <span class="na">gridster=</span><span class="s">"gridsterOpts"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;ul&gt;</span>
+            <span class="nt">&lt;li</span> <span class="na">gridster-item=</span><span class="s">"item"</span> <span class="na">ng-repeat=</span><span class="s">"item in standardItems"</span><span class="nt">&gt;&lt;/li&gt;</span>
+        <span class="nt">&lt;/ul&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+<p>With a scope like:</p>
+
+<div class="highlight highlight-JavaScript"><pre>    <span class="nx">$scope</span><span class="p">.</span><span class="nx">gridsterOpts</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nx">minRows</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="c1">// the minimum height of the grid, in rows</span>
+      <span class="nx">maxRows</span><span class="o">:</span> <span class="mi">100</span><span class="p">,</span>
+      <span class="nx">columns</span><span class="o">:</span> <span class="mi">6</span><span class="p">,</span> <span class="c1">// the width of the grid, in columns</span>
+      <span class="nx">colWidth</span><span class="o">:</span> <span class="s1">'auto'</span><span class="p">,</span> <span class="c1">// can be an integer or 'auto'.  'auto' uses the pixel width of the element divided by 'columns'</span>
+      <span class="nx">rowHeight</span><span class="o">:</span> <span class="s1">'match'</span><span class="p">,</span> <span class="c1">// can be an integer or 'match'.  Match uses the colWidth, giving you square widgets.</span>
+      <span class="nx">margins</span><span class="o">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="c1">// the pixel distance between each widget</span>
+      <span class="nx">defaultSizeX</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="c1">// the default width of a gridster item, if not specifed</span>
+      <span class="nx">defaultSizeY</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="c1">// the default height of a gridster item, if not specified</span>
+      <span class="nx">mobileBreakPoint</span><span class="o">:</span> <span class="mi">600</span><span class="p">,</span> <span class="c1">// if the screen is not wider that this, remove the grid layout and stack the items</span>
+      <span class="nx">resize</span><span class="o">:</span> <span class="p">{</span>
+         <span class="nx">enabled</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+         <span class="nx">start</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">uiWidget</span><span class="p">,</span> <span class="nx">$element</span><span class="p">)</span> <span class="p">{},</span> <span class="c1">// optional callback fired when resize is started,</span>
+         <span class="nx">resize</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">uiWidget</span><span class="p">,</span> <span class="nx">$element</span><span class="p">)</span> <span class="p">{},</span> <span class="c1">// optional callback fired when item is resized,</span>
+         <span class="nx">stop</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">uiWidget</span><span class="p">,</span> <span class="nx">$element</span><span class="p">)</span> <span class="p">{}</span> <span class="c1">// optional callback fired when item is finished resizing</span>
+      <span class="p">},</span>
+      <span class="nx">draggable</span><span class="o">:</span> <span class="p">{</span>
+         <span class="nx">enabled</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">// whether dragging items is supported</span>
+         <span class="nx">handle</span><span class="o">:</span> <span class="s1">'.my-class'</span><span class="p">,</span> <span class="c1">// optional selector for resize handle</span>
+         <span class="nx">start</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">uiWidget</span><span class="p">,</span> <span class="nx">$element</span><span class="p">)</span> <span class="p">{},</span> <span class="c1">// optional callback fired when drag is started,</span>
+         <span class="nx">drag</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">uiWidget</span><span class="p">,</span> <span class="nx">$element</span><span class="p">)</span> <span class="p">{},</span> <span class="c1">// optional callback fired when item is moved,</span>
+         <span class="nx">stop</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">uiWidget</span><span class="p">,</span> <span class="nx">$element</span><span class="p">)</span> <span class="p">{}</span> <span class="c1">// optional callback fired when item is finished dragging</span>
+      <span class="p">}</span>
+    <span class="p">};</span>
+</pre></div>
+
+<p>This directive/plugin does not generate style tags, like the jQuery plugin.  It also uses standard camalCase for variables and object properties, while the original plugin used lower_case_with_underscores.  These options have not and may never be implemented:</p>
+
+<ul>
+<li>widget_class - not necessary since directives already whatever classes and attributes you want to add</li>
+<li>widget_margins - replaced by 'margins'</li>
+<li>widget_base_dimensions - replaced by 'defaultSizeX' and 'defaultSizeY'</li>
+<li>min_cols - currently, only 'columns' is used to defined the maximum width</li>
+<li>max_cols - currently, only 'columns' is used to defined the maximum width</li>
+<li>min_rows - replaced by 'minRows'</li>
+<li>max_rows - replaced by 'maxRows'</li>
+<li>max_size_x</li>
+<li>max_size_y</li>
+<li>extra_cols</li>
+<li>extra_rows</li>
+<li>autogenerate_stylesheet</li>
+<li>avoid_overlapped_widgets</li>
+<li>resize.axes</li>
+<li>resize.handle_class - replaced by 'resize.handle', which doesn't need to be a class</li>
+<li>resize.handle_append_to</li>
+<li>resize.max_size</li>
+<li>collision.on_overlap_start</li>
+<li>collision.on_overlap</li>
+<li>collision.on_overlap_stop</li>
+</ul><p>Watching item size and position:</p>
+
+<p>The typical Angular way would be to do a $scope.$watch on your item or items in the scope.  Example:</p>
+
+<div class="highlight highlight-JavaScript"><pre><span class="c1">// two objects, converted to gridster items in the view via ng-repeat</span>
+<span class="nx">$scope</span><span class="p">.</span><span class="nx">items</span> <span class="o">=</span> <span class="p">[{},{}];</span>
+
+<span class="nx">$scope</span><span class="p">.</span><span class="nx">$watch</span><span class="p">(</span><span class="s1">'items'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">items</span><span class="p">){</span>
+   <span class="c1">// one of the items changed</span>
+<span class="p">},</span> <span class="kc">true</span><span class="p">);</span>
+</pre></div>
+
+<p>or</p>
+
+<div class="highlight highlight-JavaScript"><pre><span class="nx">$scope</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="s1">'items[0]'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+   <span class="c1">// item0 changed</span>
+<span class="p">},</span> <span class="kc">true</span><span class="p">);</span>
+</pre></div>
+
+<p>or</p>
+
+<div class="highlight highlight-JavaScript"><pre><span class="nx">$scope</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="s1">'items[0].sizeX'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+   <span class="c1">// item0 sizeX changed</span>
+<span class="p">},</span> <span class="kc">true</span><span class="p">);</span>
+</pre></div>
+
+<p>The third argument, true, is to make the watch based on the value of the object, rather than just matching the reference to the object.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/ManifestWebDesign/angular-gridster/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/ManifestWebDesign/angular-gridster/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/ManifestWebDesign/angular-gridster"></a> is maintained by <a href="https://github.com/ManifestWebDesign">ManifestWebDesign</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
