@@ -158,7 +158,7 @@ $scope.$watch('items', function(items){
 or
 
 ```JavaScript
-$scope.watch('items[0]', function(){
+$scope.$watch('items[0]', function(){
    // item0 changed
 }, true);
 ```
@@ -166,7 +166,7 @@ $scope.watch('items[0]', function(){
 or
 
 ```JavaScript
-$scope.watch('items[0].sizeX', function(){
+$scope.$watch('items[0].sizeX', function(){
    // item0 sizeX changed
 }, true);
 ```
