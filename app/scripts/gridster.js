@@ -32,12 +32,14 @@ angular.module('gridster', [])
 		opts: {
 			colWidth: 'auto',
 			rowHeight: 'match',
+			minColumns: 1,
+			minRows: 1,
 			columns: 6,
 			margins: [10, 10],
 			defaultSizeX: 2,
 			defaultSizeY: 1,
-			minRows: 2,
-			maxRows: 100,
+			minGridRows: 2,
+			maxGridRows: 100,
 			mobileBreakPoint: 600,
 			resizable: {
 				enabled: true
@@ -51,7 +53,7 @@ angular.module('gridster', [])
 		colWidth: 'auto',
 		rowHeight: 'match',
 		gridHeight: 2,
-		maxRows: 100,
+		maxGridRows: 100,
 		margins: [10, 10],
 		isMobile: false,
 
@@ -65,6 +67,18 @@ angular.module('gridster', [])
 		},
 		getColumns: function() {
 			return this.columns;
+		},
+		getMinColumns: function() {
+			return this.minColumns;
+		},
+		getMaxColumns: function() {
+			return this.maxColumns;
+		},
+		getMinRows: function() {
+			return this.minRows;
+		},
+		getMaxRows: function() {
+			return this.maxRows;
 		},
 		setInteger: function(prop, value) {
 			if (!value) {
@@ -87,6 +101,18 @@ angular.module('gridster', [])
 		setColumns: function(columns) {
 			this.setInteger('columns', columns);
 		},
+		setMinColumns: function(minColumns) {
+			this.setInteger('minColumns', minColumns);
+		},
+		setMaxColumns: function(maxColumns) {
+			this.setInteger('maxColumns', maxColumns);
+		},
+		setMinRows: function(minRows) {
+			this.setInteger('minRows', minRows);
+		},
+		setMaxRows: function(maxRows) {
+			this.setInteger('maxRows', maxRows);
+		},
 		setWidth: function(pixels) {
 			this.setFloat('width', pixels);
 		},
@@ -104,8 +130,8 @@ angular.module('gridster', [])
 				this.setFloat('rowHeight', pixels);
 			}
 		},
-		setMaxRows: function(rows) {
-			this.setInteger('maxRows', rows);
+		setMaxGridRows: function(rows) {
+			this.setInteger('maxGridRows', rows);
 		},
 		getRowHeight: function() {
 			return this.rowHeight;
@@ -124,6 +150,18 @@ angular.module('gridster', [])
 			if (this.opts.columns) {
 				this.setColumns(this.opts.columns);
 			}
+			if (this.opts.minColumns) {
+				this.setMinColumns(this.opts.minColumns);
+			}
+			if (this.opts.maxColumns) {
+				this.setMaxColumns(this.opts.maxColumns);
+			}
+			if (this.opts.minRows) {
+				this.setMinRows(this.opts.minRows);
+			}
+			if (this.opts.maxRows) {
+				this.setMaxRows(this.opts.maxRows);
+			}
 			if (this.opts.width) {
 				this.setWidth(this.opts.width);
 			} else if (this.$element) {
@@ -135,8 +173,8 @@ angular.module('gridster', [])
 			if (this.opts.rowHeight) {
 				this.setRowHeight(this.opts.rowHeight);
 			}
-			if (this.opts.maxRows) {
-				this.setMaxRows(this.opts.maxRows);
+			if (this.opts.maxGridRows) {
+				this.setMaxGridRows(this.opts.maxGridRows);
 			}
 		},
 		redraw: function(){
@@ -168,7 +206,7 @@ angular.module('gridster', [])
 		},
 		autoSetItemPosition: function(item) {
 			// walk through each row and column looking for a place it will fit
-			for (var rowIndex = 0; rowIndex < this.maxRows; ++rowIndex) {
+			for (var rowIndex = 0; rowIndex < this.maxGridRows; ++rowIndex) {
 				for (var colIndex = 0; colIndex < this.columns; ++colIndex) {
 					var occupied = this.getItem(rowIndex, colIndex),
 						canFit = this.canItemOccupy(item, rowIndex, colIndex);
@@ -357,7 +395,7 @@ angular.module('gridster', [])
 			}
 		},
 		updateHeight: function(plus) {
-			var maxHeight = this.opts.minRows;
+			var maxHeight = this.opts.minGridRows;
 			if (!plus) {
 				plus = 0;
 			}
@@ -372,7 +410,7 @@ angular.module('gridster', [])
 					}
 				}
 			}
-			this.gridHeight = Math.min(this.maxRows, maxHeight);
+			this.gridHeight = Math.min(this.maxGridRows, maxHeight);
 		},
 
 		// css helpers
@@ -507,6 +545,7 @@ angular.module('gridster', [])
 						$elem.removeClass('gridster-loaded');
 						controller.redraw();
 						updateHeight();
+						scope.$broadcast('gridster-resized', [width, $elem.height()]);
 						$elem.addClass('gridster-loaded');
 						scope.$apply();
 					}
@@ -699,6 +738,15 @@ angular.module('gridster', [])
 					}
 				}
 			}
+			
+			function updateResizableDimensions(enabled) {
+				if(resizablePossible && enabled) {
+					$el.resizable( "option", "minHeight", gridster.minRows ? gridster.minRows * gridster.rowHeight : gridster.rowHeight );
+					$el.resizable( "option", "maxHeight", gridster.maxRows ? gridster.maxRows * gridster.rowHeight : gridster.rowHeight * gridster.maxGridRows );
+					$el.resizable( "option", "minWidth", gridster.minColumns ? gridster.minColumns * gridster.colWidth : gridster.colWidth );
+					$el.resizable( "option", "maxWidth", gridster.maxColumns ? gridster.maxColumns * gridster.colWidth : gridster.columns * gridster.colWidth );
+				}
+			}
 
 			function setResizable(enable) {
 				if(resizablePossible) {
@@ -706,8 +754,10 @@ angular.module('gridster', [])
 						$el.resizable({
 							autoHide: true,
 							handles: 'n, e, s, w, ne, se, sw, nw',
-							minHeight: gridster.rowHeight,
-							minWidth: gridster.colWidth,
+							minHeight: gridster.minRows ? gridster.minRows * gridster.rowHeight : gridster.rowHeight,
+							maxHeight: gridster.maxRows ? gridster.maxRows * gridster.rowHeight : gridster.rowHeight * gridster.maxGridRows,
+							minWidth: gridster.minColumns ? gridster.minColumns * gridster.colWidth : gridster.colWidth,
+							maxWidth: gridster.maxColumns ? gridster.maxColumns * gridster.colWidth : gridster.columns * gridster.colWidth,
 							start: function(e, widget) {
 								$el.addClass('gridster-item-moving');
 								item.resizing = true;
@@ -809,6 +859,12 @@ angular.module('gridster', [])
 
 			scope.$on('resizable-changed', function(event, resizable) {
 				setResizable(resizable.enabled);
+			});
+
+			scope.$on('gridster-resized', function(event, dimensions) {
+				updateResizableDimensions(typeof gridster.opts.resizable !== 'undefined'
+                                && typeof gridster.opts.resizable.enabled !== 'undefined'
+                                && gridster.opts.resizable.enabled);
 			});
 
 			setDraggable(
