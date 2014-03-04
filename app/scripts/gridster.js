@@ -741,10 +741,10 @@ angular.module('gridster', [])
 			
 			function updateResizableDimensions(enabled) {
 				if(resizablePossible && enabled) {
-					$el.resizable( "option", "minHeight", gridster.minRows ? gridster.minRows * gridster.rowHeight : gridster.rowHeight );
-					$el.resizable( "option", "maxHeight", gridster.maxRows ? gridster.maxRows * gridster.rowHeight : gridster.rowHeight * gridster.maxGridRows );
-					$el.resizable( "option", "minWidth", gridster.minColumns ? gridster.minColumns * gridster.colWidth : gridster.colWidth );
-					$el.resizable( "option", "maxWidth", gridster.maxColumns ? gridster.maxColumns * gridster.colWidth : gridster.columns * gridster.colWidth );
+					$el.resizable( "option", "minHeight", (gridster.minRows ? gridster.minRows : 1) * gridster.rowHeight - gridster.margins[0] );
+					$el.resizable( "option", "maxHeight", (gridster.maxRows ? gridster.maxRows : gridster.maxGridRows) * gridster.rowHeight - gridster.margins[0] );
+					$el.resizable( "option", "minWidth", (gridster.minColumns ? gridster.minColumns : 1) * gridster.colWidth - gridster.margins[1] );
+					$el.resizable( "option", "maxWidth", (gridster.maxColumns ? gridster.maxColumns : gridster.columns) * gridster.colWidth - gridster.margins[1] );
 				}
 			}
 
@@ -754,10 +754,10 @@ angular.module('gridster', [])
 						$el.resizable({
 							autoHide: true,
 							handles: 'n, e, s, w, ne, se, sw, nw',
-							minHeight: gridster.minRows ? gridster.minRows * gridster.rowHeight : gridster.rowHeight,
-							maxHeight: gridster.maxRows ? gridster.maxRows * gridster.rowHeight : gridster.rowHeight * gridster.maxGridRows,
-							minWidth: gridster.minColumns ? gridster.minColumns * gridster.colWidth : gridster.colWidth,
-							maxWidth: gridster.maxColumns ? gridster.maxColumns * gridster.colWidth : gridster.columns * gridster.colWidth,
+							minHeight: (gridster.minRows ? gridster.minRows : 1) * gridster.rowHeight - gridster.margins[0],
+							maxHeight: (gridster.maxRows ? gridster.maxRows : gridster.maxGridRows) * gridster.rowHeight - gridster.margins[0],
+							minWidth: (gridster.minColumns ? gridster.minColumns : 1) * gridster.colWidth - gridster.margins[1],
+							maxWidth: (gridster.maxColumns ? gridster.maxColumns : gridster.columns) * gridster.colWidth - gridster.margins[1],
 							start: function(e, widget) {
 								$el.addClass('gridster-item-moving');
 								item.resizing = true;
