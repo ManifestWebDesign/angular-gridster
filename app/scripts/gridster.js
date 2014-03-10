@@ -547,10 +547,12 @@ angular.module('gridster', [])
 						updateHeight();
 						scope.$broadcast('gridster-resized', [width, $elem.height()]);
 						$elem.addClass('gridster-loaded');
-						scope.$apply();
 					}
 
-					angular.element(window).on('resize', resize);
+					angular.element(window).on('resize', function(){
+						resize();
+						scope.$apply();
+					});
 					scope.$watch(function() {
 						return $elem.width();
 					}, resize);
@@ -738,7 +740,7 @@ angular.module('gridster', [])
 					}
 				}
 			}
-			
+
 			function updateResizableDimensions(enabled) {
 				if(resizablePossible && enabled) {
 					$el.resizable( "option", "minHeight", (gridster.minRows ? gridster.minRows : 1) * gridster.rowHeight - gridster.margins[0] );
