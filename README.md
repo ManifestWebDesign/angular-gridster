@@ -103,7 +103,7 @@ With a scope like:
       defaultSizeX: 2, // the default width of a gridster item, if not specifed
       defaultSizeY: 1, // the default height of a gridster item, if not specified
       mobileBreakPoint: 600, // if the screen is not wider that this, remove the grid layout and stack the items
-      resize: {
+      resizable: {
          enabled: true,
          start: function(event, uiWidget, $element) {}, // optional callback fired when resize is started,
          resize: function(event, uiWidget, $element) {}, // optional callback fired when item is resized,
