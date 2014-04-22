@@ -768,8 +768,8 @@ angular.module('gridster', [])
 								gridster.setElementSizeX(gridster.$preview, item.sizeX);
 								gridster.setElementSizeY(gridster.$preview, item.sizeY);
 								scope.$apply();
-								if (gridster.opts.resize && gridster.opts.resize.start) {
-									gridster.opts.resize.start(e, widget, $el);
+								if (gridster.opts.resizable && gridster.opts.resizable.start) {
+									gridster.opts.resizable.start(e, widget, $el);
 									scope.$apply();
 								}
 							},
@@ -779,8 +779,8 @@ angular.module('gridster', [])
 								item.sizeX = gridster.pixelsToColumns(widget.size.width, true);
 								item.sizeY = gridster.pixelsToRows(widget.size.height, true);
 								scope.$apply();
-								if (gridster.opts.resize && gridster.opts.resize.resize) {
-									gridster.opts.resize.resize(e, widget, $el);
+								if (gridster.opts.resizable && gridster.opts.resizable.resize) {
+									gridster.opts.resizable.resize(e, widget, $el);
 									scope.$apply();
 								}
 							},
@@ -797,8 +797,8 @@ angular.module('gridster', [])
 								item.setSizeY(item.sizeY);
 								item.setSizeX(item.sizeX);
 								scope.$apply();
-								if (gridster.opts.resize && gridster.opts.resize.stop) {
-									gridster.opts.resize.stop(e, widget, $el);
+								if (gridster.opts.resizable && gridster.opts.resizable.stop) {
+									gridster.opts.resizable.stop(e, widget, $el);
 									scope.$apply();
 								}
 							}
