@@ -3,6 +3,7 @@
 describe('Controller: GridsterCtrl', function() {
 	beforeEach(function() {
     browser.get('http://localhost:9000/index.html');
+    browser.driver.manage().window().setSize(1000, 1000);
   });
 
   it('should have a page with elements', function() {
