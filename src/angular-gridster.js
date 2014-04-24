@@ -6,16 +6,10 @@ angular.module('gridster', [])
 
 	function deepExtend(destination, source) {
 		for (var property in source) {
-			if (
-				source[property] && source[property].constructor
-				&& source[property].constructor === Object
-			) {
+			if (source[property] && source[property].constructor && source[property].constructor === Object) {
 				destination[property] = destination[property] || {};
 				deepExtend(destination[property], source[property]);
-			} else if (
-				source[property] && source[property].constructor
-				&& source[property].constructor === Array
-			) {
+			} else if (source[property] && source[property].constructor && source[property].constructor === Array) {
 				destination[property] = destination[property] || [];
 				deepExtend(destination[property], source[property]);
 			} else {
@@ -137,7 +131,7 @@ angular.module('gridster', [])
 			return this.rowHeight;
 		},
 		destroy: function() {
-			this.grid && (this.grid.length = 0);
+			//this.grid && (this.grid.length = 0);  TODO: what is this for do?
 			this.opts = this.margins = this.grid = this.$element = this.$preview = null;
 		},
 		setOpts: function(opts) {
@@ -229,11 +223,7 @@ angular.module('gridster', [])
 			for (var h = 0; h < sizeY; ++h) {
 				for (var w = 0; w < sizeX; ++w) {
 					var item = this.getItem(row + h, column + w, excludeItems);
-					if (
-						item
-						&& (!excludeItems || excludeItems.indexOf(item) === -1)
-						&& items.indexOf(item) === -1
-					) {
+					if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && items.indexOf(item) === -1) {
 						items.push(item);
 					}
 				}
@@ -253,7 +243,7 @@ angular.module('gridster', [])
 				}
 			}
 			this.floatItemsUp();
-			updateHeight();
+			this.updateHeight();
 		},
 		getItem: function(row, column, excludeItems) {
 			if (excludeItems && !(excludeItems instanceof Array)) {
@@ -267,12 +257,7 @@ angular.module('gridster', [])
 					var items = this.grid[row];
 					if (items) {
 						var item = items[col];
-						if (
-							item
-							&& (!excludeItems || excludeItems.indexOf(item) === -1)
-							&& item.sizeX >= sizeX
-							&& item.sizeY >= sizeY
-						) {
+						if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && item.sizeX >= sizeX && item.sizeY >= sizeY) {
 							return item;
 						}
 					}
@@ -388,7 +373,7 @@ angular.module('gridster', [])
 				}
 				bestRow = rowIndex;
 				bestColumn = colIndex;
-				 --rowIndex;
+				--rowIndex;
 			}
 			if (bestRow !== null) {
 				this.putItem(item, bestRow, bestColumn);
@@ -466,12 +451,12 @@ angular.module('gridster', [])
 	return {
 		restrict: 'EAC',
 		controller: 'GridsterCtrl',
-		compile: function compile(tElement, tAttrs, transclude) {
+		compile: function compile() {
 			return {
 				pre: function(scope, $elem, attrs, controller) {
-					function updateHeight() {
+					var updateHeight = function() {
 						controller.$element.css('height', (controller.gridHeight * controller.rowHeight) + controller.margins[0] + 'px');
-					}
+					};
 
 					var optsKey = attrs.gridster,
 						opts = {};
@@ -485,19 +470,11 @@ angular.module('gridster', [])
 							}
 							controller.setOpts(newOpts);
 
-							if (
-								typeof newOpts.draggable !== 'undefined'
-								&& typeof oldOpts.draggable !== 'undefined'
-								&& newOpts.draggable !== oldOpts.draggable
-							) {
+							if (typeof newOpts.draggable !== 'undefined' && typeof oldOpts.draggable !== 'undefined' && newOpts.draggable !== oldOpts.draggable) {
 								scope.$broadcast('draggable-changed', newOpts.draggable);
 							}
 
-							if (
-								typeof newOpts.resizable !== 'undefined'
-								&& typeof oldOpts.resizable !== 'undefined'
-								&& newOpts.resizable !== oldOpts.resizable
-							) {
+							if (typeof newOpts.resizable !== 'undefined' && typeof oldOpts.resizable !== 'undefined' && newOpts.resizable !== oldOpts.resizable) {
 								scope.$broadcast('resizable-changed', newOpts.resizable);
 							}
 
@@ -535,10 +512,7 @@ angular.module('gridster', [])
 					var prevWidth = $elem.width();
 					function resize() {
 						var width = $elem.width();
-						if (
-							width === prevWidth
-							|| $elem.find('.gridster-item-moving').length > 0
-						) {
+						if (width === prevWidth || $elem.find('.gridster-item-moving').length > 0) {
 							return;
 						}
 						prevWidth = width;
@@ -627,11 +601,7 @@ angular.module('gridster', [])
 			if (isNaN(value) || value === 0) {
 				value = this.gridster.opts['default' + titleCase];
 			}
-			var changed = !(
-				this[camelCase] === value
-				&& this['old' + titleCase]
-				&& this['old' + titleCase] === value
-			);
+			var changed = !(this[camelCase] === value && this['old' + titleCase] && this['old' + titleCase] === value);
 			this['old' + titleCase] = this[camelCase] = value;
 
 			if (this.resizing) {
@@ -743,10 +713,10 @@ angular.module('gridster', [])
 
 			function updateResizableDimensions(enabled) {
 				if(resizablePossible && enabled) {
-					$el.resizable( "option", "minHeight", (gridster.minRows ? gridster.minRows : 1) * gridster.rowHeight - gridster.margins[0] );
-					$el.resizable( "option", "maxHeight", (gridster.maxRows ? gridster.maxRows : gridster.maxGridRows) * gridster.rowHeight - gridster.margins[0] );
-					$el.resizable( "option", "minWidth", (gridster.minColumns ? gridster.minColumns : 1) * gridster.colWidth - gridster.margins[1] );
-					$el.resizable( "option", "maxWidth", (gridster.maxColumns ? gridster.maxColumns : gridster.columns) * gridster.colWidth - gridster.margins[1] );
+					$el.resizable( 'option', 'minHeight', (gridster.minRows ? gridster.minRows : 1) * gridster.rowHeight - gridster.margins[0] );
+					$el.resizable( 'option', 'maxHeight', (gridster.maxRows ? gridster.maxRows : gridster.maxGridRows) * gridster.rowHeight - gridster.margins[0] );
+					$el.resizable( 'option', 'minWidth', (gridster.minColumns ? gridster.minColumns : 1) * gridster.colWidth - gridster.margins[1] );
+					$el.resizable( 'option', 'maxWidth', (gridster.maxColumns ? gridster.maxColumns : gridster.columns) * gridster.colWidth - gridster.margins[1] );
 				}
 			}
 
@@ -813,39 +783,42 @@ angular.module('gridster', [])
 
 			var aspects = ['sizeX', 'sizeY', 'row', 'col'],
 				$getters = {};
+
+      var aspectFn = function(aspect) {
+        var key;
+        if (typeof opts[aspect] === 'string') {
+          key = opts[aspect];
+        } else if (typeof opts[aspect.toLowerCase()] === 'string') {
+          key = opts[aspect.toLowerCase()];
+        } else if (optsKey) {
+          key = $parse(optsKey + '.' + aspect);
+        } else {
+          return;
+        }
+        $getters[aspect] = $parse(key);
+        scope.$watch(key, function(newVal){
+          newVal = parseInt(newVal, 10);
+          if (!isNaN(newVal)) {
+            item[aspect] = newVal;
+          }
+        });
+        var val = $getters[aspect](scope);
+        if (typeof val === 'number') {
+          item[aspect] = val;
+        }
+      };
+
 			for (var i = 0, l = aspects.length; i < l; ++i) {
-				(function(aspect){
-					var key;
-					if (typeof opts[aspect] === 'string') {
-						key = opts[aspect];
-					} else if (typeof opts[aspect.toLowerCase()] === 'string') {
-						key = opts[aspect.toLowerCase()];
-					} else if (optsKey) {
-						key = $parse(optsKey + '.' + aspect);
-					} else {
-						return;
-					}
-					$getters[aspect] = $parse(key);
-					scope.$watch(key, function(newVal){
-						newVal = parseInt(newVal, 10);
-						if (!isNaN(newVal)) {
-							item[aspect] = newVal;
-						}
-					});
-					var val = $getters[aspect](scope);
-					if (typeof val === 'number') {
-						item[aspect] = val;
-					}
-				})(aspects[i]);
+        aspectFn(aspects[i]);
 			}
 
 			function positionChanged() {
 				item.setPosition(item.row, item.col);
-				if ($getters['row'] && $getters['row'].assign) {
-					$getters['row'].assign(scope, item.row);
+				if ($getters.row && $getters.row.assign) {
+					$getters.row.assign(scope, item.row);
 				}
-				if ($getters['col'] && $getters['col'].assign) {
-					$getters['col'].assign(scope, item.col);
+				if ($getters.col && $getters.col.assign) {
+					$getters.col.assign(scope, item.col);
 				}
 			}
 			scope.$watch(function() {
@@ -863,37 +836,27 @@ angular.module('gridster', [])
 				setResizable(resizable.enabled);
 			});
 
-			scope.$on('gridster-resized', function(event, dimensions) {
-				updateResizableDimensions(typeof gridster.opts.resizable !== 'undefined'
-                                && typeof gridster.opts.resizable.enabled !== 'undefined'
-                                && gridster.opts.resizable.enabled);
-			});
+			scope.$on('gridster-resized', function() {
+				updateResizableDimensions(typeof gridster.opts.resizable !== 'undefined' && typeof gridster.opts.resizable.enabled !== 'undefined' && gridster.opts.resizable.enabled);
+      });
 
-			setDraggable(
-				typeof gridster.opts.draggable !== 'undefined'
-				&& typeof gridster.opts.draggable.enabled !== 'undefined'
-				&& gridster.opts.draggable.enabled
-			);
-			setResizable(
-				typeof gridster.opts.resizable !== 'undefined'
-				&& typeof gridster.opts.resizable.enabled !== 'undefined'
-				&& gridster.opts.resizable.enabled
-			);
+			setDraggable(typeof gridster.opts.draggable !== 'undefined' && typeof gridster.opts.draggable.enabled !== 'undefined' && gridster.opts.draggable.enabled);
+			setResizable(typeof gridster.opts.resizable !== 'undefined' && typeof gridster.opts.resizable.enabled !== 'undefined' && gridster.opts.resizable.enabled);
 
 			scope.$watch(function() {
 				return item.sizeY;
 			}, function(sizeY) {
 				item.setSizeY(sizeY);
-				if ($getters['sizeY'] && $getters['sizeY'].assign) {
-					$getters['sizeY'].assign(scope, item.sizeY);
+				if ($getters.sizeY && $getters.sizeY.assign) {
+					$getters.sizeY.assign(scope, item.sizeY);
 				}
 			});
 			scope.$watch(function() {
 				return item.sizeX;
 			}, function(sizeX) {
 				item.setSizeX(sizeX);
-				if ($getters['sizeX'] && $getters['sizeX'].assign) {
-					$getters['sizeX'].assign(scope, item.sizeX);
+				if ($getters.sizeX && $getters.sizeX.assign) {
+					$getters.sizeX.assign(scope, item.sizeX);
 				}
 			});
 

@@ -1,4 +1,8 @@
 {
+  "eqnull": true,
+  "immed": true,
+  "white": false,
+  "unused": true,
   "node": true,
   "browser": true,
   "esnext": true,
@@ -29,6 +33,8 @@
     "expect": false,
     "inject": false,
     "it": false,
+    "by": false,
+    "protractor": false,
     "spyOn": false
   }
 }
