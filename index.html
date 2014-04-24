@@ -1,0 +1,244 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<title></title>
+		<meta name="description" content="" />
+		<meta name="viewport" content="width=device-width" />
+		<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+		<link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery.ui.core.css" />
+		<link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery.ui.resizable.css" />
+
+		<link rel="stylesheet" href="dist/angular-gridster.min.css" />
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #004756;
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        color: #fff;
+      }
+
+      input {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        font-size: 14px;
+        padding: 4px;
+      }
+
+      .container {
+        margin: auto;
+        max-width: 1000px;
+      }
+
+      .gridster .gridster-item {
+        -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      }
+
+      .gridster .gridster-item {
+        -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        color: #004756;
+      }
+
+      .gridster .gridster-item {
+        background: #ffffff;
+        padding: 10px;
+      }
+    </style>
+	</head>
+	<body ng-app="app" id="ng-app">
+		<!--[if lt IE 7]>
+		  <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+		<![endif]-->
+
+		<!-- Add your site or application content here -->
+    <div class="container" ng-controller="MainCtrl">
+      <h2>Standard Items</h2>
+      <input type="button" ng-click="gridsterOpts.draggable.enabled = !gridsterOpts.draggable.enabled" value="{{gridsterOpts.draggable.enabled ? 'Disable' : 'Enable' }} Draggability" />
+      <input type="button" ng-click="gridsterOpts.resizable.enabled = !gridsterOpts.resizable.enabled" value="{{gridsterOpts.resizable.enabled ? 'Disable' : 'Enable' }} Resizability" />
+      <p>
+        Each item provides its own dimensions and position using the standard fields: { row: row, col: col, sizeX: sizeX, sizeY: sizeY }.
+      </p>
+      <div gridster="gridsterOpts">
+        <ul>
+          <li gridster-item="item" ng-repeat="item in standardItems">
+            <input type="text" integer ng-model="item.row" size="1" />
+            ,
+            <input type="text" integer ng-model="item.col" size="1" />
+            <br />
+            <input type="text" integer ng-model="item.sizeX" size="1" />
+            x
+            <input type="text" integer ng-model="item.sizeY" size="1" />
+          </li>
+        </ul>
+      </div>
+
+      <h2>Custom Items</h2>
+      <p>
+        Each item provides its own dimensions but with custom fields defined using customItemMap: { position: [row, col], size: { x: sizeX, y: sizeY }}
+      </p>
+      <div gridster="gridsterOpts">
+        <ul>
+          <li gridster-item="customItemMap" ng-repeat="item in customItems">
+            <input type="text" integer ng-model="item.position[0]" size="1" />
+            ,
+            <input type="text" integer ng-model="item.position[1]" size="1" />
+            <br />
+            <input type="text" integer ng-model="item.size.x" size="1" />
+            x
+            <input type="text" integer ng-model="item.size.y" size="1" />
+          </li>
+        </ul>
+      </div>
+
+      <h2>Custom Items2</h2>
+      <p>
+        Each item provides its own dimensions but with custom fields indicated using html attributes: row, col, sizex, sizey.  Size can also be in the form of data-size-x or data-sizex.
+      </p>
+      <div gridster="gridsterOpts">
+        <ul>
+          <li
+            gridster-item
+            row="item.position[0]"
+            col="item.position[1]"
+            size-x="item.size.x"
+            size-y="item.size.y"
+            ng-repeat="item in customItems"
+            >
+            <input type="text" integer ng-model="item.position[0]" size="1" />
+            ,
+            <input type="text" integer ng-model="item.position[1]" size="1" />
+            <br />
+            <input type="text" integer ng-model="item.size.x" size="1" />
+            x
+            <input type="text" integer ng-model="item.size.y" size="1" />
+          </li>
+        </ul>
+      </div>
+
+      <h2>Empty Items</h2>
+      <p>
+        Each item stores the standard options as an object within itself: { grid: {row: row, col: col, sizeX: sizeX, sizeY: sizeY }}
+      </p>
+      <div gridster="gridsterOpts">
+        <ul>
+          <li gridster-item="item.grid" ng-repeat="item in emptyItems">
+            <input type="text" integer ng-model="item.grid.row" size="1" />
+            ,
+            <input type="text" integer ng-model="item.grid.col" size="1" />
+            <br />
+            <input type="text" integer ng-model="item.grid.sizeX" size="1" />
+            x
+            <input type="text" integer ng-model="item.grid.sizeY" size="1" />
+          </li>
+        </ul>
+      </div>
+
+      <h2>No Configuration or Binding</h2>
+      <p>
+        No data binding or configuration provided.
+      </p>
+      <div gridster>
+        <ul>
+          <li gridster-item></li>
+        </ul>
+      </div>
+    </div>
+
+		<script src="bower_components/es5-shim/es5-shim.js"></script>
+
+		<script src="bower_components/jquery/dist/jquery.js"></script>
+		<script src="bower_components/jquery-ui/ui/jquery.ui.core.js"></script>
+		<script src="bower_components/jquery-ui/ui/jquery.ui.widget.js"></script>
+		<script src="bower_components/jquery-ui/ui/jquery.ui.mouse.js"></script>
+		<script src="bower_components/jquery-ui/ui/jquery.ui.draggable.js"></script>
+		<script src="bower_components/jquery-ui/ui/jquery.ui.resizable.js"></script>
+		<script src="bower_components/angular/angular.js"></script>
+
+		<script src="src/angular-gridster.js"></script>
+
+    <script>
+      'use strict';
+
+      angular.module('app', [ 'gridster' ])
+
+      .directive('integer', function(){
+          return {
+              require: 'ngModel',
+              link: function(scope, ele, attr, ctrl){
+                  ctrl.$parsers.unshift(function(viewValue){
+              if (viewValue === '' || viewValue === null || typeof viewValue === 'undefined') {
+                return null;
+              }
+                      return parseInt(viewValue, 10);
+                  });
+              }
+          };
+      })
+      .controller('MainCtrl', function($scope) {
+
+        $scope.gridsterOpts = {
+          margins: [20, 20],
+          draggable: {
+            enabled: false
+          },
+          resizable: {
+            enabled: false
+          }
+        };
+
+        // these map directly to gridsterItem options
+        $scope.standardItems = [
+          { sizeX: 2, sizeY: 1, row: 0, col: 0 },
+          { sizeX: 2, sizeY: 2, row: 0, col: 2 },
+          { sizeX: 1, sizeY: 1, row: 0, col: 4 },
+          { sizeX: 1, sizeY: 1, row: 0, col: 5 },
+          { sizeX: 2, sizeY: 1, row: 1, col: 0 },
+          { sizeX: 1, sizeY: 1, row: 1, col: 4 },
+          { sizeX: 1, sizeY: 2, row: 1, col: 5 },
+          { sizeX: 1, sizeY: 1, row: 2, col: 0 },
+          { sizeX: 2, sizeY: 1, row: 2, col: 1 },
+          { sizeX: 1, sizeY: 1, row: 2, col: 3 },
+          { sizeX: 1, sizeY: 1, row: 2, col: 4 }
+        ];
+
+        // these are non-standard, so they require mapping options
+        $scope.customItems = [
+          { size: { x: 2, y: 1 }, position: [0, 0] },
+          { size: { x: 2, y: 2 }, position: [0, 2] },
+          { size: { x: 1, y: 1 }, position: [0, 4] },
+          { size: { x: 1, y: 1 }, position: [0, 5] },
+          { size: { x: 2, y: 1 }, position: [1, 0] },
+          { size: { x: 1, y: 1 }, position: [1, 4] },
+          { size: { x: 1, y: 2 }, position: [1, 5] },
+          { size: { x: 1, y: 1 }, position: [2, 0] },
+          { size: { x: 2, y: 1 }, position: [2, 1] },
+          { size: { x: 1, y: 1 }, position: [2, 3] },
+          { size: { x: 1, y: 1 }, position: [2, 4] }
+        ];
+
+        $scope.emptyItems = [
+          { name: 'Item1' },
+          { name: 'Item2' },
+          { name: 'Item3' },
+          { name: 'Item4' }
+        ];
+
+        // map the gridsterItem to the custom item structure
+        $scope.customItemMap = {
+          sizeX: 'item.size.x',
+          sizeY: 'item.size.y',
+          row: 'item.position[0]',
+          col: 'item.position[1]'
+        };
+
+      });
+    </script>
+	</body>
+</html>

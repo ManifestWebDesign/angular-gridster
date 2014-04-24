@@ -1,7 +1,5 @@
 node_modules
-dist
+bower_components
 .tmp
 .sass-cache
-app/bower_components
-!/dist/
 nbproject

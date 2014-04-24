@@ -5,6 +5,7 @@
 	"dependencies": {
 		"angular": "~1.2.0",
 		"es5-shim": "~2.1.0",
+		"jquery": "~1.11.0",
 		"jquery-ui": "~1.10.4"
 	},
 	"devDependencies": {
