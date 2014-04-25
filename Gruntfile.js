@@ -23,6 +23,7 @@ module.exports = function(grunt) {
       },
       dev: {
         options: {
+          open: true,
           livereload: 35729
         }
       },
@@ -73,7 +74,6 @@ module.exports = function(grunt) {
     uglify: {
       options: {
         mangle: false,
-        compile: true,
         compress: true
       },
       dist: {
@@ -92,10 +92,15 @@ module.exports = function(grunt) {
       },
       dev: {
         files: ['src/*', 'test/**/*.js'],
-        tasks: ['default', 'karma:unit:run', 'protractor'],
+        tasks: ['jshint', 'uglify', 'less', 'karma:unit:run'],
         options: {
-          livereload: 9090,
+          livereload: true,
+          port: 35729
         }
+      },
+      e2e: { // separate e2e so livereload doesn't have to wait for e2e tests
+        files: ['src/*', 'test/**/*.js'],
+        tasks: ['protractor']
       }
     }
   });
@@ -109,12 +114,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-protractor-runner');
 
-  grunt.registerTask('server', ['connect:dev', 'watch']);
 
   grunt.registerTask('default', ['jshint', 'uglify', 'less']);
 
-  grunt.registerTask('dev', ['connect:dev', 'karma:unit:start', 'watch']);
+  grunt.registerTask('dev', ['connect:dev', 'karma:unit:start', 'karma:unit:run', 'watch']);
 
-  grunt.registerTask('test', ['default', 'connect:cli', 'karma:singleRun', 'protractor']);
+  grunt.registerTask('test', ['connect:cli', 'karma:singleRun', 'protractor']);
 
 };

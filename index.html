@@ -19,7 +19,7 @@
     <style>
       body {
         margin: 0;
-        padding: 0;
+        padding: 10px;
         background: #004756;
         font-family: 'Helvetica Neue', Arial, sans-serif;
         color: #fff;
@@ -34,6 +34,13 @@
       .container {
         margin: auto;
         max-width: 1000px;
+      }
+
+      .code-coverage {
+        color: #fff;
+        font-weight: bold;
+        float: right;
+        padding: 10px;
       }
 
       .gridster .gridster-item {
@@ -56,6 +63,11 @@
 		<!--[if lt IE 7]>
 		  <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 		<![endif]-->
+
+    <a href="http://localhost:9000/coverage" target="_blank" class="code-coverage">View Code Coverage</a>
+
+    <h1>Angular-Gridster</h1>
+    <hr>
 
 		<!-- Add your site or application content here -->
     <div class="container" ng-controller="MainCtrl">

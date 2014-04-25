@@ -172,3 +172,18 @@ $scope.$watch('items[0].sizeX', function(){
 ```
 
 The third argument, true, is to make the watch based on the value of the object, rather than just matching the reference to the object.
+
+##Contributing
+
+Install project dependencies
+```bash
+  npm install
+  bower install  
+```
+
+###Grunt Tasks
+```grunt default``` Runs jshint & compiles project 
+
+```grunt dev``` Opens demo page, starts karma test runner, watches src & test folder for changes
+
+```grunt test``` Runs the unit & e2e tests
