@@ -83,17 +83,11 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      config: {
-        files: ['Gruntfile.js', 'karma.conf.js', 'ptor.conf.js'],
-        tasks: ['jshint'],
-        options: {
-          reload: true
-        }
-      },
       dev: {
-        files: ['src/*', 'test/**/*.js'],
+        files: ['Gruntfile.js', 'karma.conf.js', 'ptor.conf.js', 'src/*', 'test/**/*.js'],
         tasks: ['jshint', 'uglify', 'less', 'karma:unit:run'],
         options: {
+          reload: true,
           livereload: true,
           port: 35729
         }
@@ -117,7 +111,9 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['jshint', 'uglify', 'less']);
 
-  grunt.registerTask('dev', ['connect:dev', 'karma:unit:start', 'karma:unit:run', 'watch']);
+  grunt.registerTask('dev', ['connect:dev', 'karma:unit:start', 'karma:unit:run', 'watch:dev']);
+
+  grunt.registerTask('e2e', ['watch:e2e', 'protractor']);
 
   grunt.registerTask('test', ['connect:cli', 'karma:singleRun', 'protractor']);
 

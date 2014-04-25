@@ -184,6 +184,8 @@ Install project dependencies
 ###Grunt Tasks
 ```grunt default``` Runs jshint & compiles project 
 
-```grunt dev``` Opens demo page, starts karma test runner, watches src & test folder for changes
+```grunt dev``` Opens demo page, starts karma test runner, runs unit tests on src & test folder changes
+
+```grunt e2e``` Watch src folder and run e2e tests on changes
 
 ```grunt test``` Runs the unit & e2e tests
