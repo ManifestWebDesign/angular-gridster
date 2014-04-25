@@ -34,16 +34,24 @@ describe('Controller: GridsterCtrl', function() {
 				width: 1200,
 				colWidth: 120,
 				rowHeight: 120,
+        maxGridRows: 500,
 				columns: 7,
+				minColumns: 3,
+				maxColumns: 3,
 				margins: [15, 15],
+				minRows: 1,
 				maxRows: 500
 			});
 
 			expect(gridster.width).toBe(1200);
 			expect(gridster.colWidth).toBe(120);
 			expect(gridster.rowHeight).toBe(120);
+			expect(gridster.maxGridRows).toBe(500);
 			expect(gridster.columns).toBe(7);
+			expect(gridster.minColumns).toEqual(3);
+			expect(gridster.maxColumns).toEqual(3);
 			expect(gridster.margins).toEqual([15, 15]);
+      expect(gridster.minRows).toBe(1);
 			expect(gridster.maxRows).toBe(500);
 		});
 	});
