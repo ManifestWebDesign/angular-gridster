@@ -21,7 +21,6 @@
   "unused": true,
   "strict": true,
   "trailing": true,
-  "smarttabs": true,
   "globals": {
     "after": false,
     "afterEach": false,

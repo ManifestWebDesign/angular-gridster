@@ -175,13 +175,16 @@ The third argument, true, is to make the watch based on the value of the object,
 
 ##Contributing
 
-Install project dependencies
+####Install project dependencies
 ```bash
   npm install
   bower install  
 ```
 
-###Grunt Tasks
+####Style Guide
+Please respect the formatting specified in .editorconfig
+
+####Grunt Tasks
 ```grunt default``` Runs jshint & compiles project 
 
 ```grunt dev``` Opens demo page, starts karma test runner, runs unit tests on src & test folder changes
