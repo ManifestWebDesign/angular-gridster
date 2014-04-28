@@ -38,7 +38,6 @@ angular.module('gridster', [])
 			defaultSizeX: 2,
 			defaultSizeY: 1,
 			mobileBreakPoint: 600,
-			containment: '.gridster',
 			resizable: {
 				enabled: true
 			},
@@ -751,7 +750,6 @@ angular.module('gridster', [])
 						if (enable) {
 							$el.draggable({
 								handle: gridster.options.draggable && gridster.options.draggable.handle ? gridster.options.draggable.handle : null,
-								containment: gridster.options.containment,
 								refreshPositions: true,
 								start: function (e, widget) {
 									$el.addClass('gridster-item-moving');
