@@ -4,9 +4,26 @@ angular.module('gridster', [])
 
 .controller('GridsterCtrl', function(){
 	return {
+
+    /**
+     * Associative array of the items in the grid
+     */
 		grid: [],
+
+
+    /**
+     * Preview holder element
+     */
 		$preview: null,
+
+    /**
+     * Gridster element
+     */
 		$element: null,
+
+    /**
+     * Configurable options
+     */
 		options: {
       width: 'auto',
       columns: 6,
@@ -22,6 +39,7 @@ angular.module('gridster', [])
 			defaultSizeX: 2,
 			defaultSizeY: 1,
 			mobileBreakPoint: 600,
+      containment: '.gridster',
 			resizable: {
 				enabled: true
 			},
@@ -30,15 +48,30 @@ angular.module('gridster', [])
 			}
 		},
 
-		// construct, configure, destruct
+		/**
+     * Sets gridster & preview elements
+     *
+     * @param {object} $element Gridster element
+     * @param {object} $preview Gridster preview element
+     */
 		init: function($element, $preview) {
 			this.$element = $element;
 			this.$preview = $preview;
 		},
+
+    /**
+     * Clean up after yourself
+     */
 		destroy: function() {
 			//this.grid && (this.grid.length = 0);  TODO: what is this for do?
 			this.options = this.options.margins = this.grid = this.$element = this.$preview = null;
 		},
+
+    /**
+     * Overrides default options
+     *
+     * @param {object} options The options to override
+     */
 		setOptions: function(options) {
       if (options) {
         $.extend(true, this.options, options);
@@ -55,6 +88,10 @@ angular.module('gridster', [])
 				this.options.rowHeight = this.options.colWidth;
 			}
 		},
+
+    /**
+     * Redraws the grid
+     */
 		redraw: function(){
 			this.setOptions({});
 
@@ -78,17 +115,29 @@ angular.module('gridster', [])
 			}
 		},
 
-		// grid management
+    /**
+     * Check if item can occupy a specified position in the grid
+     *
+     * @param {object} item The item in question
+     * @param {number} row The row index
+     * @param {number} column The column index
+     * @returns {boolean} True if if item fits
+     */
 		canItemOccupy: function(item, row, column) {
 			return row > -1 && column > -1 && item.sizeX + column <= this.options.columns;
 		},
+
+    /**
+     * Set the item in the first suitable position
+     *
+     * @param {object} item The item to insert
+     */
 		autoSetItemPosition: function(item) {
 			// walk through each row and column looking for a place it will fit
 			for (var rowIndex = 0; rowIndex < this.options.maxRows; ++rowIndex) {
 				for (var colIndex = 0; colIndex < this.options.columns; ++colIndex) {
-					var occupied = this.getItem(rowIndex, colIndex),
-						canFit = this.canItemOccupy(item, rowIndex, colIndex);
-					if (!occupied && canFit) {
+          // only insert if position is not already taken and it can fit
+					if (!this.getItem(rowIndex, colIndex) && this.canItemOccupy(item, rowIndex, colIndex)) {
 						this.putItem(item, rowIndex, colIndex);
 						return;
 					}
@@ -96,6 +145,17 @@ angular.module('gridster', [])
 			}
 			throw new Error('Unable to place item!');
 		},
+
+    /**
+     * Gets items at a specific coordinate
+     *
+     * @param {number} row
+     * @param {number} column
+     * @param {number} sizeX
+     * @param {number} sizeY
+     * @param {array} excludeItems An array of items to exclude from selection
+     * @returns {array} Items that match the criteria
+     */
 		getItems: function(row, column, sizeX, sizeY, excludeItems) {
 			var items = [];
 			if (!sizeX || !sizeY) {
@@ -114,6 +174,12 @@ angular.module('gridster', [])
 			}
 			return items;
 		},
+
+    /**
+     * Removes an item from the grid
+     *
+     * @param {object} item
+     */
 		removeItem: function(item) {
 			for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 				var columns = this.grid[rowIndex];
@@ -129,6 +195,15 @@ angular.module('gridster', [])
 			this.floatItemsUp();
 			this.updateHeight();
 		},
+
+    /**
+     * Returns the item at a specified coordinate
+     *
+     * @param {number} row
+     * @param {number} column
+     * @param {array} excludeitems Items to exclude from selection
+     * @returns {object} The matched item or null
+     */
 		getItem: function(row, column, excludeItems) {
 			if (excludeItems && !(excludeItems instanceof Array)) {
 				excludeItems = [excludeItems];
@@ -153,11 +228,25 @@ angular.module('gridster', [])
 			}
 			return null;
 		},
+
+    /**
+     * Insert an array of items into the grid
+     *
+     * @param {array} items An array of items to insert
+     */
 		putItems: function(items) {
 			for (var i = 0, l = items.length; i < l; ++i) {
 				this.putItem(items[i]);
 			}
 		},
+
+    /**
+     * Insert a single item into the grid
+     *
+     * @param {object} item The item to insert
+     * @param {number} row (Optional) Specifies the items row index
+     * @param {number} column (Optional) Specifies the items column index
+     */
 		putItem: function(item, row, column) {
 			if (typeof row === 'undefined' || row === null) {
 				row = item.row;
@@ -196,6 +285,12 @@ angular.module('gridster', [])
 			}
 			this.grid[row][column] = item;
 		},
+
+    /**
+     * Prevents items from being overlapped
+     *
+     * @param {object} item The item that should remain
+     */
 		moveOverlappingItems: function(item) {
 			var items = this.getItems(
 				item.row,
@@ -206,7 +301,14 @@ angular.module('gridster', [])
 			);
 			this.moveItemsDown(items, item.row + item.sizeY);
 		},
-		moveItemsDown: function(items, toRow) {
+
+    /**
+     * Moves an array of items to a specified row
+     *
+     * @param {array} items The items to move
+     * @param {number} row The target row
+     */
+		moveItemsDown: function(items, row) {
 			if (!items || items.length === 0) {
 				return;
 			}
@@ -219,10 +321,10 @@ angular.module('gridster', [])
 					topRows[item.col] = item.row;
 				}
 			}
-			// move each item down from the top row in its column to the toRow
+			// move each item down from the top row in its column to the row
 			for (i = 0, l = items.length; i < l; ++i) {
 				item = items[i];
-				var columnOffset = toRow - topRows[item.col];
+				var columnOffset = row - topRows[item.col];
 				this.putItem(
 					item,
 					item.row + columnOffset,
@@ -230,6 +332,10 @@ angular.module('gridster', [])
 				);
 			}
 		},
+
+    /**
+     * Moves all items up as much as possible
+     */
 		floatItemsUp: function() {
 			for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 				var columns = this.grid[rowIndex];
@@ -243,6 +349,12 @@ angular.module('gridster', [])
 				}
 			}
 		},
+
+    /**
+     * Float an item up to the most suitable row
+     *
+     * @param {object} item The item to move
+     */
 		floatItemUp: function(item) {
 			var colIndex = item.col,
 				sizeY = item.sizeY,
@@ -250,6 +362,7 @@ angular.module('gridster', [])
 				bestRow = null,
 				bestColumn = null,
 				rowIndex = item.row - 1;
+
 			while (rowIndex > -1) {
 				var items = this.getItems(rowIndex, colIndex, sizeX, sizeY, item);
 				if (items.length !== 0) {
@@ -263,6 +376,12 @@ angular.module('gridster', [])
 				this.putItem(item, bestRow, bestColumn);
 			}
 		},
+
+    /**
+     * Update gridsters height
+     *
+     * @param {number} plus (Optional) Additional height to add
+     */
 		updateHeight: function(plus) {
 			var maxHeight = this.options.minRows;
 			if (!plus) {
@@ -282,15 +401,28 @@ angular.module('gridster', [])
 			this.options.gridHeight = Math.min(this.options.maxRows, maxHeight);
 		},
 
-		// css helpers
+    /**
+     * Returns the number of rows that will fit in given amount of pixels
+     *
+     * @param {number} pixels
+     * @param {boolean} ceilOrFloor (Optional) Determines rounding method
+     */
 		pixelsToRows: function(pixels, ceilOrFloor) {
 			if (ceilOrFloor === true) {
 				return Math.ceil(pixels / this.options.rowHeight);
 			} else if (ceilOrFloor === false) {
 				return Math.floor(pixels / this.options.rowHeight);
 			}
+
 			return Math.round(pixels / this.options.rowHeight);
 		},
+
+    /**
+     * Returns the number of columns that will fit in a given amount of pixels
+     *
+     * @param {number} pixels
+     * @param {boolean} ceilOrFloor (Optional) Determines rounding method
+     */
 		pixelsToColumns: function(pixels, ceilOrFloor) {
 			if (ceilOrFloor === true) {
 				return Math.ceil(pixels / this.options.colWidth);
@@ -299,6 +431,14 @@ angular.module('gridster', [])
 			}
 			return Math.round(pixels / this.options.colWidth);
 		},
+
+    /**
+     * Sets an elements position on the page
+     *
+     * @param {object} $el The element to position
+     * @param {number} row
+     * @param {number} column
+     */
 		setElementPosition: function($el, row, column) {
 			if (this.options.isMobile) {
 				$el.css({
@@ -314,6 +454,13 @@ angular.module('gridster', [])
 				});
 			}
 		},
+
+    /**
+     * Sets an elements height
+     *
+     * @param {object} $el The element to resize
+     * @param {number} rows The number of rows the element occupies
+     */
 		setElementSizeY: function($el, rows) {
 			if (this.options.isMobile) {
 				$el.css('height', 'auto');
@@ -321,6 +468,13 @@ angular.module('gridster', [])
 				$el.css('height', (rows * this.options.rowHeight) - this.options.margins[0] + 'px');
 			}
 		},
+
+    /**
+     * Sets an elements width
+     *
+     * @param {object} $el The element to resize
+     * @param {number} columns The number of columns the element occupies
+     */
 		setElementSizeX: function($el, columns) {
 			if (this.options.isMobile) {
 				$el.css('width', 'auto');
@@ -331,6 +485,12 @@ angular.module('gridster', [])
 	};
 })
 
+/**
+ * The gridster directive
+ *
+ * @param {object} $parse
+ * @param {object} $timeout
+ */
 .directive('gridster', ['$parse', '$timeout', function($parse, $timeout) {
 	return {
 		restrict: 'EAC',
@@ -345,10 +505,11 @@ angular.module('gridster', [])
 					var optionsKey = attrs.gridster;
 					var	options = {};
 
+          // overrides default options if specified through gridster attribute
 					if (optionsKey) {
-						var optionsGetter = $parse(optionsKey);
-						options = optionsGetter(scope);
+						options = $parse(optionsKey)(scope);
 
+            // watch the specified options in case the user changes them
 						scope.$watch(optionsKey, function(newOptions, oldOptions){
 							if (newOptions === oldOptions) {
 								return;
@@ -456,6 +617,10 @@ angular.module('gridster', [])
 			this.gridster = null;
 			this.$element = null;
 		},
+
+    /**
+     * Returns the items most important attributes
+     */
 		toJSON: function() {
 			return {
 				row: this.row,
@@ -464,6 +629,13 @@ angular.module('gridster', [])
 				sizeX: this.sizeX
 			};
 		},
+
+    /**
+     * Set the items position
+     *
+     * @param {number} row
+     * @param {number} column
+     */
 		setPosition: function (row, column) {
 			this.gridster.putItem(this, row, column);
 			this.gridster.floatItemsUp();
@@ -475,6 +647,13 @@ angular.module('gridster', [])
 				this.gridster.setElementPosition(this.$element, this.row, this.col);
 			}
 		},
+
+    /**
+     * Sets a specified size property
+     *
+     * @param {string} key Can be either "x" or "y"
+     * @param {number} value The size amount
+     */
 		setSize: function (key, value) {
 			key = key.toUpperCase();
 			var camelCase = 'size' + key,
@@ -501,15 +680,34 @@ angular.module('gridster', [])
 				this.gridster.updateHeight(this.dragging ? this.sizeY : 0);
 			}
 		},
+
+    /**
+     * Sets the items sizeY property
+     *
+     * @param {number} rows
+     */
 		setSizeY: function (rows) {
 			this.setSize('y', rows);
 		},
+
+    /**
+     * Sets the items sizeX property
+     *
+     * @param {number} rows
+     */
 		setSizeX: function (columns) {
 			this.setSize('x', columns);
 		}
 	};
 })
 
+/**
+ * GridsterItem directive
+ *
+ * @param {object} $parse
+ * @param {object} $controller
+ * @param {object} $timeout
+ */
 .directive('gridsterItem', ['$parse', '$controller', '$timeout', function($parse, $controller, $timeout) {
 	return {
 		restrict: 'EAC',
@@ -522,6 +720,7 @@ angular.module('gridster', [])
 				draggablePossible = typeof $el.draggable === 'function',
 				resizablePossible = typeof $el.resizable === 'function';
 
+      //bind the items position properties
 			if (optionsKey) {
 				var $optionsGetter = $parse(optionsKey);
 				options = $optionsGetter(scope) || {};
@@ -548,7 +747,7 @@ angular.module('gridster', [])
 					if (enable) {
 						$el.draggable({
 							handle: gridster.options.draggable && gridster.options.draggable.handle ? gridster.options.draggable.handle : null,
-			//				containment: '.gridster',
+							containment: gridster.options.containment,
 							refreshPositions: true,
 							start: function(e, widget) {
 								$el.addClass('gridster-item-moving');
