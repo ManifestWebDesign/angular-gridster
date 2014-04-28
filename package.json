@@ -1,7 +1,10 @@
 {
   "name": "angular-gridster",
-  "version": "0.0.1",
+  "version": "0.9.8",
   "description": "This directive gives you gridster behavior",
+  "license": "MIT",
+  "homepage": "http://manifestwebdesign.github.io/angular-gridster",
+  "authors": "https://github.com/ManifestWebDesign/angular-gridster/graphs/contributors",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-uglify": "latest",

@@ -72,11 +72,16 @@ module.exports = function(grunt) {
       }
     },
     uglify: {
-      options: {
-        mangle: false,
-        compress: true
-      },
       dist: {
+        options: {
+          banner: ['/*',
+               ' * <%= pkg.name %>',
+               ' * <%= pkg.homepage %>',
+               ' *',
+               ' * @version: <%= pkg.version %>',
+               ' * @license: <%= pkg.license %>',
+               ' */\n'].join('\n')
+        },
         files: {
           'dist/angular-gridster.min.js': ['src/angular-gridster.js']
         }

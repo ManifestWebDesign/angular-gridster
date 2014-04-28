@@ -1,6 +1,6 @@
 {
 	"name": "angular-gridster",
-	"version": "0.9.7",
+	"version": "0.9.8",
 	"main": "app/scripts/gridster.js",
 	"dependencies": {
 		"angular": "~1.2.0",
@@ -9,8 +9,7 @@
 		"jquery-ui": "~1.10.4"
 	},
 	"devDependencies": {
-		"angular-mocks": "~1.2.0",
-		"angular-scenario": "~1.2.0"
+		"angular-mocks": "~1.2.0"
 	},
 	"ignore": [
 		"test",
@@ -22,7 +21,7 @@
 		".travis.yml",
 		"Gruntfile.js",
 		"karma.conf.js",
-		"karma-e2e.conf.js",
+		"ptor.conf.js",
 		"package.json"
 	]
 }
