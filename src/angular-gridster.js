@@ -32,7 +32,6 @@ angular.module('gridster', [])
 			margins: [10, 10],
 			isMobile: false,
 			minColumns: 1,
-			maxColumns: 10,
 			minRows: 1,
 			maxRows: 100,
 			defaultSizeX: 2,
@@ -421,6 +420,7 @@ angular.module('gridster', [])
 		 *
 		 * @param {number} pixels
 		 * @param {boolean} ceilOrFloor (Optional) Determines rounding method
+		 * @returns {number} The number of columns
 		 */
 		pixelsToColumns: function (pixels, ceilOrFloor) {
 			if (ceilOrFloor === true) {
@@ -428,6 +428,7 @@ angular.module('gridster', [])
 			} else if (ceilOrFloor === false) {
 				return Math.floor(pixels / this.options.colWidth);
 			}
+
 			return Math.round(pixels / this.options.colWidth);
 		},
 
@@ -802,7 +803,7 @@ angular.module('gridster', [])
 						$el.resizable('option', 'minHeight', gridster.options.minRows * gridster.options.rowHeight - gridster.options.margins[0]);
 						$el.resizable('option', 'maxHeight', gridster.options.maxRows * gridster.options.rowHeight - gridster.options.margins[0]);
 						$el.resizable('option', 'minWidth', gridster.options.minColumns * gridster.options.colWidth - gridster.options.margins[1]);
-						$el.resizable('option', 'maxWidth', gridster.options.maxColumns * gridster.options.colWidth - gridster.options.margins[1]);
+						$el.resizable('option', 'maxWidth', gridster.options.columns * gridster.options.colWidth - gridster.options.margins[1]);
 					}
 				}
 
@@ -815,7 +816,7 @@ angular.module('gridster', [])
 								minHeight: gridster.options.minRows * gridster.options.rowHeight - gridster.options.margins[0],
 								maxHeight: gridster.options.maxRows * gridster.options.rowHeight - gridster.options.margins[0],
 								minWidth: gridster.options.minColumns * gridster.options.colWidth - gridster.options.margins[1],
-								maxWidth: gridster.options.maxColumns * gridster.options.colWidth - gridster.options.margins[1],
+								maxWidth: gridster.options.columns * gridster.options.colWidth - gridster.options.margins[1],
 								start: function (e, widget) {
 									$el.addClass('gridster-item-moving');
 									item.resizing = true;
