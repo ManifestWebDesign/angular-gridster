@@ -1,5 +1,6 @@
 angular-gridster
 ================
+[![Build Status](https://travis-ci.org/ManifestWebDesign/angular-gridster.svg)](https://travis-ci.org/ManifestWebDesign/angular-gridster)
 
 An implementation of gridster-like widgets for Angular JS.  This is not a wrapper on the original gridster jQuery plugin (http://gridster.net/).  It is instead completely rewritten as Angular directives.  Rewriting allowed for some additional features and better use of Angular data binding.  Even more importantly, the original plugin had unpredictable behavior and crashed when wrapped with an Angular directive in my initial tests.
 
@@ -178,14 +179,14 @@ The third argument, true, is to make the watch based on the value of the object,
 ####Install project dependencies
 ```bash
   npm install
-  bower install  
+  bower install
 ```
 
 ####Style Guide
 Please respect the formatting specified in .editorconfig
 
 ####Grunt Tasks
-```grunt default``` Runs jshint & compiles project 
+```grunt default``` Runs jshint & compiles project
 
 ```grunt dev``` Opens demo page, starts karma test runner, runs unit tests on src & test folder changes
 
