@@ -63,7 +63,9 @@ describe('Controller: GridsterCtrl', function () {
 
 			expect(gridster.options.width).toBe(1200);
 			expect(gridster.options.colWidth).toBe(120);
+			expect(gridster.options.curColWidth).toBe(120);
 			expect(gridster.options.rowHeight).toBe(120);
+			expect(gridster.options.curRowHeight).toBe(120);
 			expect(gridster.options.maxGridRows).toBe(500);
 			expect(gridster.options.columns).toBe(7);
 			expect(gridster.options.minColumns).toEqual(3);
@@ -83,18 +85,19 @@ describe('Controller: GridsterCtrl', function () {
 				colWidth: 'auto'
 			});
 
-			expect(gridster.options.colWidth).toBe(200);
+			expect(gridster.options.colWidth).toBe('auto');
+			expect(gridster.options.curColWidth).toBe(200);
 		});
 
-		it('should set the value if integer"', function () {
+		it('should set the value if integer', function () {
 			gridster.setOptions({
 				colWidth: 100
 			});
 
 			expect(gridster.options.colWidth).toBe(100);
+			expect(gridster.options.curColWidth).toBe(100);
 		});
 	});
-
 
 	describe('RowHeight option', function () {
 		it('should set the value if equal to "match"', function () {
@@ -106,15 +109,17 @@ describe('Controller: GridsterCtrl', function () {
 				rowHeight: 'match'
 			});
 
-			expect(gridster.options.rowHeight).toBe(200);
+			expect(gridster.options.rowHeight).toBe('match');
+			expect(gridster.options.curRowHeight).toBe(200);
 		});
 
-		it('should set the value if integer"', function () {
+		it('should set the value if integer', function () {
 			gridster.setOptions({
 				rowHeight: 100
 			});
 
 			expect(gridster.options.rowHeight).toBe(100);
+			expect(gridster.options.curRowHeight).toBe(100);
 		});
 	});
 
