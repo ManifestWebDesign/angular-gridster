@@ -174,6 +174,21 @@ $scope.$watch('items[0].sizeX', function(){
 
 The third argument, true, is to make the watch based on the value of the object, rather than just matching the reference to the object.
 
+##How to import
+To install the directive:
+```bash
+  bower install angular-gridster
+```
+
+Then, import the following in your HTML alongside `jQuery` and `angular`:
+```html
+  <link rel="stylesheet" href="dist/angular-gridster.min.css" />
+  <script src="bower_components/javascript-detect-element-resize/jquery.resize.js"></script>
+  <script src="src/angular-gridster.js"></script>
+```
+
+`jquery.resize` is a jQuery plugin needed to check for changes in the gridster size.
+
 ##Contributing
 
 ####Install project dependencies

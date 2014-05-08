@@ -24,9 +24,7 @@ describe('Controller: GridsterCtrl', function () {
 		browser.findElement(by.css('.gridster-item:first-child')).then(function (el) {
 			return el.getSize().then(function (size) {
 				expect(size.width).toBeGreaterThan(0);
-
 				width = size.width;
-
 				return el;
 			});
 		}).then(function (el) {
@@ -43,4 +41,21 @@ describe('Controller: GridsterCtrl', function () {
 			expect(size.width).toBeGreaterThan(width);
 		});
 	});
+
+  it('should resize the row widths and heights', function () {
+    browser.driver.manage().window().setSize(1200, 1200);
+    browser.findElement(by.css('.gridster-item:first-child')).then(function (el) {
+      return el.getSize().then(function (size) {
+        expect(size.width).toBe(366);
+        expect(size.height).toBe(173);
+      });
+    });
+    browser.driver.manage().window().setSize(1000, 1000);
+    browser.findElement(by.css('.gridster-item:first-child')).then(function (el) {
+      return el.getSize().then(function (size) {
+        expect(size.width).toBe(300);
+        expect(size.height).toBe(140);
+      });
+    });
+  });
 });
