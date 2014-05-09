@@ -78,7 +78,7 @@ angular.module('gridster', [])
 			if (this.options.width === 'auto') {
 				this.options.curWidth = this.$element ? this.$element.width() : 1000;
 			} else {
-        		this.options.curWidth = this.options.width;
+				this.options.curWidth = this.options.width;
 			}
 			if (this.options.colWidth === 'auto') {
 				this.options.curColWidth = (this.options.curWidth - this.options.margins[1]) / this.options.columns;
@@ -573,7 +573,12 @@ angular.module('gridster', [])
 							$elem.removeClass('gridster-loaded');
 							controller.redraw();
 							updateHeight();
-							scope.$broadcast('gridster-resized', [width, $elem.height()]);
+
+
+							if (typeof controller.options.resizable !== 'undefined' && controller.options.resizable.enabled) {
+								scope.$broadcast('gridster-resized', [width, $elem.height()]);
+							}
+
 							$elem.addClass('gridster-loaded');
 						}
 
@@ -930,7 +935,7 @@ angular.module('gridster', [])
 				});
 
 				scope.$on('gridster-resized', function () {
-					updateResizableDimensions(typeof gridster.options.resizable !== 'undefined' && typeof gridster.options.resizable.enabled !== 'undefined' && gridster.options.resizable.enabled);
+					updateResizableDimensions();
 				});
 
 				setDraggable(typeof gridster.options.draggable !== 'undefined' && typeof gridster.options.draggable.enabled !== 'undefined' && gridster.options.draggable.enabled);
