@@ -2,7 +2,34 @@
 
 angular.module('gridster', [])
 
-.controller('GridsterCtrl', [function () {
+.constant('gridsterConfig', {
+	columns: 6, // number of columns in the grid
+	width: 'auto', // the width of the grid. "auto" will expand the grid to its parent container
+	colWidth: 'auto', // the width of the columns. "auto" will divide the width of the grid evenly among the columns
+	rowHeight: 'match', // the height of the rows. "match" will set the row height to be the same as the column width
+	margins: [10, 10], // the margins in between grid items
+	isMobile: false, // toggle mobile view
+	minColumns: 1, // the minimum amount of columns the grid can scale down to
+	minRows: 1, // the minimum amount of rows to show if the grid is empty
+	maxRows: 100, // the maximum amount of rows in the grid
+	defaultSizeX: 2, // the default width of a item
+	defaultSizeY: 1, // the default height of a item
+	mobileBreakPoint: 600, // the width threshold to toggle mobile mode
+	resizable: { // options to pass to jquery ui resizable
+		enabled: true
+	},
+	draggable: { // options to pass to jquery ui draggable
+		enabled: true
+	}
+})
+
+.controller('GridsterCtrl', ['gridsterConfig', function (gridsterConfig) {
+
+	/**
+	 * Create options from gridsterConfig constant
+	 */
+	this.options = angular.extend({}, gridsterConfig);
+
 	/**
 	 * A positional array of the items in the grid
 	 */
@@ -17,31 +44,6 @@ angular.module('gridster', [])
 	 * Gridster element
 	 */
 	this.$element = null;
-
-	/**
-	 * Configurable options
-	 */
-	this.options = {
-		width: 'auto',
-		columns: 6,
-		colWidth: 'auto',
-		rowHeight: 'match',
-		gridHeight: 2,
-		margins: [10, 10],
-		isMobile: false,
-		minColumns: 1,
-		minRows: 1,
-		maxRows: 100,
-		defaultSizeX: 2,
-		defaultSizeY: 1,
-		mobileBreakPoint: 600,
-		resizable: {
-			enabled: true
-		},
-		draggable: {
-			enabled: true
-		}
-	};
 
 	/**
 	 * Sets gridster & preview elements
