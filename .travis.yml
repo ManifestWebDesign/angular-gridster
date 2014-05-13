@@ -1,7 +1,7 @@
 language: node_js
+
 node_js:
-  - '0.8'
-  - '0.10'
+  - 0.10
 
 before_script:
   - export DISPLAY=:99.0
@@ -9,8 +9,8 @@ before_script:
   - npm install --quiet -g grunt-cli karma bower protractor
   - npm install
   - bower install
-  - ./node_modules/protractor/bin/install_selenium_standalone
-  - java -jar selenium/selenium-server-standalone-2.35.0.jar -Dwebdriver.chrome.driver=./selenium/chromedriver &
-  - sleep 3
+  - wget http://selenium.googlecode.com/files/selenium-server-standalone-2.31.0.jar
+  - java -jar selenium-server-standalone-2.31.0.jar > /dev/null &
+  - sleep 5
 
 script: grunt test
