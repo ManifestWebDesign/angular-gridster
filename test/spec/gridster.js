@@ -1,6 +1,6 @@
 'use strict';
 
-describe('GridsterCtrl', function () {
+describe('GridsterCtrl', function() {
 
 	// load the controller's module
 	beforeEach(module('gridster'));
@@ -13,7 +13,7 @@ describe('GridsterCtrl', function () {
 		item2x2;
 
 	// Initialize the controller and a mock scope
-	beforeEach(inject(function ($controller, $rootScope) {
+	beforeEach(inject(function($controller, $rootScope) {
 		scope = $rootScope.$new();
 
 		item1x1 = {
@@ -51,12 +51,12 @@ describe('GridsterCtrl', function () {
 		GridsterCtrl.setOptions();
 	}));
 
-	it('should have a grid Array', function () {
+	it('should have a grid Array', function() {
 		expect(GridsterCtrl.grid.constructor).toBe(Array);
 	});
 
-	describe('options', function () {
-		it('should set default options', function () {
+	describe('options', function() {
+		it('should set default options', function() {
 			expect(GridsterCtrl.options.columns).toBe(6);
 			expect(GridsterCtrl.options.width).toBe('auto');
 			expect(GridsterCtrl.options.colWidth).toBe('auto');
@@ -73,7 +73,7 @@ describe('GridsterCtrl', function () {
 			expect(GridsterCtrl.options.draggable.enabled).toBe(true);
 		});
 
-		it('should resolve smart options', function () {
+		it('should resolve smart options', function() {
 			expect(GridsterCtrl.options.curWidth).toBe(400); // inherit element width
 			expect(GridsterCtrl.options.curColWidth).toBe(65); // (400 - 10) / 6
 			expect(GridsterCtrl.options.curRowHeight).toBe(65); // match curColWidth
@@ -100,18 +100,18 @@ describe('GridsterCtrl', function () {
 		});
 	});
 
-	describe('putItem', function () {
-		it('should be able to place an item with coordinates', function () {
+	describe('putItem', function() {
+		it('should be able to place an item with coordinates', function() {
 			GridsterCtrl.putItem(item1x1, 2, 3);
 			expect(GridsterCtrl.getItem(2, 3)).toBe(item1x1);
 		});
 
-		it('should place an item without coordinates into empty grid', function () {
+		it('should place an item without coordinates into empty grid', function() {
 			GridsterCtrl.putItem(item1x1);
 			expect(GridsterCtrl.getItem(0, 0)).toBe(item1x1);
 		});
 
-		it('should place item into without coordinates into the next available position', function () {
+		it('should place item into without coordinates into the next available position', function() {
 			// place 1x1 at 0x0
 			GridsterCtrl.putItem(item1x1);
 			expect(GridsterCtrl.getItem(0, 0)).toBe(item1x1);
@@ -131,20 +131,20 @@ describe('GridsterCtrl', function () {
 			expect(GridsterCtrl.getItem(0, 4)).toBe(item2x2); // should stick it at 0x4
 		});
 
-		it('should not allow items to be placed with negative indices', function () {
+		it('should not allow items to be placed with negative indices', function() {
 			GridsterCtrl.putItem(item1x1, -1, -1);
 			expect(GridsterCtrl.getItem(0, 0)).toBe(item1x1);
 			expect(item1x1.row).toBe(0);
 			expect(item1x1.col).toBe(0);
 		});
 
-		it('should not float items until told to', function () {
+		it('should not float items until told to', function() {
 			GridsterCtrl.putItem(item1x1, 3, 0);
 			expect(GridsterCtrl.getItem(0, 0)).toBe(null);
 			expect(GridsterCtrl.getItem(3, 0)).toBe(item1x1);
 		});
 
-		it('should not create two references to the same item', function () {
+		it('should not create two references to the same item', function() {
 			GridsterCtrl.putItem(item1x1, 0, 0);
 			expect(GridsterCtrl.getItem(0, 0)).toBe(item1x1);
 			GridsterCtrl.putItem(item1x1, 0, 4);
@@ -153,8 +153,8 @@ describe('GridsterCtrl', function () {
 		});
 	});
 
-	describe('getItem', function () {
-		it('should match any column of a multi-column item', function () {
+	describe('getItem', function() {
+		it('should match any column of a multi-column item', function() {
 			GridsterCtrl.putItem(item2x2, 0, 2);
 
 			// all 4 corners should return the same item
@@ -165,8 +165,8 @@ describe('GridsterCtrl', function () {
 		});
 	});
 
-	describe('getItems', function () {
-		it('should get items within an area', function () {
+	describe('getItems', function() {
+		it('should get items within an area', function() {
 			GridsterCtrl.putItem(item2x2, 0, 1);
 			GridsterCtrl.putItem(item2x1, 2, 0);
 
@@ -180,14 +180,14 @@ describe('GridsterCtrl', function () {
 		});
 	});
 
-	describe('floatItemsUp', function () {
-		it('should float an item up', function () {
+	describe('floatItemsUp', function() {
+		it('should float an item up', function() {
 			GridsterCtrl.putItem(item1x1, 3, 0);
 			GridsterCtrl.floatItemsUp();
 			expect(GridsterCtrl.getItem(0, 0)).toBe(item1x1);
 		});
 
-		it('should stack items when they float up', function () {
+		it('should stack items when they float up', function() {
 			GridsterCtrl.putItem(item1x1, 3, 0);
 			GridsterCtrl.floatItemsUp();
 			expect(GridsterCtrl.getItem(0, 0)).toBe(item1x1);
@@ -201,7 +201,7 @@ describe('GridsterCtrl', function () {
 			expect(GridsterCtrl.getItem(1, 1)).toBe(item1x1);
 		});
 
-		it('should correctly stack multi-column items when their primary coordinates do not stack', function () {
+		it('should correctly stack multi-column items when their primary coordinates do not stack', function() {
 			GridsterCtrl.putItem(item2x2, 0, 2);
 			GridsterCtrl.putItem(item2x1, 2, 1);
 
@@ -218,8 +218,8 @@ describe('GridsterCtrl', function () {
 		});
 	});
 
-	describe('moveOverlappingItems', function () {
-		it('should correctly stack items on resize when their primary coordinates do not stack', function () {
+	describe('moveOverlappingItems', function() {
+		it('should correctly stack items on resize when their primary coordinates do not stack', function() {
 			GridsterCtrl.putItem(item1x1, 0, 0);
 			GridsterCtrl.putItem(item2x2, 0, 2);
 			GridsterCtrl.putItem(item2x1, 1, 0);
@@ -236,7 +236,7 @@ describe('GridsterCtrl', function () {
 			expect(item2x2.row).toBe(2);
 		});
 
-		it('should correctly push items down', function () {
+		it('should correctly push items down', function() {
 			GridsterCtrl.putItem(item2x2, 0, 0);
 			GridsterCtrl.putItem(item1x1, 2, 0);
 			GridsterCtrl.putItem(item1x2, 1, 1);

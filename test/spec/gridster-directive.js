@@ -32,12 +32,12 @@ describe('gridster directive', function() {
 	}));
 
 
-	it('should add a class of gridster', function(){
+	it('should add a class of gridster', function() {
 		expect(element.hasClass('gridster')).toBe(true);
 	});
 
 
-	it('should override options', function(){
+	it('should override options', function() {
 		expect(GridsterCtrl.options.minRows).toBe(scope.opts.minRows);
 	});
 

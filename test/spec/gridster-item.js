@@ -37,10 +37,26 @@ describe('Controller: GridsterItemCtrl', function() {
 			$scope: scope
 		});
 
-		item1x1 = { sizeX: 1, sizeY: 1, id: '1x1' };
-		item2x1 = { sizeX: 2, sizeY: 1, id: '2x1' };
-		item2x2 = { sizeX: 2, sizeY: 2, id: '2x2' };
-		item1x2 = { sizeX: 1, sizeY: 2, id: '1x2' };
+		item1x1 = {
+			sizeX: 1,
+			sizeY: 1,
+			id: '1x1'
+		};
+		item2x1 = {
+			sizeX: 2,
+			sizeY: 1,
+			id: '2x1'
+		};
+		item2x2 = {
+			sizeX: 2,
+			sizeY: 2,
+			id: '2x2'
+		};
+		item1x2 = {
+			sizeX: 1,
+			sizeY: 2,
+			id: '1x2'
+		};
 
 
 		var $el = angular.element('<div></div>');
@@ -53,7 +69,7 @@ describe('Controller: GridsterItemCtrl', function() {
 		gridsterItem.init(null, gridster);
 	}));
 
-	it('should get defaults from gridster', function(){
+	it('should get defaults from gridster', function() {
 		expect(gridsterItem.sizeX).toBe(scope.config.defaultSizeX);
 		expect(gridsterItem.sizeY).toBe(scope.config.defaultSizeY);
 	});
