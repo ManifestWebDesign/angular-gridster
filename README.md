@@ -4,7 +4,9 @@ angular-gridster
 
 An implementation of gridster-like widgets for Angular JS.  This is not a wrapper on the original gridster jQuery plugin (http://gridster.net/).  It is instead completely rewritten as Angular directives.  Rewriting allowed for some additional features and better use of Angular data binding.  Even more importantly, the original plugin had unpredictable behavior and crashed when wrapped with an Angular directive in my initial tests.
 
-Demo html/css/js is included and can be executed by running "grunt serve" or by opening app/index.html in a web browser.
+##Demo
+
+See <a href="https://rawgit.com/ManifestWebDesign/angular-gridster/master/index.html">Live Demo</a>
 
 ##Usage
 
