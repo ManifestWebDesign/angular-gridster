@@ -1,18 +1,18 @@
 'use strict';
 
-describe('Controller: GridsterCtrl', function() {
+describe('gridster directive', function() {
 
 	// load the controller's module
 	beforeEach(module('gridster'));
 
 	var scope,
-		opts,
+		GridsterCtrl,
 		element;
 
 	beforeEach(inject(function($rootScope, $compile) {
 		scope = $rootScope.$new();
 
-		opts = {
+		scope.opts = {
 			colWidth: 100,
 			rowHeight: 100,
 			columns: 6,
@@ -27,6 +27,8 @@ describe('Controller: GridsterCtrl', function() {
 		element = angular.element('<div gridster="opts"></div>');
 		$compile(element)(scope);
 		scope.$digest();
+
+		GridsterCtrl = element.controller('gridster');
 	}));
 
 
@@ -35,11 +37,8 @@ describe('Controller: GridsterCtrl', function() {
 	});
 
 
-//	it('should override options', function(){
-//		scope.opts = opts;
-//		scope.$digest();
-//		//var cont = element.data('controller');
-//		expect(element.scope().minRows).toBe(opts.minRows);
-//	});
+	it('should override options', function(){
+		expect(GridsterCtrl.options.minRows).toBe(scope.opts.minRows);
+	});
 
 });
