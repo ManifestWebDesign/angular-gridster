@@ -3,7 +3,7 @@
 	"version": "0.9.8",
 	"main": "app/scripts/gridster.js",
 	"dependencies": {
-		"angular": "~1.2.0",
+		"angular": "~1.2.15",
 		"es5-shim": "~2.1.0",
 		"jquery": "~1.11.0",
 		"jquery-ui": "~1.10.4",
