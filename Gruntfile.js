@@ -36,7 +36,7 @@ module.exports = function(grunt) {
 			options: {
 				config: '.jsbeautifyrc'
 			},
-			files: ['demo/**/*', 'src/**/*', 'test/**/*', 'Gruntfile.js', 'karma.conf.js', 'index.html', 'ptor.conf.js']
+			files: ['demo/**/*', 'src/**/*', 'test/**/*', 'Gruntfile.js', 'karma.conf.js', 'bower.json', 'index.html', 'ptor.conf.js']
 		},
 		jshint: {
 			options: {
