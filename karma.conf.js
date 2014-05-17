@@ -14,6 +14,8 @@ module.exports = function(config) {
 		// list of files / patterns to load in the browser
 		files: [
 			'bower_components/jquery/dist/jquery.js',
+			'bower_components/jquery-ui/ui/jquery-ui.js',
+			'bower_components/jquery-simulate/jquery.simulate.js',
 			'bower_components/javascript-detect-element-resize/jquery.resize.js',
 			'bower_components/angular/angular.js',
 			'bower_components/angular-mocks/angular-mocks.js',
