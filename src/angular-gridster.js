@@ -758,20 +758,20 @@ angular.module('gridster', [])
 									gridster.setElementSizeY(gridster.$preview, item.sizeY);
 									gridster.setElementPosition(gridster.$preview, item.row, item.col);
 									gridster.updateHeight(item.sizeY);
-									scope.$apply();
-									if (gridster.options.draggable && gridster.options.draggable.start) {
-										gridster.options.draggable.start(e, widget, $el);
-										scope.$apply();
-									}
+									scope.$apply(function() {
+										if (gridster.options.draggable && gridster.options.draggable.start) {
+											gridster.options.draggable.start(e, widget, $el);
+										}
+									});
 								},
 								drag: function(e, widget) {
 									item.row = gridster.pixelsToRows(widget.position.top);
 									item.col = gridster.pixelsToColumns(widget.position.left);
-									scope.$apply();
-									if (gridster.options.draggable && gridster.options.draggable.drag) {
-										gridster.options.draggable.drag(e, widget, $el);
-										scope.$apply();
-									}
+									scope.$apply(function() {
+										if (gridster.options.draggable && gridster.options.draggable.drag) {
+											gridster.options.draggable.drag(e, widget, $el);
+										}
+									});
 								},
 								stop: function(e, widget) {
 									$el.removeClass('gridster-item-moving');
@@ -781,11 +781,11 @@ angular.module('gridster', [])
 									gridster.$preview.hide();
 									item.setPosition(item.row, item.col);
 									gridster.updateHeight();
-									scope.$apply();
-									if (gridster.options.draggable && gridster.options.draggable.stop) {
-										gridster.options.draggable.stop(e, widget, $el);
-										scope.$apply();
-									}
+									scope.$apply(function() {
+										if (gridster.options.draggable && gridster.options.draggable.stop) {
+											gridster.options.draggable.stop(e, widget, $el);
+										}
+									});
 								}
 							});
 						} else {
@@ -822,22 +822,22 @@ angular.module('gridster', [])
 									gridster.$preview.fadeIn(300);
 									gridster.setElementSizeX(gridster.$preview, item.sizeX);
 									gridster.setElementSizeY(gridster.$preview, item.sizeY);
-									scope.$apply();
-									if (gridster.options.resizable && gridster.options.resizable.start) {
-										gridster.options.resizable.start(e, widget, $el);
-										scope.$apply();
-									}
+									scope.$apply(function() {
+										if (gridster.options.resizable && gridster.options.resizable.start) {
+											gridster.options.resizable.start(e, widget, $el);
+										}
+									});
 								},
 								resize: function(e, widget) {
 									item.row = gridster.pixelsToRows(widget.position.top, false);
 									item.col = gridster.pixelsToColumns(widget.position.left, false);
 									item.sizeX = gridster.pixelsToColumns(widget.size.width, true);
 									item.sizeY = gridster.pixelsToRows(widget.size.height, true);
-									scope.$apply();
-									if (gridster.options.resizable && gridster.options.resizable.resize) {
-										gridster.options.resizable.resize(e, widget, $el);
-										scope.$apply();
-									}
+									scope.$apply(function() {
+										if (gridster.options.resizable && gridster.options.resizable.resize) {
+											gridster.options.resizable.resize(e, widget, $el);
+										}
+									});
 								},
 								stop: function(e, widget) {
 									$el.removeClass('gridster-item-moving');
@@ -851,11 +851,11 @@ angular.module('gridster', [])
 									item.setPosition(item.row, item.col);
 									item.setSizeY(item.sizeY);
 									item.setSizeX(item.sizeX);
-									scope.$apply();
-									if (gridster.options.resizable && gridster.options.resizable.stop) {
-										gridster.options.resizable.stop(e, widget, $el);
-										scope.$apply();
-									}
+									scope.$apply(function() {
+										if (gridster.options.resizable && gridster.options.resizable.stop) {
+											gridster.options.resizable.stop(e, widget, $el);
+										}
+									});
 								}
 							});
 						} else {
