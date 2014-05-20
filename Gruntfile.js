@@ -110,7 +110,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('default', ['jsbeautifier', 'jshint', 'uglify', 'less']);
 
-	grunt.registerTask('dev', ['connect:dev', 'karma:unit:start', 'karma:unit:run', 'watch:dev']);
+	grunt.registerTask('dev', ['connect:dev', 'karma:unit:start', 'watch:dev']);
 
 	grunt.registerTask('e2e', ['watch:e2e', 'protractor']);
 
