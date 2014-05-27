@@ -1,0 +1,82 @@
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<title>Angular Gridster</title>
+		<meta name="description" content="" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+		<link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/css/bootstrap.css" rel="stylesheet">
+		<link rel="stylesheet" href="dist/css/angular-gridster.min.css" />
+
+		<link rel="stylesheet" href="demo/common/style.css" />
+
+		<script src="dist/js/modernizr.custom.js"></script>
+		<script src="//rawgit.com/Canop/JSON.prune/master/JSON.prune.js"></script>
+		<script src="//rawgit.com/taye/interact.js/master/interact.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.js"></script>
+		<script src="//cdn.rawgit.com/angular/bower-angular-touch/master/angular-touch.min.js"></script>
+		<script src="//code.angularjs.org/1.2.15/angular-route.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
+
+		<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script src="test/fixtures/dashboards.js"></script>
+		<script src="dist/js/angular-gridster.js"></script>
+
+		<script type="text/javascript">
+			(function() {
+				angular.module('app', ['gridster', 'ui.bootstrap', 'ngRoute'])
+					.config(['$routeProvider',
+						function($routeProvider) {
+							$routeProvider
+								.when('/main', {
+									templateUrl: 'demo/main/view.html'
+								})
+								.when('/dashboard', {
+									templateUrl: 'demo/dashboard/view.html'
+								})
+								.otherwise({
+									redirectTo: '/main'
+								});
+						}
+					])
+					.controller('RootCtrl', function($scope) {
+						$scope.$on('$locationChangeStart', function(e, next, current) {
+							$scope.page = next.split('/').splice(-1);
+							$scope.styleUrl = 'demo/' + $scope.page + '/style.css'
+						});
+					});
+			})();
+		</script>
+
+		<script src="demo/main/script.js"></script>
+		<script src="demo/dashboard/script.js"></script>
+	</head>
+
+	<body ng-app="app">
+		<div ng-controller="RootCtrl">
+			<link rel="stylesheet" ng-href="{{ styleUrl }}" />
+
+			<div class="navbar navbar-inverse">
+				<div class="col-lg-6">
+					<h2><a href="#">Angular Gridster</a></h2>
+				</div>
+				<ul class="col-lg-6 nav navbar-nav">
+					<li ng-class="{active: page == 'main'}"><a href="#/main">Main Demo</a>
+					</li>
+					<li ng-class="{active: page == 'dashboard'}"><a href="#/dashboard">Dashboard Demo</a>
+					</li>
+					<li class="visible-lg"><a>|</a>
+					</li>
+					<li><a href="coverage" target="_blank">Code Coverage</a>
+					</li>
+				</ul>
+			</div>
+
+			<div class="container-fluid" ng-view></div>
+
+		</div>
+	</body>
+
+</html>

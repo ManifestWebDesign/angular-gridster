@@ -5,49 +5,42 @@
     <p>
         Each item provides its own dimensions and position using the standard fields: { row: row, col: col, sizeX: sizeX, sizeY: sizeY }.
     </p>
-    <div gridster="gridsterOpts">
-        <ul>
-            <li gridster-item="item" ng-repeat="item in standardItems">
-                <input type="text" integer ng-model="item.row" size="1" />,
-                <input type="text" integer ng-model="item.col" size="1" />
-                <br />
-                <input type="text" integer ng-model="item.sizeX" size="1" />x
-                <input type="text" integer ng-model="item.sizeY" size="1" />
-            </li>
-        </ul>
+    <div gridster="gridsterOpts" items="standardItems">
+        hi
+        <input type="text" integer ng-model="item.row" size="1" />,
+        <input type="text" integer ng-model="item.col" size="1" />
+        <br />
+        <input type="text" integer ng-model="item.sizeX" size="1" />x
+        <input type="text" integer ng-model="item.sizeY" size="1" />
     </div>
 
-    <h2>Custom Items</h2>
-    <p>
-        Each item provides its own dimensions but with custom fields defined using customItemMap: { position: [row, col], size: { x: sizeX, y: sizeY }}
-    </p>
-    <div gridster="gridsterOpts">
-        <ul>
-            <li gridster-item="customItemMap" ng-repeat="item in customItems">
-                <input type="text" integer ng-model="item.position[0]" size="1" />,
-                <input type="text" integer ng-model="item.position[1]" size="1" />
-                <br />
-                <input type="text" integer ng-model="item.size.x" size="1" />x
-                <input type="text" integer ng-model="item.size.y" size="1" />
-            </li>
-        </ul>
-    </div>
+    <!--<h2>Custom Items</h2>-->
+    <!--<p>-->
+    <!--Each item provides its own dimensions but with custom fields defined using customItemMap: { position: [row, col], size: { x: sizeX, y: sizeY }}-->
+    <!--</p>-->
+    <!--<div gridster="gridsterOpts1" items="customItems">-->
+    <!--<input type="text" integer ng-model="item.position[0]" size="1" />,-->
+    <!--<input type="text" integer ng-model="item.position[1]" size="1" />-->
+    <!--<br />-->
+    <!--<input type="text" integer ng-model="item.size.x" size="1" />x-->
+    <!--<input type="text" integer ng-model="item.size.y" size="1" />-->
+    <!--</div>-->
 
-    <h2>Custom Items2</h2>
-    <p>
-        Each item provides its own dimensions but with custom fields indicated using html attributes: row, col, sizex, sizey. Size can also be in the form of data-size-x or data-sizex.
-    </p>
-    <div gridster="gridsterOpts">
-        <ul>
-            <li gridster-item row="item.position[0]" col="item.position[1]" size-x="item.size.x" size-y="item.size.y" ng-repeat="item in customItems">
-                <input type="text" integer ng-model="item.position[0]" size="1" />,
-                <input type="text" integer ng-model="item.position[1]" size="1" />
-                <br />
-                <input type="text" integer ng-model="item.size.x" size="1" />x
-                <input type="text" integer ng-model="item.size.y" size="1" />
-            </li>
-        </ul>
-    </div>
+    <!--<h2>Custom Items2</h2>-->
+    <!--<p>-->
+    <!--Each item provides its own dimensions but with custom fields indicated using html attributes: row, col, sizex, sizey. Size can also be in the form of data-size-x or data-sizex.-->
+    <!--</p>-->
+    <!--<div gridster="gridsterOpts">-->
+    <!--<ul>-->
+    <!--<li gridster-item row="item.position[0]" col="item.position[1]" size-x="item.size.x" size-y="item.size.y" ng-repeat="item in customItems">-->
+    <!--<input type="text" integer ng-model="item.position[0]" size="1" />,-->
+    <!--<input type="text" integer ng-model="item.position[1]" size="1" />-->
+    <!--<br />-->
+    <!--<input type="text" integer ng-model="item.size.x" size="1" />x-->
+    <!--<input type="text" integer ng-model="item.size.y" size="1" />-->
+    <!--</li>-->
+    <!--</ul>-->
+    <!--</div>-->
 
     <h2>Empty Items</h2>
     <p>
@@ -65,14 +58,14 @@
         </ul>
     </div>
 
-    <h2>No Configuration or Binding</h2>
-    <p>
-        No data binding or configuration provided.
-    </p>
-    <div gridster>
-        <ul>
-            <li gridster-item></li>
-        </ul>
-    </div>
+    <!--<h2>No Configuration or Binding</h2>-->
+    <!--<p>-->
+    <!--No data binding or configuration provided.-->
+    <!--</p>-->
+    <!--<div gridster>-->
+    <!--<ul>-->
+    <!--<li gridster-item></li>-->
+    <!--</ul>-->
+    <!--</div>-->
 </div>
 

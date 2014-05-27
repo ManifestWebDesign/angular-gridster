@@ -3,7 +3,16 @@
 module.exports = function(grunt) {
 
 	require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
-	require('time-grunt')(grunt);
+
+	var banner = ['/**',
+		' * @file <%= pkg.name %> - <%= pkg.homepage %>',
+		' * @module <%= pkg.name %>',
+		' * ',
+		' * @see <%= pkg.homepage %>',
+		' * @version <%= pkg.version %>',
+		' * @license <%= pkg.license %>',
+		' */\n'
+	].join('\n');
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -17,9 +26,33 @@ module.exports = function(grunt) {
 				commitFiles: ['package.json', 'bower.json']
 			}
 		},
+		cssmin: {
+			options: {
+				banner: banner
+			},
+			main: {
+				files: {
+					'dist/css/angular-gridster.min.css': ['dist/css/angular-gridster.css'],
+					'dist/css/angular-gridster-resizable.min.css': ['dist/css/angular-gridster-resizable.css']
+				}
+			}
+		},
+		concat: {
+			options: {
+				banner: banner + [
+					'(function(angular) {',
+					'\'use strict\';\n',
+				].join('\n'),
+				footer: '}(angular));',
+			},
+			main: {
+				src: ['src/js/*/*'],
+				dest: 'dist/js/<%= pkg.name %>.js'
+			}
+		},
 		connect: {
 			options: {
-				port: 9000,
+				port: 9005,
 				hostname: 'localhost'
 			},
 			dev: {
@@ -36,33 +69,48 @@ module.exports = function(grunt) {
 			options: {
 				config: '.jsbeautifyrc'
 			},
-			files: ['demo/**/*', 'src/**/*', 'test/**/*', 'Gruntfile.js', 'karma.conf.js', 'bower.json', 'index.html', 'ptor.conf.js']
+			dev: {
+				src: ['demo/**/*.{html, js}', 'src/**/*.js', 'test/**/*.js', 'Gruntfile.js', 'karma.conf.js', 'bower.json', 'index.html', 'ptor.conf.js']
+			},
+			dist: {
+				src: ['dist/js/angular-gridster.js']
+			}
 		},
 		jshint: {
 			options: {
 				jshintrc: '.jshintrc'
 			},
-			files: ['src/*.js', 'test/**/*.js']
+			files: ['src/js/*/*.js', 'test/**/*.js']
 		},
 		karma: {
 			unit: {
 				configFile: 'karma.conf.js',
 				background: true,
-				singleRun: false
+				singleRun: false,
+				browsers: ['PhantomJS']
 			},
 			singleRun: {
 				configFile: 'karma.conf.js',
-				singleRun: true
+				singleRun: true,
+				browsers: ['PhantomJS']
 			}
 		},
 		less: {
-			dist: {
-				options: {
-					yuicompress: true
-				},
+			main: {
 				files: {
-					"dist/angular-gridster.min.css": "src/angular-gridster.less"
+					'dist/css/angular-gridster.css': 'src/less/angular-gridster.less'
 				}
+			},
+			resizable: {
+				files: {
+					'dist/css/angular-gridster-resizable.css': ['src/less/angular-gridster.less', 'src/less/angular-gridster-resizable.less']
+				}
+			}
+		},
+		ngmin: {
+			main: {
+				src: ['dist/js/angular-gridster.js'],
+				dest: 'dist/js/angular-gridster.js'
 			}
 		},
 		protractor: {
@@ -77,28 +125,20 @@ module.exports = function(grunt) {
 		uglify: {
 			dist: {
 				options: {
-					banner: ['/*',
-						' * <%= pkg.name %>',
-						' * <%= pkg.homepage %>',
-						' *',
-						' * @version: <%= pkg.version %>',
-						' * @license: <%= pkg.license %>',
-						' */\n'
-					].join('\n')
+					banner: banner,
 				},
-				files: {
-					'dist/angular-gridster.min.js': ['src/angular-gridster.js']
-				}
+				src: ['dist/js/angular-gridster.js'],
+				dest: 'dist/js/angular-gridster.min.js'
 			}
 		},
 		watch: {
 			dev: {
-				files: ['Gruntfile.js', 'karma.conf.js', 'ptor.conf.js', 'src/*', 'test/**/*.js'],
-				tasks: ['jsbeautifier', 'jshint', 'uglify', 'less', 'karma:unit:run'],
+				files: ['Gruntfile.js', 'karma.conf.js', 'ptor.conf.js', 'src/**/*', 'test/*/*.js'],
+				tasks: ['jshint', 'concat', 'ngmin', 'jsbeautifier:dist', 'uglify', 'less', 'cssmin', 'karma:unit:run'],
 				options: {
 					reload: true,
 					livereload: true,
-					port: 35729
+					port: 35739
 				}
 			},
 			e2e: { // separate e2e so livereload doesn't have to wait for e2e tests
@@ -108,11 +148,11 @@ module.exports = function(grunt) {
 		}
 	});
 
-	grunt.registerTask('default', ['jsbeautifier', 'jshint', 'uglify', 'less']);
+	grunt.registerTask('default', ['jsbeautifier:dev', 'jshint', 'concat', 'ngmin', 'jsbeautifier:dist', 'uglify', 'less', 'cssmin']);
 
-	grunt.registerTask('dev', ['connect:dev', 'karma:unit:start', 'watch:dev']);
+	grunt.registerTask('dev', ['karma:unit:start', 'watch:dev']);
 
-	grunt.registerTask('e2e', ['watch:e2e', 'protractor']);
+	grunt.registerTask('dev_e2e', ['watch:e2e', 'protractor']);
 
 	grunt.registerTask('test', ['connect:cli', 'karma:singleRun', 'protractor']);
 

@@ -13,18 +13,20 @@ module.exports = function(config) {
 
 		// list of files / patterns to load in the browser
 		files: [
+			'dist/js/modernizr.custom.js',
+			'bower_components/interact/interact.js',
 			'bower_components/jquery/dist/jquery.js',
 			'bower_components/jquery-ui/ui/jquery-ui.js',
-			'bower_components/jquery-simulate/jquery.simulate.js',
-			'bower_components/javascript-detect-element-resize/jquery.resize.js',
 			'bower_components/angular/angular.js',
 			'bower_components/angular-mocks/angular-mocks.js',
-			'src/angular-gridster.js',
+			'src/js/**/*.js',
+			'dist/css/angular-gridster-resizable.min.css',
+			'test/fixtures/*.js',
 			'test/spec/*.js'
 		],
 
 		preprocessors: {
-			'src/*.js': ['coverage']
+			'src/js/**/*.js': ['coverage']
 		},
 
 		coverageReporter: {
@@ -33,6 +35,8 @@ module.exports = function(config) {
 		},
 
 		background: false,
+
+		reportSlowerThan: 15,
 
 		// list of files / patterns to exclude
 		exclude: [],
@@ -47,18 +51,6 @@ module.exports = function(config) {
 
 		// enable / disable watching file and executing tests whenever any file changes
 		autoWatch: false,
-
-
-		// Start these browsers, currently available:
-		// - Chrome
-		// - ChromeCanary
-		// - Firefox
-		// - Opera
-		// - Safari (only Mac)
-		// - PhantomJS
-		// - IE (only Windows)
-		browsers: ['PhantomJS'],
-
 
 		// Continuous Integration mode
 		// if true, it capture browsers, run tests and exit

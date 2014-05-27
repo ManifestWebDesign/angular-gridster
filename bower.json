@@ -7,11 +7,15 @@
 		"es5-shim": "~2.1.0",
 		"jquery": "~1.11.0",
 		"jquery-ui": "~1.10.4",
-		"javascript-detect-element-resize": "https://github.com/sdecima/javascript-detect-element-resize.git#~0.5.1"
+		"javascript-detect-element-resize": "https://github.com/sdecima/javascript-detect-element-resize.git#~0.5.1",
+		"jquery-throttle-debounce": "*"
 	},
 	"devDependencies": {
 		"angular-mocks": "~1.2.0",
-		"jquery-simulate": "*"
+		"jquery-simulate": "*",
+		"jquery-simulate-ext": "~1.3.0",
+		"interact": "~1.0.17",
+		"modernizr": "~2.8.2"
 	},
 	"ignore": [
 		"test",

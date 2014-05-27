@@ -26,6 +26,10 @@ angular.module('app')
 		}
 	};
 
+	$scope.gridsterOpts1 = {
+		fields: ['position[0]', 'position[1]', 'size.x', 'size.y']
+	};
+
 	// these map directly to gridsterItem options
 	$scope.standardItems = [{
 		sizeX: 2,
@@ -162,13 +166,5 @@ angular.module('app')
 	}, {
 		name: 'Item4'
 	}];
-
-	// map the gridsterItem to the custom item structure
-	$scope.customItemMap = {
-		sizeX: 'item.size.x',
-		sizeY: 'item.size.y',
-		row: 'item.position[0]',
-		col: 'item.position[1]'
-	};
 
 });
