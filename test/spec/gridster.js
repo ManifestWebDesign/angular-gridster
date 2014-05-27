@@ -6,16 +6,13 @@ describe('GridsterCtrl', function() {
 	beforeEach(module('gridster'));
 
 	var GridsterCtrl,
-		scope,
 		item1x1,
 		item2x1,
 		item1x2,
 		item2x2;
 
-	// Initialize the controller and a mock scope
-	beforeEach(inject(function($controller, $rootScope) {
-		scope = $rootScope.$new();
-
+	// Initialize the controller
+	beforeEach(inject(function($controller) {
 		item1x1 = {
 			sizeX: 1,
 			sizeY: 1,
@@ -37,18 +34,16 @@ describe('GridsterCtrl', function() {
 			id: '1x2'
 		};
 
-		scope.config = [item1x1, item2x1, item2x2, item1x2];
+		var config = [item1x1, item2x1, item2x2, item1x2];
 
-		GridsterCtrl = $controller('GridsterCtrl', {
-			$scope: scope
-		});
+		GridsterCtrl = $controller('GridsterCtrl');
 
 		var $el = angular.element('<div style="width: 400px;"></div>');
 		var $preview = angular.element('<div></div>');
 
 		GridsterCtrl.init($el, $preview);
 
-		GridsterCtrl.setOptions();
+		GridsterCtrl.setOptions(config);
 	}));
 
 	it('should have a grid Array', function() {
@@ -80,15 +75,13 @@ describe('GridsterCtrl', function() {
 		});
 
 		it('should update options', function() {
-			angular.extend(GridsterCtrl.options, {
+			GridsterCtrl.setOptions({
 				width: 1200,
 				colWidth: 120,
 				rowHeight: 140,
 				columns: 7,
 				margins: [15, 15]
 			});
-
-			GridsterCtrl.setOptions();
 
 			expect(GridsterCtrl.options.width).toBe(1200);
 			expect(GridsterCtrl.options.colWidth).toBe(120);

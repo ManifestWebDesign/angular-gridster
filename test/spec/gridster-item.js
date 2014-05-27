@@ -5,6 +5,7 @@ describe('Controller: GridsterItemCtrl', function() {
 	beforeEach(module('gridster'));
 
 	var gridster,
+		config,
 		scope,
 		item1x1,
 		item2x1,
@@ -16,7 +17,7 @@ describe('Controller: GridsterItemCtrl', function() {
 	beforeEach(inject(function($controller, $rootScope) {
 		scope = $rootScope.$new();
 
-		scope.config = {
+		config = {
 			colWidth: 100,
 			rowHeight: 100,
 			columns: 6,
@@ -30,12 +31,8 @@ describe('Controller: GridsterItemCtrl', function() {
 			defaultSizeY: 4
 		};
 
-		gridster = $controller('GridsterCtrl', {
-			$scope: scope
-		});
-		gridsterItem = $controller('GridsterItemCtrl', {
-			$scope: scope
-		});
+		gridster = $controller('GridsterCtrl');
+		gridsterItem = $controller('GridsterItemCtrl');
 
 		item1x1 = {
 			sizeX: 1,
@@ -64,14 +61,13 @@ describe('Controller: GridsterItemCtrl', function() {
 
 		gridster.init($el, $preview);
 
-
-		gridster.setOptions();
+		gridster.setOptions(config);
 		gridsterItem.init(null, gridster);
 	}));
 
 	it('should get defaults from gridster', function() {
-		expect(gridsterItem.sizeX).toBe(scope.config.defaultSizeX);
-		expect(gridsterItem.sizeY).toBe(scope.config.defaultSizeY);
+		expect(gridsterItem.sizeX).toBe(config.defaultSizeX);
+		expect(gridsterItem.sizeY).toBe(config.defaultSizeY);
 	});
 
 });
