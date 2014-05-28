@@ -651,7 +651,10 @@ angular.module('gridster', [])
 	 */
 	this.setPosition = function(row, column) {
 		this.gridster.putItem(this, row, column);
-		this.gridster.floatItemsUp();
+		if (this.gridster.$element.hasClass('gridster-loaded')) {
+			this.gridster.floatItemsUp();
+		}
+
 		this.gridster.updateHeight(this.dragging ? this.sizeY : 0);
 
 		if (this.dragging) {
