@@ -525,16 +525,16 @@ angular.module('gridster', [])
 
 						controller.setOptions(newOptions);
 
-						if (typeof newOptions.draggable !== 'undefined' && newOptions.draggable.enabled) {
-							$rootScope.$broadcast('draggable-changed');
-						}
-
-						if (typeof newOptions.resizable !== 'undefined' && newOptions.resizable.enabled) {
-							$rootScope.$broadcast('resizable-changed');
-						}
-
 						controller.redraw();
 						updateHeight();
+					}, true);
+
+					scope.$watch('config.draggable', function() {
+						$rootScope.$broadcast('draggable-changed');
+					}, true);
+
+					scope.$watch('config.resizable', function() {
+						$rootScope.$broadcast('resizable-changed');
 					}, true);
 
 					var updateHeight = function() {
