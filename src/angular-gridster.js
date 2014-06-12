@@ -138,7 +138,8 @@ angular.module('gridster', [])
 			for (var rowIndex = 0; rowIndex < this.options.maxRows; ++rowIndex) {
 				for (var colIndex = 0; colIndex < this.options.columns; ++colIndex) {
 					// only insert if position is not already taken and it can fit
-					if (!this.getItem(rowIndex, colIndex) && this.canItemOccupy(item, rowIndex, colIndex)) {
+					var items = this.getItems(rowIndex, colIndex, item.sizeX, item.sizeY, item);
+					if (items.length === 0 && this.canItemOccupy(item, rowIndex, colIndex)) {
 						this.putItem(item, rowIndex, colIndex);
 						return;
 					}

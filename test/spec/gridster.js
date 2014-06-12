@@ -93,6 +93,24 @@ describe('GridsterCtrl', function() {
 		});
 	});
 
+	describe('autoSetItemPosition', function() {
+		it('should place an item in the first available space', function() {
+			GridsterCtrl.putItem(item2x1, 0, 1);
+			GridsterCtrl.autoSetItemPosition(item1x1);
+			expect(GridsterCtrl.getItem(0, 0)).toBe(item1x1);
+
+			GridsterCtrl.autoSetItemPosition(item2x2);
+			expect(GridsterCtrl.getItem(0, 3)).toBe(item2x2);
+		});
+
+		it('should respect item size', function() {
+			GridsterCtrl.putItem(item2x1, 0, 1);
+
+			GridsterCtrl.autoSetItemPosition(item2x2);
+			expect(GridsterCtrl.getItem(0, 3)).toBe(item2x2);
+		});
+	});
+
 	describe('putItem', function() {
 		it('should be able to place an item with coordinates', function() {
 			GridsterCtrl.putItem(item1x1, 2, 3);
