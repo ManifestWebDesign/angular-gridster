@@ -4,9 +4,8 @@
 	"main": "app/scripts/gridster.js",
 	"dependencies": {
 		"angular": "~1.2.15",
-		"es5-shim": "~2.1.0",
-		"jquery": "~1.11.0",
-		"jquery-ui": "~1.10.4",
+		"jquery": ">= 1.8.0",
+		"jquery-ui": ">= 1.9.2",
 		"javascript-detect-element-resize": "https://github.com/sdecima/javascript-detect-element-resize.git#~0.5.1"
 	},
 	"devDependencies": {
