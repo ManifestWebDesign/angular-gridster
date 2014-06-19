@@ -107,10 +107,9 @@ angular.module('gridster', [])
 				for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
 					if (columns[colIndex]) {
 						var item = columns[colIndex];
-						var $el = item.$element;
-						this.setElementPosition($el, item.row, item.col);
-						this.setElementSizeY($el, item.sizeY);
-						this.setElementSizeX($el, item.sizeX);
+						this.setElementPosition(item.$element, item.row, item.col);
+						this.setElementSizeY(item.$element, item.sizeY);
+						this.setElementSizeX(item.$element, item.sizeX);
 					}
 				}
 			}
@@ -503,20 +502,29 @@ angular.module('gridster', [])
 			// without transclude, some child items may lose their parent scope
 			transclude: true,
 			replace: true,
-			template: '<div ng-transclude></div>',
+			template: '<div ng-transclude ng-class="gridsterClass()"></div>',
 			controller: 'GridsterCtrl',
+			controllerAs: 'gridster',
 			scope: {
 				config: '=?gridster'
 			},
-			compile: function($elem) {
-				$elem.addClass('gridster');
+			compile: function() {
 
 				return function(scope, $elem, attrs, controller) {
-					$elem.removeClass('gridster-loaded');
+					controller.loaded = false;
 
 					var $preview = angular.element('<div class="gridster-item gridster-preview-holder"></div>').appendTo($elem);
 
 					scope.config = scope.config || {};
+
+					scope.gridsterClass = function() {
+						return {
+							gridster: true,
+							'gridster-desktop': !controller.options.isMobile,
+							'gridster-mobile': controller.options.isMobile,
+							'gridster-loaded': controller.loaded
+						};
+					};
 
 					// update grid items on config changes
 					scope.$watch('config', function(newOptions, oldOptions) {
@@ -531,11 +539,11 @@ angular.module('gridster', [])
 					}, true);
 
 					scope.$watch('config.draggable', function() {
-						$rootScope.$broadcast('draggable-changed');
+						$rootScope.$broadcast('gridster-draggable-changed');
 					}, true);
 
 					scope.$watch('config.resizable', function() {
-						$rootScope.$broadcast('resizable-changed');
+						$rootScope.$broadcast('gridster-resizable-changed');
 					}, true);
 
 					var updateHeight = function() {
@@ -546,16 +554,6 @@ angular.module('gridster', [])
 						return controller.options.gridHeight;
 					}, updateHeight);
 
-					scope.$watch(function() {
-						return controller.options.isMobile;
-					}, function(isMobile) {
-						if (isMobile) {
-							controller.$element.addClass('gridster-mobile');
-						} else {
-							controller.$element.removeClass('gridster-mobile');
-						}
-					});
-
 					var prevWidth = $elem.width();
 
 					function resize() {
@@ -564,7 +562,7 @@ angular.module('gridster', [])
 							return;
 						}
 						prevWidth = width;
-						$elem.removeClass('gridster-loaded');
+						controller.loaded = false;
 						controller.redraw();
 						updateHeight();
 
@@ -573,7 +571,7 @@ angular.module('gridster', [])
 							scope.$broadcast('gridster-resized', [width, $elem.height()]);
 						}
 
-						$elem.addClass('gridster-loaded');
+						controller.loaded = true;
 					}
 
 					function onResize() {
@@ -604,7 +602,7 @@ angular.module('gridster', [])
 
 					$timeout(function() {
 						controller.floatItemsUp();
-						$elem.addClass('gridster-loaded');
+						controller.loaded = true;
 					}, 100);
 				};
 			}
@@ -654,7 +652,7 @@ angular.module('gridster', [])
 	 */
 	this.setPosition = function(row, column) {
 		this.gridster.putItem(this, row, column);
-		if (this.gridster.$element.hasClass('gridster-loaded')) {
+		if (this.gridster.loaded) {
 			this.gridster.floatItemsUp();
 		}
 
@@ -695,7 +693,11 @@ angular.module('gridster', [])
 		}
 		if (changed) {
 			this.gridster.moveOverlappingItems(this);
-			this.gridster.floatItemsUp();
+
+			if (this.gridster.loaded) {
+				this.gridster.floatItemsUp();
+			}
+
 			this.gridster.updateHeight(this.dragging ? this.sizeY : 0);
 		}
 	};
@@ -898,12 +900,16 @@ angular.module('gridster', [])
 						return;
 					}
 					$getters[aspect] = $parse(key);
+
+					// when the value changes externally, update the internal item object
 					scope.$watch(key, function(newVal) {
 						newVal = parseInt(newVal, 10);
 						if (!isNaN(newVal)) {
 							item[aspect] = newVal;
 						}
 					});
+
+					// initial set
 					var val = $getters[aspect](scope);
 					if (typeof val === 'number') {
 						item[aspect] = val;
@@ -915,7 +921,10 @@ angular.module('gridster', [])
 				}
 
 				function positionChanged() {
+					// call setPosition so the element and gridster controller are updated
 					item.setPosition(item.row, item.col);
+
+					// when internal item position changes, update externally bound values
 					if ($getters.row && $getters.row.assign) {
 						$getters.row.assign(scope, item.row);
 					}
@@ -930,10 +939,8 @@ angular.module('gridster', [])
 					return item.col;
 				}, positionChanged);
 
-				scope.$on('draggable-changed', setDraggable);
-
-				scope.$on('resizable-changed', setResizable);
-
+				scope.$on('gridster-draggable-changed', setDraggable);
+				scope.$on('gridster-resizable-changed', setResizable);
 				scope.$on('gridster-resized', updateResizableDimensions);
 
 				setDraggable();

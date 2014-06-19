@@ -38,6 +38,21 @@ angular.module('app')
 		row: 0,
 		col: 2
 	}, {
+		sizeX: 2,
+		sizeY: 1,
+		row: 2,
+		col: 1
+	}, {
+		sizeX: 1,
+		sizeY: 1,
+		row: 2,
+		col: 3
+	}, {
+		sizeX: 1,
+		sizeY: 1,
+		row: 2,
+		col: 4
+	}, {
 		sizeX: 1,
 		sizeY: 1,
 		row: 0,
@@ -67,21 +82,6 @@ angular.module('app')
 		sizeY: 1,
 		row: 2,
 		col: 0
-	}, {
-		sizeX: 2,
-		sizeY: 1,
-		row: 2,
-		col: 1
-	}, {
-		sizeX: 1,
-		sizeY: 1,
-		row: 2,
-		col: 3
-	}, {
-		sizeX: 1,
-		sizeY: 1,
-		row: 2,
-		col: 4
 	}];
 
 	// these are non-standard, so they require mapping options
@@ -97,24 +97,6 @@ angular.module('app')
 			y: 2
 		},
 		position: [0, 2]
-	}, {
-		size: {
-			x: 1,
-			y: 1
-		},
-		position: [0, 4]
-	}, {
-		size: {
-			x: 1,
-			y: 1
-		},
-		position: [0, 5]
-	}, {
-		size: {
-			x: 2,
-			y: 1
-		},
-		position: [1, 0]
 	}, {
 		size: {
 			x: 1,
@@ -145,6 +127,24 @@ angular.module('app')
 			y: 1
 		},
 		position: [2, 3]
+	}, {
+		size: {
+			x: 1,
+			y: 1
+		},
+		position: [0, 4]
+	}, {
+		size: {
+			x: 1,
+			y: 1
+		},
+		position: [0, 5]
+	}, {
+		size: {
+			x: 2,
+			y: 1
+		},
+		position: [1, 0]
 	}, {
 		size: {
 			x: 1,
