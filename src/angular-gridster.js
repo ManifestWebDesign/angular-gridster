@@ -578,8 +578,8 @@ angular.module('gridster', [])
 
 					function onResize() {
 						resize();
-						$timeout(function(){
-							scope.$apply();	
+						$timeout(function() {
+							scope.$apply();
 						});
 					}
 					if (typeof $elem.resize === 'function') {
