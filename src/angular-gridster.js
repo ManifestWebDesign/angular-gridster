@@ -578,7 +578,9 @@ angular.module('gridster', [])
 
 					function onResize() {
 						resize();
-						scope.$apply();
+						$timeout(function(){
+							scope.$apply();	
+						});
 					}
 					if (typeof $elem.resize === 'function') {
 						$elem.resize(onResize);
