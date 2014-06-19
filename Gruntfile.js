@@ -36,7 +36,16 @@ module.exports = function(grunt) {
 			options: {
 				config: '.jsbeautifyrc'
 			},
-			files: ['demo/**/*', 'src/**/*', 'test/**/*', 'Gruntfile.js', 'karma.conf.js', 'bower.json', 'index.html', 'ptor.conf.js']
+			files: [
+				'demo/**/*.js',
+				'src/**/*.js',
+				'test/**/*.js',
+				'Gruntfile.js',
+				'karma.conf.js',
+				'bower.json',
+				'index.html',
+				'ptor.conf.js'
+			]
 		},
 		jshint: {
 			options: {
@@ -58,7 +67,7 @@ module.exports = function(grunt) {
 		less: {
 			dist: {
 				options: {
-					yuicompress: true
+					compress: true
 				},
 				files: {
 					"dist/angular-gridster.min.css": "src/angular-gridster.less"
@@ -111,9 +120,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('default', ['jsbeautifier', 'jshint', 'uglify', 'less']);
 
 	grunt.registerTask('dev', ['connect:dev', 'karma:unit:start', 'watch:dev']);
-
 	grunt.registerTask('e2e', ['watch:e2e', 'protractor']);
-
 	grunt.registerTask('test', ['connect:cli', 'karma:singleRun', 'protractor']);
 
 };
