@@ -55,12 +55,6 @@ describe('Controller: GridsterItemCtrl', function() {
 			id: '1x2'
 		};
 
-
-		var $el = angular.element('<div></div>');
-		var $preview = angular.element('<div></div>');
-
-		gridster.init($el, $preview);
-
 		gridster.setOptions(config);
 		gridsterItem.init(null, gridster);
 	}));

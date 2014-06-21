@@ -79,7 +79,7 @@ describe('gridster directive', function() {
 	});
 
 	it('should override options', function() {
-		expect(GridsterCtrl.options.minRows).toBe($scope.opts.minRows);
+		expect(GridsterCtrl.minRows).toBe($scope.opts.minRows);
 	});
 
 	it('should add widgets to DOM', function() {
