@@ -24,7 +24,8 @@ angular.module('app')
 			enabled: false
 		},
 		resizable: {
-			enabled: false
+			enabled: false,
+			handles: 'n, e, s, w, se, sw'
 		}
 	};
 

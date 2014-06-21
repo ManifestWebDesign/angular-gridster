@@ -18,7 +18,8 @@ angular.module('gridster', [])
 	defaultSizeY: 1, // the default height of a item
 	mobileBreakPoint: 600, // the width threshold to toggle mobile mode
 	resizable: { // options to pass to jquery ui resizable
-		enabled: true
+		enabled: true,
+		handles: 'n, e, s, w, ne, se, sw, nw'
 	},
 	draggable: { // options to pass to jquery ui draggable
 		enabled: true
@@ -831,7 +832,7 @@ angular.module('gridster', [])
 					}
 					$el.resizable({
 						autoHide: true,
-						handles: 'n, e, s, w, ne, se, sw, nw',
+						handles: gridster.resizable.handles,
 						minHeight: gridster.minRows * gridster.curRowHeight - gridster.margins[0],
 						maxHeight: gridster.maxRows * gridster.curRowHeight - gridster.margins[0],
 						minWidth: gridster.minColumns * gridster.curColWidth - gridster.margins[1],
