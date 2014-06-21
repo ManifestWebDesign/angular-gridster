@@ -4,7 +4,10 @@ angular.module('app')
 	function($scope, $timeout) {
 		$scope.gridsterOptions = {
 			margins: [20, 20],
-			columns: 4
+			columns: 4,
+			draggable: {
+				handle: 'h3'
+			}
 		};
 
 		$scope.dashboards = {
@@ -131,7 +134,7 @@ angular.module('app')
 		$scope.submit = function() {
 			angular.extend(widget, $scope.form);
 
-			$modalInstance.close(widget)
+			$modalInstance.close(widget);
 		};
 
 	}

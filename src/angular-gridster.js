@@ -54,6 +54,18 @@ angular.module('gridster', [])
 		 */
 		this.setOptions = function(options) {
 			if (options) {
+				options = angular.extend({}, options);
+
+				// all this to avoid using jQuery...
+				if (options.draggable) {
+					angular.extend(this.draggable, options.draggable);
+					delete(options.draggable);
+				}
+				if (options.resizable) {
+					angular.extend(this.resizable, options.resizable);
+					delete(options.resizable);
+				}
+
 				angular.extend(this, options);
 				if (!this.margins || this.margins.length !== 2) {
 					this.margins = [0, 0];
@@ -513,14 +525,12 @@ angular.module('gridster', [])
 							return;
 						}
 						prevWidth = width;
-						gridster.loaded = false;
+
 						refresh();
 
 						if (typeof gridster.resizable !== 'undefined' && gridster.resizable.enabled) {
 							scope.$broadcast('gridster-resized', [width, $elem.height()]);
 						}
-
-						gridster.loaded = true;
 					}
 
 					// track element width changes any way we can
