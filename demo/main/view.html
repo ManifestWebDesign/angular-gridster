@@ -2,6 +2,14 @@
     <h2>Standard Items</h2>
     <input type="button" ng-click="gridsterOpts.draggable.enabled = !gridsterOpts.draggable.enabled" value="{{gridsterOpts.draggable.enabled ? 'Disable' : 'Enable' }} Draggability" />
     <input type="button" ng-click="gridsterOpts.resizable.enabled = !gridsterOpts.resizable.enabled" value="{{gridsterOpts.resizable.enabled ? 'Disable' : 'Enable' }} Resizability" />
+	<input type="button" ng-click="gridsterOpts.floating = !gridsterOpts.floating" value="{{gridsterOpts.floating ? 'Disable' : 'Enable' }} Floating" />
+	<input type="button" ng-click="gridsterOpts.pushing = !gridsterOpts.pushing" value="{{gridsterOpts.floating ? 'Disable' : 'Enable' }} Pushing" />
+
+	Margins:
+	<input type="text" ng-model="gridsterOpts.margins[0]" size="3" />
+	x
+	<input type="text" ng-model="gridsterOpts.margins[1]" size="3" />
+
     <p>
         Each item provides its own dimensions and position using the standard fields: { row: row, col: col, sizeX: sizeX, sizeY: sizeY }.
     </p>

@@ -4,6 +4,8 @@ angular.module('gridster', [])
 
 .constant('gridsterConfig', {
 	columns: 6, // number of columns in the grid
+	pushing: true, // whether to push other items out of the way
+	floating: true, // whether to automatically float items up so they stack
 	width: 'auto', // the width of the grid. "auto" will expand the grid to its parent container
 	colWidth: 'auto', // the width of the columns. "auto" will divide the width of the grid evenly among the columns
 	rowHeight: 'match', // the height of the rows. "match" will set the row height to be the same as the column width
@@ -289,6 +291,9 @@ angular.module('gridster', [])
 		 * Moves all items up as much as possible
 		 */
 		this.floatItemsUp = function() {
+			if (this.floating === false) {
+				return;
+			}
 			for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 				var columns = this.grid[rowIndex];
 				if (!columns) {
@@ -542,7 +547,9 @@ angular.module('gridster', [])
 
 					// allow a little time to place items before floating up
 					$timeout(function() {
-						gridster.floatItemsUp();
+						scope.$watch('gridster.floating', function() {
+							gridster.floatItemsUp();
+						});
 						gridster.loaded = true;
 					}, 100);
 				};
@@ -770,8 +777,13 @@ angular.module('gridster', [])
 							});
 						},
 						drag: function(e, widget) {
-							item.row = gridster.pixelsToRows(widget.position.top);
-							item.col = gridster.pixelsToColumns(widget.position.left);
+							var row = gridster.pixelsToRows(widget.position.top);
+							var col = gridster.pixelsToColumns(widget.position.left);
+							if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
+								item.row = row;
+								item.col = col;
+							}
+
 							scope.$apply(function() {
 								if (gridster.draggable && gridster.draggable.drag) {
 									gridster.draggable.drag(e, widget, $el);
@@ -780,8 +792,12 @@ angular.module('gridster', [])
 						},
 						stop: function(e, widget) {
 							$el.removeClass('gridster-item-moving');
-							item.row = gridster.pixelsToRows(widget.position.top);
-							item.col = gridster.pixelsToColumns(widget.position.left);
+							var row = gridster.pixelsToRows(widget.position.top);
+							var col = gridster.pixelsToColumns(widget.position.left);
+							if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
+								item.row = row;
+								item.col = col;
+							}
 							gridster.movingItem = null;
 							scope.$apply(function() {
 								if (gridster.draggable && gridster.draggable.stop) {
@@ -830,10 +846,17 @@ angular.module('gridster', [])
 							});
 						},
 						resize: function(e, widget) {
-							item.row = gridster.pixelsToRows(widget.position.top, false);
-							item.col = gridster.pixelsToColumns(widget.position.left, false);
-							item.sizeX = gridster.pixelsToColumns(widget.size.width, true);
-							item.sizeY = gridster.pixelsToRows(widget.size.height, true);
+							var row = gridster.pixelsToRows(widget.position.top, false);
+							var col = gridster.pixelsToColumns(widget.position.left, false);
+							var sizeX = gridster.pixelsToColumns(widget.size.width, true);
+							var sizeY = gridster.pixelsToRows(widget.size.height, true);
+							if (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0) {
+								item.row = row;
+								item.col = col;
+								item.sizeX = sizeX;
+								item.sizeY = sizeY;
+							}
+
 							scope.$apply(function() {
 								if (gridster.resizable && gridster.resizable.resize) {
 									gridster.resizable.resize(e, widget, $el);
@@ -842,10 +865,16 @@ angular.module('gridster', [])
 						},
 						stop: function(e, widget) {
 							$el.removeClass('gridster-item-moving');
-							item.row = gridster.pixelsToRows(widget.position.top, false);
-							item.col = gridster.pixelsToColumns(widget.position.left, false);
-							item.sizeX = gridster.pixelsToColumns(widget.size.width, true);
-							item.sizeY = gridster.pixelsToRows(widget.size.height, true);
+							var row = gridster.pixelsToRows(widget.position.top, false);
+							var col = gridster.pixelsToColumns(widget.position.left, false);
+							var sizeX = gridster.pixelsToColumns(widget.size.width, true);
+							var sizeY = gridster.pixelsToRows(widget.size.height, true);
+							if (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0) {
+								item.row = row;
+								item.col = col;
+								item.sizeX = sizeX;
+								item.sizeY = sizeY;
+							}
 							gridster.movingItem = null;
 							scope.$apply(function() {
 								if (gridster.resizable && gridster.resizable.stop) {
