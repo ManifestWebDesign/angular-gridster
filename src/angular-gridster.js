@@ -526,7 +526,13 @@ angular.module('gridster', [])
 						}
 						prevWidth = width;
 
+						if (gridster.loaded) {
+							$elem.removeClass('gridster-loaded');
+						}
 						refresh();
+						if (gridster.loaded) {
+							$elem.addClass('gridster-loaded');
+						}
 
 						if (typeof gridster.resizable !== 'undefined' && gridster.resizable.enabled) {
 							scope.$broadcast('gridster-resized', [width, $elem.height()]);

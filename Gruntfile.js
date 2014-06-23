@@ -78,7 +78,6 @@ module.exports = function(grunt) {
 			e2e: {
 				options: {
 					configFile: "ptor.conf.js",
-					keepAlive: true,
 					args: {}
 				}
 			}
@@ -112,7 +111,7 @@ module.exports = function(grunt) {
 			},
 			e2e: { // separate e2e so livereload doesn't have to wait for e2e tests
 				files: ['src/*', 'test/**/*.js'],
-				tasks: ['protractor']
+				tasks: ['jsbeautifier', 'jshint', 'uglify', 'protractor']
 			}
 		}
 	});
@@ -120,7 +119,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('default', ['jsbeautifier', 'jshint', 'uglify', 'less']);
 
 	grunt.registerTask('dev', ['connect:dev', 'karma:unit:start', 'watch:dev']);
-	grunt.registerTask('e2e', ['watch:e2e', 'protractor']);
+	grunt.registerTask('e2e', ['connect:cli', 'protractor', 'watch:e2e']);
 	grunt.registerTask('test', ['connect:cli', 'karma:singleRun', 'protractor']);
 
 };

@@ -9,8 +9,7 @@ before_script:
   - npm install --quiet -g grunt-cli karma bower protractor
   - npm install
   - bower install
-  - wget http://selenium.googlecode.com/files/selenium-server-standalone-2.31.0.jar
-  - java -jar selenium-server-standalone-2.31.0.jar > /dev/null &
+  - node ./node_modules/grunt-protractor-runner/node_modules/protractor/bin/webdriver-manager start > /dev/null &
   - sleep 5
 
 script: grunt test
