@@ -36,7 +36,9 @@ describe('gridster directive', function() {
 				stop: function() {
 					stopCount++;
 				}
-			}
+			},
+			curRowHeight: 200,
+			curColWidth: 200
 		};
 
 		$scope.dashboard = {
