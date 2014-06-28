@@ -145,6 +145,23 @@ You can also override the default configuration site wide by modifying the ```gr
 	}]);
 ```
 
+##Watching gridster element size changes
+
+When the window or gridster element are resized, all the gridster item elements are resized accordingly and this event is broadcast:
+
+```JavaScript
+$scope.$broadcast('gridster-resized', [width, height]);
+```
+
+It can be handled like this:
+
+```JavaScript
+$scope.$on('gridster-resized', function(newSizes){
+  var newWidth = sizes[0];
+  var newHeight = sizes[1];
+});
+```
+
 ##Watching item changes of size and position
 
 The typical Angular way would be to do a $scope.$watch on your item or items in the scope.  Example:
