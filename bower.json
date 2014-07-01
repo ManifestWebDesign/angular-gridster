@@ -1,6 +1,6 @@
 {
 	"name": "angular-gridster",
-	"version": "0.9.9",
+	"version": "0.9.10",
 	"main": "src/angular-gridster.js",
 	"dependencies": {
 		"angular": ">= 1.2.0",
