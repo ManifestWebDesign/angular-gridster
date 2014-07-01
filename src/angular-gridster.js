@@ -533,10 +533,6 @@ angular.module('gridster', [])
 						if (gridster.loaded) {
 							$elem.addClass('gridster-loaded');
 						}
-
-						if (typeof gridster.resizable !== 'undefined' && gridster.resizable.enabled) {
-							scope.$broadcast('gridster-resized', [width, $elem.height()]);
-						}
 					}
 
 					// track element width changes any way we can
@@ -827,15 +823,6 @@ angular.module('gridster', [])
 					});
 				}
 
-				function updateResizableDimensions(enabled) {
-					if (resizablePossible && enabled) {
-						$el.resizable('option', 'minHeight', gridster.minRows * gridster.curRowHeight - gridster.margins[0]);
-						$el.resizable('option', 'maxHeight', gridster.maxRows * gridster.curRowHeight - gridster.margins[0]);
-						$el.resizable('option', 'minWidth', gridster.minColumns * gridster.curColWidth - gridster.margins[1]);
-						$el.resizable('option', 'maxWidth', gridster.columns * gridster.curColWidth - gridster.margins[1]);
-					}
-				}
-
 				function setResizable() {
 					if (!resizablePossible) {
 						return;
@@ -958,10 +945,25 @@ angular.module('gridster', [])
 				scope.$watch(function() {
 					return item.col;
 				}, positionChanged);
+				scope.$watch(function() {
+					return gridster.options.curRowHeight;
+				}, function(newRowHeight, oldRowHeight) {
+					if (newRowHeight !== oldRowHeight && resizablePossible) {
+						$el.resizable('option', 'minHeight', gridster.options.minRows * newRowHeight - gridster.options.margins[0]);
+						$el.resizable('option', 'maxHeight', gridster.options.maxRows * newRowHeight - gridster.options.margins[0]);
+					}
+				});
+				scope.$watch(function() {
+					return gridster.options.curColWidth;
+				}, function(newColWidth, oldColWidth) {
+					if (newColWidth !== oldColWidth && resizablePossible) {
+						$el.resizable('option', 'minWidth', gridster.options.minColumns * newColWidth - gridster.options.margins[1]);
+						$el.resizable('option', 'maxWidth', gridster.options.columns * newColWidth - gridster.options.margins[1]);
+					}
+				});
 
 				scope.$on('gridster-draggable-changed', setDraggable);
 				scope.$on('gridster-resizable-changed', setResizable);
-				scope.$on('gridster-resized', updateResizableDimensions);
 
 				setDraggable();
 				setResizable();
