@@ -34,6 +34,9 @@ angular.module('gridster', [])
 		 */
 		angular.extend(this, gridsterConfig);
 
+		this.resizable = angular.extend({}, gridsterConfig.resizable || {});
+		this.draggable = angular.extend({}, gridsterConfig.draggable || {});
+
 		/**
 		 * A positional array of the items in the grid
 		 */
@@ -53,28 +56,31 @@ angular.module('gridster', [])
 		 * @param {object} options The options to override
 		 */
 		this.setOptions = function(options) {
-			if (options) {
-				options = angular.extend({}, options);
+			if (!options) {
+				return;
+			}
 
-				// all this to avoid using jQuery...
-				if (options.draggable) {
-					angular.extend(this.draggable, options.draggable);
-					delete(options.draggable);
-				}
-				if (options.resizable) {
-					angular.extend(this.resizable, options.resizable);
-					delete(options.resizable);
-				}
+			options = angular.extend({}, options);
 
-				angular.extend(this, options);
-				if (!this.margins || this.margins.length !== 2) {
-					this.margins = [0, 0];
-				} else {
-					for (var x = 0, l = this.margins.length; x < l; ++x) {
-						this.margins[x] = parseInt(this.margins[x], 10);
-						if (isNaN(this.margins[x])) {
-							this.margins[x] = 0;
-						}
+			// all this to avoid using jQuery...
+			if (options.draggable) {
+				angular.extend(this.draggable, options.draggable);
+				delete(options.draggable);
+			}
+			if (options.resizable) {
+				angular.extend(this.resizable, options.resizable);
+				delete(options.resizable);
+			}
+
+			angular.extend(this, options);
+
+			if (!this.margins || this.margins.length !== 2) {
+				this.margins = [0, 0];
+			} else {
+				for (var x = 0, l = this.margins.length; x < l; ++x) {
+					this.margins[x] = parseInt(this.margins[x], 10);
+					if (isNaN(this.margins[x])) {
+						this.margins[x] = 0;
 					}
 				}
 			}
@@ -534,9 +540,7 @@ angular.module('gridster', [])
 							$elem.addClass('gridster-loaded');
 						}
 
-						if (typeof gridster.resizable !== 'undefined' && gridster.resizable.enabled) {
-							scope.$broadcast('gridster-resized', [width, $elem.height()]);
-						}
+						scope.$broadcast('gridster-resized', [width, $elem.height()]);
 					}
 
 					// track element width changes any way we can
@@ -827,7 +831,8 @@ angular.module('gridster', [])
 					});
 				}
 
-				function updateResizableDimensions(enabled) {
+				function updateResizableDimensions() {
+					var enabled = typeof gridster.resizable !== 'undefined' || gridster.resizable.enabled;
 					if (resizablePossible && enabled) {
 						$el.resizable('option', 'minHeight', gridster.minRows * gridster.curRowHeight - gridster.margins[0]);
 						$el.resizable('option', 'maxHeight', gridster.maxRows * gridster.curRowHeight - gridster.margins[0]);
