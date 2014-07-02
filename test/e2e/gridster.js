@@ -54,12 +54,12 @@ describe('Controller: GridsterCtrl', function() {
 			expect(size.width).toBe(307);
 			expect(size.height).toBe(143);
 		});
-//		.then(function() {
-//			browser.driver.manage().window().setSize(1000, 1000);
-//			firstItem.getSize().then(function(size) {
-//				expect(size.width).toBe(271);
-//				expect(size.height).toBe(126);
-//			});
-//		});
+		//		.then(function() {
+		//			browser.driver.manage().window().setSize(1000, 1000);
+		//			firstItem.getSize().then(function(size) {
+		//				expect(size.width).toBe(271);
+		//				expect(size.height).toBe(126);
+		//			});
+		//		});
 	});
 });
