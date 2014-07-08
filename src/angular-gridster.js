@@ -713,7 +713,7 @@ angular.module('gridster', [])
 	 */
 	this.setElementSizeY = function() {
 		if (this.gridster.isMobile) {
-			this.$element.css('height', 'auto');
+			this.$element.css('height', '');
 		} else {
 			this.$element.css('height', this.sizeY * this.gridster.curRowHeight - this.gridster.margins[0]);
 		}
