@@ -250,10 +250,26 @@ describe('GridsterCtrl', function() {
 			GridsterCtrl.putItem(item1x2, 1, 1);
 			GridsterCtrl.floatItemsUp();
 
-			// verify they are still where we put them
-			expect(GridsterCtrl.getItem(2, 0)).toBe(item2x2);
-			expect(GridsterCtrl.getItem(0, 0)).toBe(item1x1);
-			expect(GridsterCtrl.getItem(0, 1)).toBe(item1x2);
+			expect(item2x2.row).toBe(2);
+			expect(item2x2.col).toBe(0);
+
+			expect(GridsterCtrl.getItem(4, 0)).toBe(item1x1);
+
+			expect(item1x2.row).toBe(0);
+			expect(item1x2.col).toBe(1);
+		});
+
+		it('should correctly push items down', function() {
+			GridsterCtrl.putItem(item1x2, 0, 0);
+			GridsterCtrl.putItem(item2x1, 0, 1);
+			GridsterCtrl.putItem(item1x1, 1, 2);
+
+			item1x2.sizeX = 2;
+			GridsterCtrl.moveOverlappingItems(item1x2);
+
+			expect(GridsterCtrl.getItem(0, 0)).toBe(item1x2);
+			expect(GridsterCtrl.getItem(2, 1)).toBe(item2x1);
+			expect(GridsterCtrl.getItem(3, 2)).toBe(item1x1);
 		});
 	});
 });

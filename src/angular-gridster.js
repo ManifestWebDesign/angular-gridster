@@ -218,8 +218,9 @@ angular.module('gridster', [])
 		 * @param {object} item The item to insert
 		 * @param {number} row (Optional) Specifies the items row index
 		 * @param {number} column (Optional) Specifies the items column index
+		 * @param {array} ignoreItems
 		 */
-		this.putItem = function(item, row, column) {
+		this.putItem = function(item, row, column, ignoreItems) {
 			if (typeof row === 'undefined' || row === null) {
 				row = item.row;
 				column = item.col;
@@ -250,7 +251,7 @@ angular.module('gridster', [])
 			item.oldRow = item.row = row;
 			item.oldColumn = item.col = column;
 
-			this.moveOverlappingItems(item);
+			this.moveOverlappingItems(item, ignoreItems);
 
 			if (!this.grid[row]) {
 				this.grid[row] = [];
@@ -262,28 +263,39 @@ angular.module('gridster', [])
 		 * Prevents items from being overlapped
 		 *
 		 * @param {object} item The item that should remain
+		 * @param {array} ignoreItems
 		 */
-		this.moveOverlappingItems = function(item) {
-			var items = this.getItems(
+		this.moveOverlappingItems = function(item, ignoreItems) {
+			if (ignoreItems) {
+				if (ignoreItems.indexOf(item) === -1) {
+					ignoreItems = ignoreItems.slice(0);
+					ignoreItems.push(item);
+				}
+			} else {
+				ignoreItems = [item];
+			}
+			var overlappingItems = this.getItems(
 				item.row,
 				item.col,
 				item.sizeX,
 				item.sizeY,
-				item
+				ignoreItems
 			);
-			this.moveItemsDown(items, item.row + item.sizeY);
+			this.moveItemsDown(overlappingItems, item.row + item.sizeY, ignoreItems);
 		};
 
 		/**
 		 * Moves an array of items to a specified row
 		 *
 		 * @param {array} items The items to move
-		 * @param {number} row The target row
+		 * @param {number} newRow The target row
+		 * @param {array} ignoreItems
 		 */
-		this.moveItemsDown = function(items, row) {
+		this.moveItemsDown = function(items, newRow, ignoreItems) {
 			if (!items || items.length === 0) {
 				return;
 			}
+			ignoreItems = ignoreItems ? ignoreItems.concat(items) : items.slice(0);
 			var topRows = {},
 				item, i, l;
 			// calculate the top rows in each column
@@ -297,12 +309,15 @@ angular.module('gridster', [])
 			// move each item down from the top row in its column to the row
 			for (i = 0, l = items.length; i < l; ++i) {
 				item = items[i];
-				var columnOffset = row - topRows[item.col];
-				this.putItem(
-					item,
-					item.row + columnOffset,
-					item.col
-				);
+				var rowsToMove = newRow - topRows[item.col];
+				this.moveItemDown(item, item.row + rowsToMove, ignoreItems);
+			}
+		};
+
+		this.moveItemDown = function(item, newRow, ignoreItems) {
+			while (item.row < newRow) {
+				++item.row;
+				this.putItem(item, item.row, item.col, ignoreItems);
 			}
 		};
 
@@ -787,17 +802,17 @@ angular.module('gridster', [])
 					$el.draggable({
 						handle: gridster.draggable && gridster.draggable.handle ? gridster.draggable.handle : null,
 						refreshPositions: true,
-						start: function(e, widget) {
+						start: function(event, widget) {
 							$el.addClass('gridster-item-moving');
 							gridster.movingItem = item;
 							gridster.updateHeight(item.sizeY);
 							scope.$apply(function() {
 								if (gridster.draggable && gridster.draggable.start) {
-									gridster.draggable.start(e, widget, $el);
+									gridster.draggable.start(event, widget, $el);
 								}
 							});
 						},
-						drag: function(e, widget) {
+						drag: function(event, widget) {
 							var row = gridster.pixelsToRows(widget.position.top);
 							var col = gridster.pixelsToColumns(widget.position.left);
 							if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
@@ -807,11 +822,11 @@ angular.module('gridster', [])
 
 							scope.$apply(function() {
 								if (gridster.draggable && gridster.draggable.drag) {
-									gridster.draggable.drag(e, widget, $el);
+									gridster.draggable.drag(event, widget, $el);
 								}
 							});
 						},
-						stop: function(e, widget) {
+						stop: function(event, widget) {
 							$el.removeClass('gridster-item-moving');
 							var row = gridster.pixelsToRows(widget.position.top);
 							var col = gridster.pixelsToColumns(widget.position.left);
@@ -822,7 +837,7 @@ angular.module('gridster', [])
 							gridster.movingItem = null;
 							scope.$apply(function() {
 								if (gridster.draggable && gridster.draggable.stop) {
-									gridster.draggable.stop(e, widget, $el);
+									gridster.draggable.stop(event, widget, $el);
 								}
 							});
 							item.setPosition(item.row, item.col);
@@ -838,6 +853,7 @@ angular.module('gridster', [])
 						$el.resizable('option', 'maxHeight', gridster.maxRows * gridster.curRowHeight - gridster.margins[0]);
 						$el.resizable('option', 'minWidth', gridster.minColumns * gridster.curColWidth - gridster.margins[1]);
 						$el.resizable('option', 'maxWidth', gridster.columns * gridster.curColWidth - gridster.margins[1]);
+						//						$el.resizable('option', 'grid', [gridster.curColWidth, gridster.curRowHeight]);
 					}
 				}
 
@@ -851,6 +867,21 @@ angular.module('gridster', [])
 						} catch (e) {}
 						return;
 					}
+
+					function handleResize(event, widget) {
+						var row = gridster.pixelsToRows(widget.position.top + 1 - gridster.margins[0], false),
+							col = gridster.pixelsToColumns(widget.position.left + 1 - gridster.margins[1], false),
+							sizeY = gridster.pixelsToRows(widget.size.height - 1 + gridster.margins[0] / 2, true),
+							sizeX = gridster.pixelsToColumns(widget.size.width - 1 + gridster.margins[1] / 2, true);
+
+						if (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0) {
+							item.row = row;
+							item.col = col;
+							item.sizeX = sizeX;
+							item.sizeY = sizeY;
+						}
+					}
+
 					$el.resizable({
 						autoHide: true,
 						handles: gridster.resizable.handles,
@@ -858,49 +889,33 @@ angular.module('gridster', [])
 						maxHeight: gridster.maxRows * gridster.curRowHeight - gridster.margins[0],
 						minWidth: gridster.minColumns * gridster.curColWidth - gridster.margins[1],
 						maxWidth: gridster.columns * gridster.curColWidth - gridster.margins[1],
-						start: function(e, widget) {
+						//						grid: [gridster.curColWidth, gridster.curRowHeight],
+						start: function(event, widget) {
 							$el.addClass('gridster-item-moving');
 							gridster.movingItem = item;
 							scope.$apply(function() {
 								if (gridster.resizable && gridster.resizable.start) {
-									gridster.resizable.start(e, widget, $el);
+									gridster.resizable.start(event, widget, $el);
 								}
 							});
 						},
-						resize: function(e, widget) {
-							var row = gridster.pixelsToRows(widget.position.top, false);
-							var col = gridster.pixelsToColumns(widget.position.left, false);
-							var sizeX = gridster.pixelsToColumns(widget.size.width, true);
-							var sizeY = gridster.pixelsToRows(widget.size.height, true);
-							if (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0) {
-								item.row = row;
-								item.col = col;
-								item.sizeX = sizeX;
-								item.sizeY = sizeY;
-							}
+						resize: function(event, widget) {
+							handleResize(event, widget);
 
 							scope.$apply(function() {
 								if (gridster.resizable && gridster.resizable.resize) {
-									gridster.resizable.resize(e, widget, $el);
+									gridster.resizable.resize(event, widget, $el);
 								}
 							});
 						},
-						stop: function(e, widget) {
+						stop: function(event, widget) {
 							$el.removeClass('gridster-item-moving');
-							var row = gridster.pixelsToRows(widget.position.top, false);
-							var col = gridster.pixelsToColumns(widget.position.left, false);
-							var sizeX = gridster.pixelsToColumns(widget.size.width, true);
-							var sizeY = gridster.pixelsToRows(widget.size.height, true);
-							if (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0) {
-								item.row = row;
-								item.col = col;
-								item.sizeX = sizeX;
-								item.sizeY = sizeY;
-							}
+							handleResize(event, widget);
+
 							gridster.movingItem = null;
 							scope.$apply(function() {
 								if (gridster.resizable && gridster.resizable.stop) {
-									gridster.resizable.stop(e, widget, $el);
+									gridster.resizable.stop(event, widget, $el);
 								}
 							});
 							item.setPosition(item.row, item.col);
