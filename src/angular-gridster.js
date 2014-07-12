@@ -317,8 +317,9 @@ angular.module('gridster', [])
 		this.moveItemDown = function(item, newRow, ignoreItems) {
 			while (item.row < newRow) {
 				++item.row;
-				this.putItem(item, item.row, item.col, ignoreItems);
+				this.moveOverlappingItems(item, ignoreItems);
 			}
+			this.putItem(item, item.row, item.col, ignoreItems);
 		};
 
 		/**
