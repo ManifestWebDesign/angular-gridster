@@ -296,7 +296,10 @@ angular.module('gridster', [])
 			if (!items || items.length === 0) {
 				return;
 			}
-			ignoreItems = ignoreItems ? ignoreItems.concat(items) : items.slice(0);
+			items.sort(function(a, b) {
+				return a.row - b.row;
+			});
+			ignoreItems = ignoreItems ? ignoreItems.slice(0) : [];
 			var topRows = {},
 				item, i, l;
 			// calculate the top rows in each column
@@ -312,10 +315,14 @@ angular.module('gridster', [])
 				item = items[i];
 				var rowsToMove = newRow - topRows[item.col];
 				this.moveItemDown(item, item.row + rowsToMove, ignoreItems);
+				ignoreItems.push(item);
 			}
 		};
 
 		this.moveItemDown = function(item, newRow, ignoreItems) {
+			if (item.row >= newRow) {
+				return;
+			}
 			while (item.row < newRow) {
 				++item.row;
 				this.moveOverlappingItems(item, ignoreItems);
