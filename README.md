@@ -111,6 +111,7 @@ Simply pass your desired options to the gridster directive
 		colWidth: 'auto', // can be an integer or 'auto'.  'auto' uses the pixel width of the element divided by 'columns'
 		rowHeight: 'match', // can be an integer or 'match'.  Match uses the colWidth, giving you square widgets.
 		margins: [10, 10], // the pixel distance between each widget
+		outerMargin: true, // whether margins apply to outer edges of the grid
 		isMobile: false, // stacks the grid items if true
 		minColumns: 1, // the minimum columns the grid must have
 		minRows: 2, // the minimum height of the grid, in rows

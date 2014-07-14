@@ -18,6 +18,7 @@ angular.module('app')
 
 	$scope.gridsterOpts = {
 		margins: [20, 20],
+		outerMargin: false,
 		pushing: true,
 		floating: true,
 		draggable: {

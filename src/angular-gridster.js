@@ -10,6 +10,7 @@ angular.module('gridster', [])
 	colWidth: 'auto', // the width of the columns. "auto" will divide the width of the grid evenly among the columns
 	rowHeight: 'match', // the height of the rows. "match" will set the row height to be the same as the column width
 	margins: [10, 10], // the margins in between grid items
+	outerMargin: true,
 	isMobile: false, // toggle mobile view
 	minColumns: 1, // the minimum amount of columns the grid can scale down to
 	minRows: 1, // the minimum amount of rows to show if the grid is empty
@@ -476,8 +477,8 @@ angular.module('gridster', [])
 							display: 'block',
 							height: item.sizeY * gridster.curRowHeight - gridster.margins[0],
 							width: item.sizeX * gridster.curColWidth - gridster.margins[1],
-							top: gridster.movingItem.row * gridster.curRowHeight + gridster.margins[0],
-							left: gridster.movingItem.col * gridster.curColWidth + gridster.margins[1]
+							top: gridster.movingItem.row * gridster.curRowHeight + (gridster.outerMargin ? gridster.margins[0] : 0),
+							left: gridster.movingItem.col * gridster.curColWidth + (gridster.outerMargin ? gridster.margins[1] : 0)
 						};
 					};
 
@@ -491,7 +492,7 @@ angular.module('gridster', [])
 							gridster.curWidth = gridster.width;
 						}
 						if (gridster.colWidth === 'auto') {
-							gridster.curColWidth = (gridster.curWidth - gridster.margins[1]) / gridster.columns;
+							gridster.curColWidth = (gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns;
 						} else {
 							gridster.curColWidth = gridster.colWidth;
 						}
@@ -535,6 +536,7 @@ angular.module('gridster', [])
 
 					var updateHeight = function() {
 						$elem.css('height', (gridster.gridHeight * gridster.curRowHeight) + gridster.margins[0] + 'px');
+						$elem.css('height', (gridster.gridHeight * gridster.curRowHeight) + (gridster.outerMargin ? gridster.margins[0] : -gridster.margins[0]) + 'px');
 					};
 
 					scope.$watch('gridster.gridHeight', updateHeight);
@@ -718,8 +720,8 @@ angular.module('gridster', [])
 		} else {
 			this.$element.css({
 				margin: 0,
-				top: this.row * this.gridster.curRowHeight + this.gridster.margins[0],
-				left: this.col * this.gridster.curColWidth + this.gridster.margins[1]
+				top: this.row * this.gridster.curRowHeight + (this.gridster.outerMargin ? this.gridster.margins[0] : 0),
+				left: this.col * this.gridster.curColWidth + (this.gridster.outerMargin ? this.gridster.margins[1] : 0)
 			});
 		}
 	};
