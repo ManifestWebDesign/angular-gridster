@@ -872,8 +872,8 @@ angular.module('gridster', [])
 					}
 
 					function handleResize(event, widget) {
-						var row = gridster.pixelsToRows(widget.position.top + 1 - gridster.margins[0], false),
-							col = gridster.pixelsToColumns(widget.position.left + 1 - gridster.margins[1], false),
+						var row = gridster.pixelsToRows(widget.position.top + 1 - (gridster.outerMargin ? gridster.margins[0] : 0), false),
+							col = gridster.pixelsToColumns(widget.position.left + 1 - (gridster.outerMargin ? gridster.margins[1] : 0), false),
 							sizeY = gridster.pixelsToRows(widget.size.height - 1 + gridster.margins[0] / 2, true),
 							sizeX = gridster.pixelsToColumns(widget.size.width - 1 + gridster.margins[1] / 2, true);
 
