@@ -611,6 +611,8 @@ angular.module('gridster', [])
 	this.col = null;
 	this.sizeX = null;
 	this.sizeY = null;
+	this.maxSizeX = null;
+	this.maxSizeY = null;
 
 	this.init = function($element, gridster) {
 		this.$element = $element;
@@ -632,7 +634,9 @@ angular.module('gridster', [])
 			row: this.row,
 			col: this.col,
 			sizeY: this.sizeY,
-			sizeX: this.sizeX
+			sizeX: this.sizeX,
+			maxSizeX: this.maxSizeX,
+			maxSizeY: this.maxSizeY
 		};
 	};
 
@@ -896,9 +900,9 @@ angular.module('gridster', [])
 						autoHide: true,
 						handles: gridster.resizable.handles,
 						minHeight: gridster.minRows * gridster.curRowHeight - gridster.margins[0],
-						maxHeight: gridster.maxRows * gridster.curRowHeight - gridster.margins[0],
+						maxHeight: (Math.min(gridster.maxRows, (item.maxSizeY === null ? Infinity : item.maxSizeY))) * gridster.curRowHeight - gridster.margins[0],
 						minWidth: gridster.minColumns * gridster.curColWidth - gridster.margins[1],
-						maxWidth: gridster.columns * gridster.curColWidth - gridster.margins[1],
+						maxWidth: (Math.min(gridster.columns, (item.maxSizeX === null ? Infinity : item.maxSizeX))) * gridster.curColWidth - gridster.margins[1],
 						//						grid: [gridster.curColWidth, gridster.curRowHeight],
 						start: function(event, widget) {
 							$el.addClass('gridster-item-moving');
@@ -935,7 +939,7 @@ angular.module('gridster', [])
 					});
 				}
 
-				var aspects = ['sizeX', 'sizeY', 'row', 'col'],
+				var aspects = ['sizeX', 'sizeY', 'row', 'col', 'maxSizeX', 'maxSizeY'],
 					$getters = {};
 
 				var aspectFn = function(aspect) {
