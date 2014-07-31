@@ -450,7 +450,7 @@ angular.module('gridster', [])
 			// without transclude, some child items may lose their parent scope
 			transclude: true,
 			replace: true,
-			template: '<div ng-class="gridsterClass()"><div ng-style="previewStyle()" class="gridster-item gridster-preview-holder"></div><div ng-transclude></div></div>',
+			template: '<div ng-class="gridsterClass()">{{ gridster.grid | json }}<div ng-style="previewStyle()" class="gridster-item gridster-preview-holder"></div><div ng-transclude></div></div>',
 			controller: 'GridsterCtrl',
 			controllerAs: 'gridster',
 			scope: {
@@ -993,8 +993,15 @@ angular.module('gridster', [])
 				scope.$on('gridster-resizable-changed', setResizable);
 				scope.$on('gridster-resized', updateResizableDimensions);
 
+				var startPosCss = $el.css('position');
+
 				setDraggable();
 				setResizable();
+
+				// undo jquery ui position relative strangeness
+				if (startPosCss && startPosCss !== 'absolute') {
+					$el.css('position', '');
+				}
 
 				scope.$watch(function() {
 					return item.sizeY;
