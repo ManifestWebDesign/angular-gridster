@@ -450,7 +450,7 @@ angular.module('gridster', [])
 			// without transclude, some child items may lose their parent scope
 			transclude: true,
 			replace: true,
-			template: '<div ng-class="gridsterClass()">{{ gridster.grid | json }}<div ng-style="previewStyle()" class="gridster-item gridster-preview-holder"></div><div ng-transclude></div></div>',
+			template: '<div ng-class="gridsterClass()"><div ng-style="previewStyle()" class="gridster-item gridster-preview-holder"></div><div ng-transclude></div></div>',
 			controller: 'GridsterCtrl',
 			controllerAs: 'gridster',
 			scope: {
