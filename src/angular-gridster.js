@@ -12,12 +12,13 @@ angular.module('gridster', [])
 	margins: [10, 10], // the margins in between grid items
 	outerMargin: true,
 	isMobile: false, // toggle mobile view
+	mobileBreakPoint: 600, // the width threshold to toggle mobile mode
+	mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
 	minColumns: 1, // the minimum amount of columns the grid can scale down to
 	minRows: 1, // the minimum amount of rows to show if the grid is empty
 	maxRows: 100, // the maximum amount of rows in the grid
 	defaultSizeX: 2, // the default width of a item
 	defaultSizeY: 1, // the default height of a item
-	mobileBreakPoint: 600, // the width threshold to toggle mobile mode
 	resizable: { // options to pass to jquery ui resizable
 		enabled: true,
 		handles: 'n, e, s, w, ne, se, sw, nw'
@@ -509,7 +510,7 @@ angular.module('gridster', [])
 							gridster.curRowHeight = gridster.rowHeight;
 						}
 
-						gridster.isMobile = gridster.curWidth <= gridster.mobileBreakPoint;
+						gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
 
 						// loop through all items and reset their CSS
 						for (var rowIndex = 0, l = gridster.grid.length; rowIndex < l; ++rowIndex) {
@@ -720,9 +721,12 @@ angular.module('gridster', [])
 	this.setElementPosition = function() {
 		if (this.gridster.isMobile) {
 			this.$element.css({
-				margin: this.gridster.margins[0] + 'px',
-				top: 'auto',
-				left: 'auto'
+				marginLeft: this.gridster.margins[0] + 'px',
+				marginRight: this.gridster.margins[0] + 'px',
+				marginTop: this.gridster.margins[1] + 'px',
+				marginBottom: this.gridster.margins[1] + 'px',
+				top: '',
+				left: ''
 			});
 		} else {
 			this.$element.css({
@@ -749,7 +753,7 @@ angular.module('gridster', [])
 	 */
 	this.setElementSizeX = function() {
 		if (this.gridster.isMobile) {
-			this.$element.css('width', 'auto');
+			this.$element.css('width', '');
 		} else {
 			this.$element.css('width', this.sizeX * this.gridster.curColWidth - this.gridster.margins[1]);
 		}
