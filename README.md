@@ -113,12 +113,13 @@ Simply pass your desired options to the gridster directive
 		margins: [10, 10], // the pixel distance between each widget
 		outerMargin: true, // whether margins apply to outer edges of the grid
 		isMobile: false, // stacks the grid items if true
+		mobileBreakPoint: 600, // if the screen is not wider that this, remove the grid layout and stack the items
+		mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
 		minColumns: 1, // the minimum columns the grid must have
 		minRows: 2, // the minimum height of the grid, in rows
 		maxRows: 100,
 		defaultSizeX: 2, // the default width of a gridster item, if not specifed
 		defaultSizeY: 1, // the default height of a gridster item, if not specified
-		mobileBreakPoint: 600, // if the screen is not wider that this, remove the grid layout and stack the items
 		resizable: {
 		   enabled: true,
 		   handles: 'n, e, s, w, ne, se, sw, nw',
