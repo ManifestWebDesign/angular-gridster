@@ -902,7 +902,7 @@ angular.module('gridster', [])
 						minHeight: gridster.minRows * gridster.curRowHeight - gridster.margins[0],
 						maxHeight: gridster.maxRows * gridster.curRowHeight - gridster.margins[0],
 						minWidth: gridster.minColumns * gridster.curColWidth - gridster.margins[1],
-						maxWidth: gridster.columns * gridster.curColWidth - gridster.margins[1],
+						maxWidth: (gridster.columns - (item.col || 0)) * gridster.curColWidth - gridster.margins[1],
 						//						grid: [gridster.curColWidth, gridster.curRowHeight],
 						start: function(event, widget) {
 							$el.addClass('gridster-item-moving');
@@ -984,6 +984,7 @@ angular.module('gridster', [])
 					}
 					if ($getters.col && $getters.col.assign) {
 						$getters.col.assign(scope, item.col);
+						setResizable();
 					}
 				}
 				scope.$watch(function() {
