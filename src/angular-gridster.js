@@ -97,7 +97,7 @@ angular.module('gridster', [])
 		 * @returns {boolean} True if if item fits
 		 */
 		this.canItemOccupy = function(item, row, column) {
-			return row > -1 && column > -1 && item.sizeX + column <= this.columns;
+			return row > -1 && column > -1 && item.sizeX + column <= this.columns && item.sizeY + row <= this.maxRows;
 		};
 
 		/**
@@ -233,7 +233,7 @@ angular.module('gridster', [])
 			}
 			if (!this.canItemOccupy(item, row, column)) {
 				column = Math.min(this.columns - item.sizeX, Math.max(0, column));
-				row = Math.max(0, row);
+				row = Math.min(this.maxRows - item.sizeY, Math.max(0, row));
 			}
 
 			if (item && item.oldRow !== null && typeof item.oldRow !== 'undefined') {
