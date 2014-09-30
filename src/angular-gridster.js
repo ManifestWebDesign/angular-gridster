@@ -767,8 +767,8 @@ angular.module('gridster', [])
  * @param {object} $controller
  * @param {object} $timeout
  */
-.directive('gridsterItem', ['$parse',
-	function($parse) {
+.directive('gridsterItem', ['$parse', '$rootScope',
+	function($parse, $rootScope) {
 		return {
 			restrict: 'EA',
 			controller: 'GridsterItemCtrl',
@@ -856,6 +856,7 @@ angular.module('gridster', [])
 							});
 							item.setPosition(item.row, item.col);
 							gridster.updateHeight();
+							$rootScope.$broadcast('gridster-item-changed', item);
 						}
 					});
 				}
@@ -935,6 +936,7 @@ angular.module('gridster', [])
 							item.setPosition(item.row, item.col);
 							item.setSizeY(item.sizeY);
 							item.setSizeX(item.sizeX);
+							$rootScope.$broadcast('gridster-item-changed', item);
 						}
 					});
 				}
