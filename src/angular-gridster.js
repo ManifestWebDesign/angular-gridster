@@ -495,7 +495,7 @@ angular.module('gridster', [])
 
 						// resolve "auto" & "match" values
 						if (gridster.width === 'auto') {
-							gridster.curWidth = parseInt($elem.css('width')) || parseInt($elem.prop('offsetWidth'));
+							gridster.curWidth = parseInt($elem.css('width')) || $elem.prop('offsetWidth');
 						} else {
 							gridster.curWidth = gridster.width;
 						}
@@ -551,7 +551,7 @@ angular.module('gridster', [])
 					var prevWidth = parseInt($elem.css('width')) || $elem.prop('offsetWidth');
 
 					function resize() {
-						var width = parseFloat($elem.css('width')) || $elem.prop('offsetWidth');
+						var width = parseInt($elem.css('width')) || $elem.prop('offsetWidth');
 
 						if (width === prevWidth || gridster.movingItem) {
 							return;
@@ -803,6 +803,18 @@ angular.module('gridster', [])
 
 				$el.addClass('gridster-item');
 
+				function getDragHandle() {
+					if (gridster.draggable.handle) {
+						return angular.element($el[0].querySelector(gridster.draggable.handle));
+					}
+
+					return $el;
+				}
+
+				function getResizeHandles() {
+					return $el[0].querySelectorAll('.gridster-item-resizable-handler');
+				}
+
 				function setDraggable() {
 					var elmX, elmY, elmW, elmH,
 
@@ -821,19 +833,9 @@ angular.module('gridster', [])
 					var originalCol, originalRow;
 
 					function mouseDown(e) {
-						// if there is no handle mousedown event will be bound
-						// to the $el so the $el will be moved no mater where 
-						// you click on it. WARNING: This will be a handler
-						// for all children elements so for example you will not have
-						// a focus on input fields.
-						// If you need to interact with children elements you'll need to
-						// have a handle. But in this case you can drag the $el only by
-						// clicking on the handle.
-						//if (fluidGrid.draggable.handle) {
 						if (e.currentTarget !== e.target) {
 							return;
 						}
-						//}
 
 						lastMouseX = e.pageX;
 						lastMouseY = e.pageY;
@@ -956,13 +958,6 @@ angular.module('gridster', [])
 						gridster.updateHeight();
 					}
 
-					function getDragHandle() {
-						if (gridster.draggable.handle) {
-							return angular.element($el[0].querySelector(gridster.draggable.handle));
-						}
-
-						return $el;
-					}
 
 					var dragHandle = getDragHandle();
 
@@ -987,7 +982,7 @@ angular.module('gridster', [])
 */
 
 				function setResizable() {
-					gridster.resizable.handles.forEach(function(handleClass) {
+					function resizeHandler(handleClass) {
 
 						var hClass = handleClass;
 
@@ -1185,7 +1180,11 @@ angular.module('gridster', [])
 							}
 						}
 
-					});
+					}
+
+					for (var c = 0, l = gridster.resizable.handles.length; c < l; c++) {
+						resizeHandler(gridster.resizable.handles[c]);
+					}
 
 				}
 
@@ -1269,8 +1268,25 @@ angular.module('gridster', [])
 
 				return scope.$on('$destroy', function() {
 					try {
+						// get all resize handles (children of this $el)
+						var domEl = getResizeHandles();
+
+						if (domEl.length) {
+							for (var i = 0, j = domEl.length; i < j; i++) {
+								// unbind all handlers
+								angular.element(domEl[i]).unbind();
+							}
+
+							// remove all of them
+							angular.element(domEl).remove();
+						}
+
+						// unbind drag handler
+						getDragHandle().unbind();
+
 						gridster.removeItem(item);
 					} catch (e) {}
+
 					try {
 						item.destroy();
 					} catch (e) {}
