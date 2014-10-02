@@ -27,7 +27,7 @@ describe('gridster directive', function() {
 			minRows: 3,
 			resizable: {
 				enabled: true,
-				handles: 'n, e, s, w, se, sw',
+				handles: ['n', 'e', 's', 'w', 'se', 'sw'],
 				start: function() {
 					startCount++;
 				},
@@ -89,13 +89,12 @@ describe('gridster directive', function() {
 
 	it('should initialize resizable', function() {
 		var $widget = $el.find('li:first-child');
-		expect($widget.hasClass('ui-resizable')).toBe(true);
-		expect($widget.find('.ui-resizable-e').length).toBe(1);
+		expect($widget.find('.handle-n').length).toBe(1);
 	});
 
 	it('should update widget dimensions on resize & trigger custom resize events', function() {
 		var $widget = $el.find('li:first-child');
-		var handle = $widget.find('.ui-resizable-e');
+		var handle = $widget.find('.handle-e');
 
 		expect($widget.width()).toBe(155);
 		expect($scope.dashboard.widgets[0].sizeX).toBe(1);

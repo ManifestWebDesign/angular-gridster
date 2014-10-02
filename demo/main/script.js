@@ -26,7 +26,7 @@ angular.module('app')
 		},
 		resizable: {
 			enabled: false,
-			handles: 'n, e, s, w, se, sw'
+			handles: ['n', 'e', 's', 'w', 'se', 'sw']
 		}
 	};
 
