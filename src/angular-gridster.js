@@ -453,7 +453,7 @@ angular.module('gridster', [])
 			// without transclude, some child items may lose their parent scope
 			transclude: true,
 			replace: true,
-			template: '<div ng-class="gridsterClass()"><div ng-style="previewStyle()" class="gridster-item gridster-preview-holder"></div><div ng-transclude></div></div>',
+			template: '<div ng-class="gridsterClass()"><div ng-style="previewStyle()" class="gridster-item gridster-preview-holder"></div><div class="gridster-content" ng-transclude></div></div>',
 			controller: 'GridsterCtrl',
 			controllerAs: 'gridster',
 			scope: {
@@ -1009,7 +1009,7 @@ angular.module('gridster', [])
 						var originalWidth, originalHeight;
 
 						function mouseDown(e) {
-							// Get the current mouse position. 
+							// Get the current mouse position.
 							lastMouseX = e.pageX;
 							lastMouseY = e.pageY;
 
