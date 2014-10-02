@@ -1,11 +1,10 @@
 {
 	"name": "angular-gridster",
 	"version": "0.9.19",
-	"main": "src/angular-gridster.js",
+	"main": ["src/angular-gridster.js", "dist/angular-gridster.min.css"],
 	"dependencies": {
 		"angular": ">= 1.2.0",
 		"jquery": "*",
-		"jquery-ui": "*",
 		"javascript-detect-element-resize": "sdecima/javascript-detect-element-resize#~0.5.1"
 	},
 	"devDependencies": {
