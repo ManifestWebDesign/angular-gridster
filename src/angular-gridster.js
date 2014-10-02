@@ -852,8 +852,8 @@ angular.module('gridster', [])
 
 						dragStart(e);
 
-						$document.bind('mousemove', mouseMove);
-						$document.bind('mouseup', mouseUp);
+						$document.on('mousemove', mouseMove);
+						$document.on('mouseup', mouseUp);
 
 						e.preventDefault();
 						e.stopPropagation();
@@ -906,8 +906,8 @@ angular.module('gridster', [])
 					}
 
 					function mouseUp(e) {
-						$document.unbind('mouseup', mouseUp);
-						$document.unbind('mousemove', mouseMove);
+						$document.off('mouseup', mouseUp);
+						$document.off('mousemove', mouseMove);
 
 						mOffX = mOffY = 0;
 
@@ -961,12 +961,12 @@ angular.module('gridster', [])
 					}
 
 
-					var dragHandle = getDragHandle();
+					var $dragHandle = getDragHandle();
 
 					if (gridster.draggable.enabled) {
-						dragHandle.bind('mousedown', mouseDown);
+						$dragHandle.on('mousedown', mouseDown);
 					} else {
-						dragHandle.unbind('mousedown');
+						$dragHandle.off('mousedown');
 					}
 				}
 
@@ -1024,8 +1024,8 @@ angular.module('gridster', [])
 
 							resizeStart(e);
 
-							$document.bind('mousemove', mouseMove);
-							$document.bind('mouseup', mouseUp);
+							$document.on('mousemove', mouseMove);
+							$document.on('mouseup', mouseUp);
 
 							e.preventDefault();
 							e.stopPropagation();
@@ -1124,8 +1124,8 @@ angular.module('gridster', [])
 						}
 
 						function mouseUp(e) {
-							$document.unbind('mouseup', mouseUp);
-							$document.unbind('mousemove', mouseMove);
+							$document.off('mouseup', mouseUp);
+							$document.off('mousemove', mouseMove);
 
 							mOffX = mOffY = 0;
 
@@ -1170,10 +1170,10 @@ angular.module('gridster', [])
 
 						if (gridster.resizable.enabled) {
 							// add handle
-							var dragHandle = angular.element('<div class="gridster-item-resizable-handler handle-' + hClass + '"></div>');
-							$el.append(dragHandle);
+							var $dragHandle = angular.element('<div class="gridster-item-resizable-handler handle-' + hClass + '"></div>');
+							$el.append($dragHandle);
 
-							dragHandle.bind('mousedown', mouseDown);
+							$dragHandle.on('mousedown', mouseDown);
 						} else {
 							// remove handles
 							var domEl = $document[0].querySelectorAll('.gridster-item-resizable-handler');
@@ -1276,7 +1276,7 @@ angular.module('gridster', [])
 						if (domEl.length) {
 							for (var i = 0, j = domEl.length; i < j; i++) {
 								// unbind all handlers
-								angular.element(domEl[i]).unbind();
+								angular.element(domEl[i]).off();
 							}
 
 							// remove all of them
@@ -1284,7 +1284,7 @@ angular.module('gridster', [])
 						}
 
 						// unbind drag handler
-						getDragHandle().unbind();
+						getDragHandle().off();
 
 						gridster.removeItem(item);
 					} catch (e) {}
