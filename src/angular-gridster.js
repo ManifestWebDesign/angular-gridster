@@ -48,8 +48,10 @@ angular.module('gridster', [])
 		 * Clean up after yourself
 		 */
 		this.destroy = function() {
-			this.grid.length = 0;
-			this.grid = null;
+			if (this.grid) {
+				this.grid.length = 0;
+				this.grid = null;
+			}
 		};
 
 		/**
