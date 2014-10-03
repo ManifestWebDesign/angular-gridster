@@ -771,8 +771,8 @@ angular.module('gridster', [])
  * @param {object} $controller
  * @param {object} $timeout
  */
-.directive('gridsterItem', ['$parse', '$document',
-	function($parse, $document) {
+.directive('gridsterItem', ['$parse', '$document', '$timeout',
+	function($parse, $document, $timeout) {
 		return {
 			restrict: 'EA',
 			controller: 'GridsterItemCtrl',
@@ -960,13 +960,16 @@ angular.module('gridster', [])
 						gridster.updateHeight();
 					}
 
-
 					var $dragHandle = getDragHandle();
 
 					if (gridster.draggable.enabled) {
-						$dragHandle.on('mousedown', mouseDown);
+						$timeout(function() {
+							$dragHandle.on('mousedown', mouseDown);
+						});
 					} else {
-						$dragHandle.off('mousedown');
+						$timeout(function() {
+							$dragHandle.off('mousedown');
+						});
 					}
 				}
 
@@ -1248,8 +1251,10 @@ angular.module('gridster', [])
 				scope.$on('gridster-resizable-changed', setResizable);
 				//scope.$on('gridster-resized', updateResizableDimensions);
 
-				setDraggable();
-				setResizable();
+				$timeout(function() {
+					setDraggable();
+					setResizable();
+				});
 
 				scope.$watch(function() {
 					return item.sizeY;

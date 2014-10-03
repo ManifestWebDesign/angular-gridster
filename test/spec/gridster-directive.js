@@ -89,26 +89,31 @@ describe('gridster directive', function() {
 
 	it('should initialize resizable', function() {
 		var $widget = $el.find('li:first-child');
-		expect($widget.find('.handle-n').length).toBe(1);
+		setTimeout(function() {
+			expect($widget.find('.handle-n').length).toBe(1);
+		});
 	});
 
 	it('should update widget dimensions on resize & trigger custom resize events', function() {
-		var $widget = $el.find('li:first-child');
-		var handle = $widget.find('.handle-e');
 
-		expect($widget.width()).toBe(155);
-		expect($scope.dashboard.widgets[0].sizeX).toBe(1);
-		expect(startCount).toBe(0);
-		expect(resizeCount).toBe(0);
-		expect(stopCount).toBe(0);
+		setTimeout(function() {
+			var $widget = $el.find('li:first-child');
+			var handle = $widget.find('.handle-e');
 
-		dragHelper(handle, 50); // should resize to next width step
+			expect($widget.width()).toBe(155);
+			expect($scope.dashboard.widgets[0].sizeX).toBe(1);
+			expect(startCount).toBe(0);
+			expect(resizeCount).toBe(0);
+			expect(stopCount).toBe(0);
 
-		expect($widget.width()).toBe(320);
-		expect($scope.dashboard.widgets[0].sizeX).toBe(2);
-		expect(startCount).toBe(1);
-		expect(resizeCount).toBe(1);
-		expect(stopCount).toBe(1);
+			dragHelper(handle, 50); // should resize to next width step
+
+			expect($widget.width()).toBe(320);
+			expect($scope.dashboard.widgets[0].sizeX).toBe(2);
+			expect(startCount).toBe(1);
+			expect(resizeCount).toBe(1);
+			expect(stopCount).toBe(1);
+		});
 	});
 
 });
