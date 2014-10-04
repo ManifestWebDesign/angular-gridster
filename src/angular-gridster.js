@@ -764,7 +764,7 @@ angular.module('gridster', [])
 	};
 })
 
-.factory('GridsterDraggable', ['$document', function($document) {
+.factory('GridsterDraggable', ['$document', '$timeout', function($document, $timeout) {
 	function GridsterDraggable($el, scope, gridster, item, itemOptions) {
 
 		var elmX, elmY, elmW, elmH,
@@ -910,22 +910,24 @@ angular.module('gridster', [])
 		var $dragHandle = null;
 
 		this.enable = function() {
-			if (enabled) {
-				return;
-			}
+			var self = this;
+			// disable and timeout required for some template rendering
+			$timeout(function() {
+				self.disable();
 
-			if (gridster.draggable && gridster.draggable.handle) {
-				$dragHandle = angular.element($el[0].querySelector(gridster.draggable.handle));
-				if ($dragHandle.length === 0) {
+				if (gridster.draggable && gridster.draggable.handle) {
+					$dragHandle = angular.element($el[0].querySelector(gridster.draggable.handle));
+					if ($dragHandle.length === 0) {
+						// fall back to element if handle not found...
+						$dragHandle = $el;
+					}
+				} else {
 					$dragHandle = $el;
-					//					throw new Error('Handle "' + gridster.draggable.handle + '" not found!');
 				}
-			} else {
-				$dragHandle = $el;
-			}
-			$dragHandle.on('mousedown', mouseDown);
+				$dragHandle.on('mousedown', mouseDown);
 
-			enabled = true;
+				enabled = true;
+			});
 		};
 
 		this.disable = function() {
