@@ -746,7 +746,7 @@ angular.module('gridster', [])
 	 * Sets an elements height
 	 */
 	this.setElementSizeY = function() {
-		if (this.gridster.isMobile && !saveGridItemCalculatedHeightInMobile) {
+		if (this.gridster.isMobile && !this.gridster.saveGridItemCalculatedHeightInMobile) {
 			this.$element.css('height', '');
 		} else {
 			this.$element.css('height', (this.sizeY * this.gridster.curRowHeight - this.gridster.margins[0]) + 'px');
