@@ -19,6 +19,7 @@ angular.module('gridster', [])
 	maxRows: 100, // the maximum amount of rows in the grid
 	defaultSizeX: 2, // the default width of a item
 	defaultSizeY: 1, // the default height of a item
+    saveGridItemCalculatedHeightInMobile: false, // grid item height in mobile display. true- to use the calculated height by sizeY given
 	resizable: { // options to pass to resizable handler
 		enabled: true,
 		handles: ['s', 'e', 'n', 'w', 'se', 'ne', 'sw', 'nw']
@@ -745,7 +746,7 @@ angular.module('gridster', [])
 	 * Sets an elements height
 	 */
 	this.setElementSizeY = function() {
-		if (this.gridster.isMobile) {
+		if (this.gridster.isMobile && !this.gridster.saveGridItemCalculatedHeightInMobile) {
 			this.$element.css('height', '');
 		} else {
 			this.$element.css('height', (this.sizeY * this.gridster.curRowHeight - this.gridster.margins[0]) + 'px');
