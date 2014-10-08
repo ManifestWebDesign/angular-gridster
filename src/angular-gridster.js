@@ -873,14 +873,20 @@ angular.module('gridster', [])
 		}
 
 		function drag(event) {
+			var oldRow = item.row,
+				oldCol = item.col,
+				hasCallback = gridster.draggable && gridster.draggable.drag;
+
 			item.row = gridster.pixelsToRows(elmY);
 			item.col = gridster.pixelsToColumns(elmX);
 
-			scope.$apply(function() {
-				if (gridster.draggable && gridster.draggable.drag) {
-					gridster.draggable.drag(event, $el, itemOptions);
-				}
-			});
+			if (hasCallback || oldRow !== item.row || oldCol !== item.col) {
+				scope.$apply(function() {
+					if (hasCallback) {
+						gridster.draggable.drag(event, $el, itemOptions);
+					}
+				});
+			}
 		}
 
 		function dragStop(event) {
@@ -1112,18 +1118,25 @@ angular.module('gridster', [])
 			}
 
 			function resize(e) {
-
+				var oldRow = item.row,
+					oldCol = item.col,
+					oldSizeX = item.sizeX,
+					oldSizeY = item.sizeY,
+					hasCallback = gridster.resizable && gridster.resizable.resize;
 				item.row = gridster.pixelsToRows(elmY, false);
 				item.col = gridster.pixelsToColumns(elmX, false);
 				item.sizeX = gridster.pixelsToColumns(elmW, true);
 				item.sizeY = gridster.pixelsToRows(elmH, true);
 
-				scope.$apply(function() {
-					// callback
-					if (gridster.resizable && gridster.resizable.resize) {
-						gridster.resizable.resize(e, $el, itemOptions); // options is the item model
-					}
-				});
+				if (
+					hasCallback || item.row !== oldRow || item.col !== oldCol || item.sizeX !== oldSizeX || item.sizeY !== oldSizeY
+				) {
+					scope.$apply(function() {
+						if (hasCallback) {
+							gridster.resizable.resize(e, $el, itemOptions); // options is the item model
+						}
+					});
+				}
 			}
 
 			function resizeStop(e) {
