@@ -122,17 +122,17 @@ Simply pass your desired options to the gridster directive
 		defaultSizeY: 1, // the default height of a gridster item, if not specified
 		resizable: {
 		   enabled: true,
-		   handles: 'n, e, s, w, ne, se, sw, nw',
-		   start: function(event, uiWidget, $element) {}, // optional callback fired when resize is started,
-		   resize: function(event, uiWidget, $element) {}, // optional callback fired when item is resized,
-		   stop: function(event, uiWidget, $element) {} // optional callback fired when item is finished resizing
+		   handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
+		   start: function(event, $element, widget) {}, // optional callback fired when resize is started,
+		   resize: function(event, $element, widget) {}, // optional callback fired when item is resized,
+		   stop: function(event, $element, widget) {} // optional callback fired when item is finished resizing
 		},
 		draggable: {
 		   enabled: true, // whether dragging items is supported
 		   handle: '.my-class', // optional selector for resize handle
-		   start: function(event, uiWidget, $element) {}, // optional callback fired when drag is started,
-		   drag: function(event, uiWidget, $element) {}, // optional callback fired when item is moved,
-		   stop: function(event, uiWidget, $element) {} // optional callback fired when item is finished dragging
+		   start: function(event, $element, widget) {}, // optional callback fired when drag is started,
+		   drag: function(event, $element, widget) {}, // optional callback fired when item is moved,
+		   stop: function(event, $element, widget) {} // optional callback fired when item is finished dragging
 		}
     };
 ```
