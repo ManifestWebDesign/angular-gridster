@@ -19,7 +19,7 @@ angular.module('gridster', [])
 	maxRows: 100, // the maximum amount of rows in the grid
 	defaultSizeX: 2, // the default width of a item
 	defaultSizeY: 1, // the default height of a item
-    saveGridItemCalculatedHeightInMobile: false, // grid item height in mobile display. true- to use the calculated height by sizeY given
+	saveGridItemCalculatedHeightInMobile: false, // grid item height in mobile display. true- to use the calculated height by sizeY given
 	resizable: { // options to pass to resizable handler
 		enabled: true,
 		handles: ['s', 'e', 'n', 'w', 'se', 'ne', 'sw', 'nw']
@@ -899,6 +899,7 @@ angular.module('gridster', [])
 				item.col = col;
 			}
 			gridster.movingItem = null;
+			item.setPosition(item.row, item.col);
 
 			var itemMoved = (originalCol !== item.col || originalRow !== item.row);
 
@@ -908,9 +909,6 @@ angular.module('gridster', [])
 					gridster.draggable.stop(event, $el, itemOptions);
 				}
 			});
-
-			item.setPosition(item.row, item.col);
-			gridster.updateHeight();
 		}
 
 		var enabled = false;
@@ -1024,6 +1022,7 @@ angular.module('gridster', [])
 				item.setElementSizeX();
 				item.setElementSizeY();
 				item.setElementPosition();
+				gridster.updateHeight(1);
 
 				scope.$apply(function() {
 					// callback
