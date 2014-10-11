@@ -6,19 +6,19 @@ angular.module('gridster', [])
 	columns: 6, // number of columns in the grid
 	pushing: true, // whether to push other items out of the way
 	floating: true, // whether to automatically float items up so they stack
-	width: 'auto', // the width of the grid. "auto" will expand the grid to its parent container
-	colWidth: 'auto', // the width of the columns. "auto" will divide the width of the grid evenly among the columns
-	rowHeight: 'match', // the height of the rows. "match" will set the row height to be the same as the column width
-	margins: [10, 10], // the margins in between grid items
+	width: 'auto', // width of the grid. "auto" will expand the grid to its parent container
+	colWidth: 'auto', // width of grid columns. "auto" will divide the width of the grid evenly among the columns
+	rowHeight: 'match', // height of grid rows. 'match' will make it the same as the column width, a numeric value will be interpreted as pixels, '/2' is half the column width, '*5' is five times the column width, etc.
+	margins: [10, 10], // margins in between grid items
 	outerMargin: true,
 	isMobile: false, // toggle mobile view
-	mobileBreakPoint: 600, // the width threshold to toggle mobile mode
+	mobileBreakPoint: 600, // width threshold to toggle mobile mode
 	mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
-	minColumns: 1, // the minimum amount of columns the grid can scale down to
-	minRows: 1, // the minimum amount of rows to show if the grid is empty
-	maxRows: 100, // the maximum amount of rows in the grid
-	defaultSizeX: 2, // the default width of a item
-	defaultSizeY: 1, // the default height of a item
+	minColumns: 1, // minimum amount of columns the grid can scale down to
+	minRows: 1, // minimum amount of rows to show if the grid is empty
+	maxRows: 100, // maximum amount of rows in the grid
+	defaultSizeX: 2, // default width of an item in columns
+	defaultSizeY: 1, // default height of an item in rows
 	saveGridItemCalculatedHeightInMobile: false, // grid item height in mobile display. true- to use the calculated height by sizeY given
 	resizable: { // options to pass to resizable handler
 		enabled: true,
@@ -507,8 +507,14 @@ angular.module('gridster', [])
 						} else {
 							gridster.curColWidth = gridster.colWidth;
 						}
-						if (gridster.rowHeight === 'match') {
-							gridster.curRowHeight = gridster.curColWidth;
+						if (typeof gridster.rowHeight === 'string') {
+							if (gridster.rowHeight === 'match') {
+								gridster.curRowHeight = gridster.curColWidth;
+							} else if (gridster.rowHeight.indexOf('*') !== -1) {
+								gridster.curRowHeight = gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', '');
+							} else if (gridster.rowHeight.indexOf('/') !== -1) {
+								gridster.curRowHeight = gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', '');
+							}
 						} else {
 							gridster.curRowHeight = gridster.rowHeight;
 						}
@@ -1184,10 +1190,14 @@ angular.module('gridster', [])
 		}
 
 		var handles = [];
+		var handlesOpts = gridster.resizable.handles;
+		if (typeof handlesOpts === 'string') {
+			handlesOpts = gridster.resizable.handles.split(',');
+		}
 		var enabled = false;
 
-		for (var c = 0, l = gridster.resizable.handles.length; c < l; c++) {
-			handles.push(new ResizeHandle(gridster.resizable.handles[c]));
+		for (var c = 0, l = handlesOpts.length; c < l; c++) {
+			handles.push(new ResizeHandle(handlesOpts[c]));
 		}
 
 		this.enable = function() {
