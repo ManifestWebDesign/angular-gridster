@@ -1146,7 +1146,7 @@ angular.module('gridster', [])
 
 				item.setPosition(item.row, item.col);
 				item.setSizeY(item.sizeY);
-				item.setSizeX(item.sizeX);
+				item.setSizeX(item.sizeX > gridster.columns ? gridster.columns : item.sizeX);
 
 				var itemResized = (originalWidth !== item.sizeX || originalHeight !== item.sizeY);
 
