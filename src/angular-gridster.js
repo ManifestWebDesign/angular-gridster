@@ -8,7 +8,7 @@ angular.module('gridster', [])
 	floating: true, // whether to automatically float items up so they stack
 	width: 'auto', // the width of the grid. "auto" will expand the grid to its parent container
 	colWidth: 'auto', // the width of the columns. "auto" will divide the width of the grid evenly among the columns
-	rowHeight: 'match', // the height of the rows. "match" will set the row height to be the same as the column width
+	rowHeight: 'match', // the height of the rows. "match" will set the row height to be the same as the column width, "half" will set the row height to half of the column width
 	margins: [10, 10], // the margins in between grid items
 	outerMargin: true,
 	isMobile: false, // toggle mobile view
@@ -509,6 +509,8 @@ angular.module('gridster', [])
 						}
 						if (gridster.rowHeight === 'match') {
 							gridster.curRowHeight = gridster.curColWidth;
+						} else if (gridster.rowHeight === 'half') {
+							gridster.curRowHeight = gridster.curColWidth / 2;
 						} else {
 							gridster.curRowHeight = gridster.rowHeight;
 						}
