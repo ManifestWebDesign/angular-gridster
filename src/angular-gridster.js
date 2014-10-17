@@ -1153,7 +1153,7 @@
 					gridster.movingItem = null;
 
 					item.setPosition(item.row, item.col);
-					item.setSizeY(item.sizeY);
+					item.setSizeY(item.sizeY > gridster.maxRows ? gridster.maxRows : item.sizeY);
 					item.setSizeX(item.sizeX > gridster.columns ? gridster.columns : item.sizeX);
 
 					var itemResized = (originalWidth !== item.sizeX || originalHeight !== item.sizeY);
