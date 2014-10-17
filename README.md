@@ -226,14 +226,11 @@ This directive/plugin does not generate style tags, like the jQuery plugin.  It 
   bower install angular-gridster
 ```
 
-Then, import the following in your HTML alongside `jQuery` and `angular`:
+Then, import the following in your HTML alongside `angular`:
 ```html
   <link rel="stylesheet" href="dist/angular-gridster.min.css" />
-  <script src="bower_components/javascript-detect-element-resize/jquery.resize.js"></script>
   <script src="src/angular-gridster.js"></script>
 ```
-
-`jquery.resize` is a jQuery plugin needed to check for changes in the gridster size.
 
 ##Contributing
 
