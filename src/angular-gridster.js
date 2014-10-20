@@ -1406,7 +1406,7 @@
 
 					$el.on(whichTransitionEvent(), function() {
 						scope.$apply(function() {
-							scope.$broadcast('gridster-item-resized');
+							scope.$broadcast('gridster-item-transition-end');
 						});
 					});
 
