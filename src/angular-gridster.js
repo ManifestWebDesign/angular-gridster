@@ -773,6 +773,14 @@
 				this.$element.css('width', (this.sizeX * this.gridster.curColWidth - this.gridster.margins[1]) + 'px');
 			}
 		};
+
+		this.getElementSizeX = function(){
+			return (this.sizeX * this.gridster.curColWidth - this.gridster.margins[1]);
+		};
+
+		this.getElementSizeY = function(){
+			return (this.sizeY * this.gridster.curRowHeight - this.gridster.margins[0]);
+		};
 	})
 
 	.factory('GridsterDraggable', ['$document', '$timeout', '$window',
@@ -1183,6 +1191,9 @@
 							// callback only if item really changed size
 							if (itemResized && gridster.resizable && gridster.resizable.stop) {
 								gridster.resizable.stop(e, $el, itemOptions); // options is the item model
+							}
+							if(itemResize && gridster.resizable){
+								scope.$broadcast('gridster-resized', [item.sizeY, item.sizeX, item.getElementSizeY(), item.getElementSizeX()]);
 							}
 						});
 					}
