@@ -1192,7 +1192,7 @@
 							if (itemResized && gridster.resizable && gridster.resizable.stop) {
 								gridster.resizable.stop(e, $el, itemOptions); // options is the item model
 							}
-							if(itemResize && gridster.resizable){
+							if(itemResized && gridster.resizable){
 								scope.$broadcast('gridster-resized', [item.sizeY, item.sizeX, item.getElementSizeY(), item.getElementSizeX()]);
 							}
 						});
