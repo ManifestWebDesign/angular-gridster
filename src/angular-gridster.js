@@ -1348,6 +1348,8 @@
 						aspectFn(aspects[i]);
 					}
 
+					scope.$broadcast('gridster-intialized', [item.sizeY, item.sizeX, item.getElementSizeY(), item.getElementSizeX()]);
+
 					function positionChanged() {
 						// call setPosition so the element and gridster controller are updated
 						item.setPosition(item.row, item.col);
