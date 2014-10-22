@@ -537,6 +537,7 @@
 										item.setElementPosition();
 										item.setElementSizeY();
 										item.setElementSizeX();
+										item.broadcastResized();
 									}
 								}
 							}
@@ -620,7 +621,7 @@
 		}
 	])
 
-	.controller('GridsterItemCtrl', function() {
+	.controller('GridsterItemCtrl', ["$scope", function($scope) {
 		this.$element = null;
 		this.gridster = null;
 		this.row = null;
@@ -781,7 +782,11 @@
 		this.getElementSizeY = function(){
 			return (this.sizeY * this.gridster.curRowHeight - this.gridster.margins[0]);
 		};
-	})
+
+		this.broadcastResized = function(){
+			$scope.$broadcast('gridster-resized', [this.sizeY, this.sizeX, this.getElementSizeY(), this.getElementSizeX()]);
+		};
+	}])
 
 	.factory('GridsterDraggable', ['$document', '$timeout', '$window',
 		function($document, $timeout, $window) {
@@ -1193,7 +1198,7 @@
 								gridster.resizable.stop(e, $el, itemOptions); // options is the item model
 							}
 							if(itemResized && gridster.resizable){
-								scope.$broadcast('gridster-resized', [item.sizeY, item.sizeX, item.getElementSizeY(), item.getElementSizeX()]);
+								item.broadcastResized();
 							}
 						});
 					}
