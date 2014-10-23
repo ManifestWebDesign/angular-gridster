@@ -621,7 +621,7 @@
 		}
 	])
 
-	.controller('GridsterItemCtrl', ["$scope", function($scope) {
+	.controller('GridsterItemCtrl', ['$scope', function($scope) {
 		this.$element = null;
 		this.gridster = null;
 		this.row = null;
@@ -775,15 +775,15 @@
 			}
 		};
 
-		this.getElementSizeX = function(){
+		this.getElementSizeX = function() {
 			return (this.sizeX * this.gridster.curColWidth - this.gridster.margins[1]);
 		};
 
-		this.getElementSizeY = function(){
+		this.getElementSizeY = function() {
 			return (this.sizeY * this.gridster.curRowHeight - this.gridster.margins[0]);
 		};
 
-		this.broadcastResized = function(){
+		this.broadcastResized = function() {
 			$scope.$broadcast('gridster-resized', [this.sizeY, this.sizeX, this.getElementSizeY(), this.getElementSizeX()]);
 		};
 	}])
@@ -1197,7 +1197,7 @@
 							if (itemResized && gridster.resizable && gridster.resizable.stop) {
 								gridster.resizable.stop(e, $el, itemOptions); // options is the item model
 							}
-							if(itemResized && gridster.resizable){
+							if (itemResized && gridster.resizable) {
 								item.broadcastResized();
 							}
 						});

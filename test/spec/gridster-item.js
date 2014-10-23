@@ -32,7 +32,7 @@ describe('Controller: GridsterItemCtrl', function() {
 		};
 
 		gridster = $controller('GridsterCtrl');
-		gridsterItem = $controller('GridsterItemCtrl');
+		gridsterItem = $controller('GridsterItemCtrl', {$scope: scope});
 
 		item1x1 = {
 			sizeX: 1,
