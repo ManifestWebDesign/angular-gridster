@@ -566,7 +566,7 @@
 						function resize() {
 							var width = parseInt($elem.css('width')) || $elem.prop('offsetWidth');
 
-							if (width === prevWidth || gridster.movingItem) {
+							if (!width || width === prevWidth || gridster.movingItem) {
 								return;
 							}
 							prevWidth = width;
