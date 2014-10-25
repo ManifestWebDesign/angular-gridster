@@ -892,8 +892,12 @@
 						scrollSensitivity = gridster.draggable.scrollSensitivity,
 						scrollSpeed = gridster.draggable.scrollSpeed;
 
-					item.row = gridster.pixelsToRows(elmY);
-					item.col = gridster.pixelsToColumns(elmX);
+					var row = gridster.pixelsToRows(elmY);
+					var col = gridster.pixelsToColumns(elmX);
+					if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
+						item.row = row;
+						item.col = col;
+					}
 					if (event.pageY - realdocument.body.scrollTop < scrollSensitivity) {
 						realdocument.body.scrollTop = realdocument.body.scrollTop - scrollSpeed;
 					} else if ($window.innerHeight - (event.pageY - realdocument.body.scrollTop) < scrollSensitivity) {
