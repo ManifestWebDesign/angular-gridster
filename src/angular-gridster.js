@@ -581,6 +581,7 @@
 								$elem.addClass('gridster-loaded');
 							}
 
+							scope.$parent.$broadcast('gridster-resized', [width, $elem.offsetHeight]);
 						}
 
 						// track element width changes any way we can
@@ -1384,6 +1385,10 @@
 					});
 					scope.$on('gridster-resizable-changed', function() {
 						resizable.toggle(gridster.resizable && gridster.resizable.enabled);
+					});
+					scope.$on('gridster-resized', function(){
+						resizable.disable();
+						resizable.enable();
 					});
 
 					if (gridster.draggable && gridster.draggable.enabled) {
