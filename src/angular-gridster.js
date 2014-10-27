@@ -537,6 +537,7 @@
 										item.setElementPosition();
 										item.setElementSizeY();
 										item.setElementSizeX();
+										item.broadcastResized();
 									}
 								}
 							}
@@ -621,7 +622,7 @@
 		}
 	])
 
-	.controller('GridsterItemCtrl', function() {
+	.controller('GridsterItemCtrl', ['$scope', function($scope) {
 		this.$element = null;
 		this.gridster = null;
 		this.row = null;
@@ -774,7 +775,19 @@
 				this.$element.css('width', (this.sizeX * this.gridster.curColWidth - this.gridster.margins[1]) + 'px');
 			}
 		};
-	})
+
+		this.getElementSizeX = function() {
+			return (this.sizeX * this.gridster.curColWidth - this.gridster.margins[1]);
+		};
+
+		this.getElementSizeY = function() {
+			return (this.sizeY * this.gridster.curRowHeight - this.gridster.margins[0]);
+		};
+
+		this.broadcastResized = function() {
+			$scope.$broadcast('gridster-resized', [this.sizeY, this.sizeX, this.getElementSizeY(), this.getElementSizeX()]);
+		};
+	}])
 
 	.factory('GridsterDraggable', ['$document', '$timeout', '$window',
 		function($document, $timeout, $window) {
@@ -1189,6 +1202,9 @@
 							if (itemResized && gridster.resizable && gridster.resizable.stop) {
 								gridster.resizable.stop(e, $el, itemOptions); // options is the item model
 							}
+							if (itemResized && gridster.resizable) {
+								item.broadcastResized();
+							}
 						});
 					}
 
@@ -1341,6 +1357,8 @@
 					for (var i = 0, l = aspects.length; i < l; ++i) {
 						aspectFn(aspects[i]);
 					}
+
+					scope.$broadcast('gridster-intialized', [item.sizeY, item.sizeX, item.getElementSizeY(), item.getElementSizeX()]);
 
 					function positionChanged() {
 						// call setPosition so the element and gridster controller are updated
