@@ -197,7 +197,7 @@ The third argument, true, is to make the watch based on the value of the object,
 
 
 ##Note
-This directive/plugin does not generate style tags, like the jQuery plugin.  It also uses standard camalCase for variables and object properties, while the original plugin used lower\_case\_with_underscores.  These options have not and may never be implemented:
+This directive/plugin does not generate style tags, like the jQuery plugin.  It also uses standard camelCase for variables and object properties, while the original plugin used lower\_case\_with_underscores.  These options have not and may never be implemented:
 
 * widget_class - not necessary since directives already whatever classes and attributes you want to add
 * widget_margins - replaced by 'margins'
