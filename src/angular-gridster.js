@@ -1156,11 +1156,18 @@
 							oldCol = item.col,
 							oldSizeX = item.sizeX,
 							oldSizeY = item.sizeY,
-							hasCallback = gridster.resizable && gridster.resizable.resize;
-						item.row = gridster.pixelsToRows(elmY, false);
-						item.col = gridster.pixelsToColumns(elmX, false);
-						item.sizeX = gridster.pixelsToColumns(elmW, true);
-						item.sizeY = gridster.pixelsToRows(elmH, true);
+							hasCallback = gridster.resizable && gridster.resizable.resize,
+							row = gridster.pixelsToRows(elmY, false),
+							col = gridster.pixelsToColumns(elmX, false),
+							sizeX = gridster.pixelsToColumns(elmW, true),
+							sizeY = gridster.pixelsToRows(elmH, true);
+
+						if (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0) {
+							item.row = row;
+							item.col = col;
+							item.sizeX = sizeX;
+							item.sizeY = sizeY;
+						}
 
 						if (
 							hasCallback || item.row !== oldRow || item.col !== oldCol || item.sizeX !== oldSizeX || item.sizeY !== oldSizeY
@@ -1386,7 +1393,7 @@
 					scope.$on('gridster-resizable-changed', function() {
 						resizable.toggle(gridster.resizable && gridster.resizable.enabled);
 					});
-					scope.$on('gridster-resized', function(){
+					scope.$on('gridster-resized', function() {
 						resizable.disable();
 						resizable.enable();
 					});
