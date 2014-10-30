@@ -1156,10 +1156,17 @@
 							oldSizeX = item.sizeX,
 							oldSizeY = item.sizeY,
 							hasCallback = gridster.resizable && gridster.resizable.resize;
-						item.row = gridster.pixelsToRows(elmY, false);
-						item.col = gridster.pixelsToColumns(elmX, false);
-						item.sizeX = gridster.pixelsToColumns(elmW, true);
-						item.sizeY = gridster.pixelsToRows(elmH, true);
+
+						var row = gridster.pixelsToRows(elmY, false);
+						var col = gridster.pixelsToColumns(elmX, false);
+						var sizeX = gridster.pixelsToColumns(elmW, true);
+						var sizeY = gridster.pixelsToRows(elmH, true);
+						if (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0) {
+							item.row = row;
+							item.col = col;
+							item.sizeX = sizeX;
+							item.sizeY = sizeY;
+						}
 
 						if (
 							hasCallback || item.row !== oldRow || item.col !== oldCol || item.sizeX !== oldSizeX || item.sizeY !== oldSizeY
