@@ -13,6 +13,7 @@
 		rowHeight: 'match', // height of grid rows. 'match' will make it the same as the column width, a numeric value will be interpreted as pixels, '/2' is half the column width, '*5' is five times the column width, etc.
 		margins: [10, 10], // margins in between grid items
 		outerMargin: true,
+		swapping: false, // whether or not to have items switch places instead of push down if they are the same size
 		isMobile: false, // toggle mobile view
 		mobileBreakPoint: 600, // width threshold to toggle mobile mode
 		mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
@@ -269,6 +270,24 @@
 			};
 
 			/**
+			 * Trade row and column if item1 with item2
+			 *
+			 * @param {object} item1
+			 * @param {object} item2
+			 */
+			this.swapItems = function(item1, item2) {
+				this.grid[item1.row][item1.col] = item2;
+				this.grid[item2.row][item2.col] = item1;
+
+				var item1Row = item1.row;
+				var item1Col = item1.col;
+				item1.row = item2.row;
+				item1.col = item2.col;
+				item2.row = item1Row;
+				item2.col = item1Col;
+			};
+
+			/**
 			 * Prevents items from being overlapped
 			 *
 			 * @param {object} item The item that should remain
@@ -364,6 +383,9 @@
 			 * @param {object} item The item to move
 			 */
 			this.floatItemUp = function(item) {
+				if (this.floating === false) {
+					return;
+				}
 				var colIndex = item.col,
 					sizeY = item.sizeY,
 					sizeX = item.sizeX,
@@ -895,10 +917,24 @@
 
 					var row = gridster.pixelsToRows(elmY);
 					var col = gridster.pixelsToColumns(elmX);
-					if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
+
+					var itemsInTheWay = gridster.getItems(row, col, item.sizeX, item.sizeY, item);
+					var hasItemsInTheWay = itemsInTheWay.length !== 0;
+
+					if (gridster.swapping === true && hasItemsInTheWay) {
+						var itemInTheWay = itemsInTheWay[0];
+						var sameSize = itemInTheWay.sizeX === item.sizeX && itemInTheWay.sizeY === item.sizeY;
+						var samePosition = itemInTheWay.row === row && itemInTheWay.col === col;
+
+						if (samePosition && sameSize) {
+							gridster.swapItems(item, itemInTheWay);
+						}
+					}
+					if (gridster.pushing !== false || !hasItemsInTheWay) {
 						item.row = row;
 						item.col = col;
 					}
+
 					if (event.pageY - realdocument.body.scrollTop < scrollSensitivity) {
 						realdocument.body.scrollTop = realdocument.body.scrollTop - scrollSpeed;
 					} else if ($window.innerHeight - (event.pageY - realdocument.body.scrollTop) < scrollSensitivity) {
@@ -1275,13 +1311,9 @@
 
 	/**
 	 * GridsterItem directive
-	 *
-	 * @param {object} $parse
-	 * @param {object} $controller
-	 * @param {object} $timeout
 	 */
-	.directive('gridsterItem', ['$parse', '$timeout', 'GridsterDraggable', 'GridsterResizable',
-		function($parse, $timeout, GridsterDraggable, GridsterResizable) {
+	.directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable',
+		function($parse, GridsterDraggable, GridsterResizable) {
 			return {
 				restrict: 'EA',
 				controller: 'GridsterItemCtrl',
