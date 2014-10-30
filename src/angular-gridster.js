@@ -813,8 +813,8 @@
 					$document.on('mousemove', mouseMove);
 					$document.on('mouseup', mouseUp);
 
-					e.preventDefault();
-					e.stopPropagation();
+					//e.preventDefault();
+					//e.stopPropagation();
 				}
 
 				function mouseMove(e) {
