@@ -817,6 +817,9 @@ angular.module('gridster', [])
 						handle: gridster.draggable && gridster.draggable.handle ? gridster.draggable.handle : null,
 						refreshPositions: true,
 						start: function(event, widget) {
+							if (gridster.isMobile) {
+								return;
+							}
 							$el.addClass('gridster-item-moving');
 							gridster.movingItem = item;
 							gridster.updateHeight(item.sizeY);
@@ -827,6 +830,9 @@ angular.module('gridster', [])
 							});
 						},
 						drag: function(event, widget) {
+							if (gridster.isMobile) {
+								return;
+							}
 							var row = gridster.pixelsToRows(widget.position.top);
 							var col = gridster.pixelsToColumns(widget.position.left);
 							if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
@@ -841,6 +847,9 @@ angular.module('gridster', [])
 							});
 						},
 						stop: function(event, widget) {
+							if (gridster.isMobile) {
+								return;
+							}
 							$el.removeClass('gridster-item-moving');
 							var row = gridster.pixelsToRows(widget.position.top);
 							var col = gridster.pixelsToColumns(widget.position.left);
