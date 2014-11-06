@@ -1419,22 +1419,22 @@
 
 					var draggable = new GridsterDraggable($el, scope, gridster, item, options);
 					var resizable = new GridsterResizable($el, scope, gridster, item, options);
+
 					scope.$on('gridster-draggable-changed', function() {
-						draggable.toggle(gridster.draggable && gridster.draggable.enabled);
+						draggable.toggle(!gridster.isMobile && gridster.draggable && gridster.draggable.enabled);
 					});
 					scope.$on('gridster-resizable-changed', function() {
-						resizable.toggle(gridster.resizable && gridster.resizable.enabled);
+						resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
 					});
 					scope.$on('gridster-resized', function() {
-						resizable.toggle(gridster.resizable && gridster.resizable.enabled);
+						resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
 					});
-
-					if (gridster.draggable && gridster.draggable.enabled) {
-						draggable.enable();
-					}
-					if (gridster.resizable && gridster.resizable.enabled) {
-						resizable.enable();
-					}
+					scope.$watch(function() {
+						return gridster.isMobile;
+					}, function() {
+						resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
+						draggable.toggle(!gridster.isMobile && gridster.draggable && gridster.draggable.enabled);
+					});
 
 					function whichTransitionEvent() {
 						var el = document.createElement('div');
