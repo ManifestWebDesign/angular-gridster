@@ -819,6 +819,10 @@
 				var originalCol, originalRow;
 
 				function mouseDown(e) {
+					if (gridster.isMobile) {
+						return;
+					}
+
 					lastMouseX = e.pageX;
 					lastMouseY = e.pageY;
 
@@ -840,6 +844,9 @@
 				}
 
 				function mouseMove(e) {
+					if (gridster.isMobile) {
+						return;
+					}
 					var maxLeft = gridster.curWidth - 1;
 
 					// Get the current mouse position.
@@ -1062,6 +1069,10 @@
 					var originalWidth, originalHeight;
 
 					function mouseDown(e) {
+						if (gridster.isMobile) {
+							return;
+						}
+
 						// Get the current mouse position.
 						lastMouseX = e.pageX;
 						lastMouseY = e.pageY;
@@ -1103,6 +1114,10 @@
 					}
 
 					function mouseMove(e) {
+						if (gridster.isMobile) {
+							return;
+						}
+
 						var maxLeft = gridster.curWidth - 1;
 
 						// Get the current mouse position.
