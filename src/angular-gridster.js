@@ -8,6 +8,7 @@
 		columns: 6, // number of columns in the grid
 		pushing: true, // whether to push other items out of the way
 		floating: true, // whether to automatically float items up so they stack
+		swapping: false, // whether or not to have items switch places instead of push down if they are the same size
 		width: 'auto', // width of the grid. "auto" will expand the grid to its parent container
 		colWidth: 'auto', // width of grid columns. "auto" will divide the width of the grid evenly among the columns
 		rowHeight: 'match', // height of grid rows. 'match' will make it the same as the column width, a numeric value will be interpreted as pixels, '/2' is half the column width, '*5' is five times the column width, etc.
@@ -269,6 +270,24 @@
 			};
 
 			/**
+			 * Trade row and column if item1 with item2
+			 *
+			 * @param {object} item1
+			 * @param {object} item2
+			 */
+			this.swapItems = function(item1, item2) {
+				this.grid[item1.row][item1.col] = item2;
+				this.grid[item2.row][item2.col] = item1;
+
+				var item1Row = item1.row;
+				var item1Col = item1.col;
+				item1.row = item2.row;
+				item1.col = item2.col;
+				item2.row = item1Row;
+				item2.col = item1Col;
+			};
+
+			/**
 			 * Prevents items from being overlapped
 			 *
 			 * @param {object} item The item that should remain
@@ -364,6 +383,9 @@
 			 * @param {object} item The item to move
 			 */
 			this.floatItemUp = function(item) {
+				if (this.floating === false) {
+					return;
+				}
 				var colIndex = item.col,
 					sizeY = item.sizeY,
 					sizeX = item.sizeX,
@@ -895,10 +917,24 @@
 
 					var row = gridster.pixelsToRows(elmY);
 					var col = gridster.pixelsToColumns(elmX);
-					if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
+
+					var itemsInTheWay = gridster.getItems(row, col, item.sizeX, item.sizeY, item);
+					var hasItemsInTheWay = itemsInTheWay.length !== 0;
+
+					if (gridster.swapping === true && hasItemsInTheWay) {
+						var itemInTheWay = itemsInTheWay[0];
+						var sameSize = itemInTheWay.sizeX === item.sizeX && itemInTheWay.sizeY === item.sizeY;
+						var samePosition = itemInTheWay.row === row && itemInTheWay.col === col;
+
+						if (samePosition && sameSize) {
+							gridster.swapItems(item, itemInTheWay);
+						}
+					}
+					if (gridster.pushing !== false || !hasItemsInTheWay) {
 						item.row = row;
 						item.col = col;
 					}
+
 					if (event.pageY - realdocument.body.scrollTop < scrollSensitivity) {
 						realdocument.body.scrollTop = realdocument.body.scrollTop - scrollSpeed;
 					} else if ($window.innerHeight - (event.pageY - realdocument.body.scrollTop) < scrollSensitivity) {
@@ -1157,10 +1193,17 @@
 							oldSizeX = item.sizeX,
 							oldSizeY = item.sizeY,
 							hasCallback = gridster.resizable && gridster.resizable.resize;
-						item.row = gridster.pixelsToRows(elmY, false);
-						item.col = gridster.pixelsToColumns(elmX, false);
-						item.sizeX = gridster.pixelsToColumns(elmW, true);
-						item.sizeY = gridster.pixelsToRows(elmH, true);
+
+						var row = gridster.pixelsToRows(elmY, false);
+						var col = gridster.pixelsToColumns(elmX, false);
+						var sizeX = gridster.pixelsToColumns(elmW, true);
+						var sizeY = gridster.pixelsToRows(elmH, true);
+						if (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0) {
+							item.row = row;
+							item.col = col;
+							item.sizeX = sizeX;
+							item.sizeY = sizeY;
+						}
 
 						if (
 							hasCallback || item.row !== oldRow || item.col !== oldCol || item.sizeX !== oldSizeX || item.sizeY !== oldSizeY
@@ -1268,13 +1311,9 @@
 
 	/**
 	 * GridsterItem directive
-	 *
-	 * @param {object} $parse
-	 * @param {object} $controller
-	 * @param {object} $timeout
 	 */
-	.directive('gridsterItem', ['$parse', '$timeout', 'GridsterDraggable', 'GridsterResizable',
-		function($parse, $timeout, GridsterDraggable, GridsterResizable) {
+	.directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable',
+		function($parse, GridsterDraggable, GridsterResizable) {
 			return {
 				restrict: 'EA',
 				controller: 'GridsterItemCtrl',
@@ -1386,7 +1425,7 @@
 					scope.$on('gridster-resizable-changed', function() {
 						resizable.toggle(gridster.resizable && gridster.resizable.enabled);
 					});
-					scope.$on('gridster-resized', function(){
+					scope.$on('gridster-resized', function() {
 						resizable.toggle(gridster.resizable && gridster.resizable.enabled);
 					});
 
