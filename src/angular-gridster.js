@@ -1387,8 +1387,7 @@
 						resizable.toggle(gridster.resizable && gridster.resizable.enabled);
 					});
 					scope.$on('gridster-resized', function(){
-						resizable.disable();
-						resizable.enable();
+						resizable.toggle(gridster.resizable && gridster.resizable.enabled);
 					});
 
 					if (gridster.draggable && gridster.draggable.enabled) {
