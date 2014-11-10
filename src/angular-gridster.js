@@ -969,11 +969,8 @@
 					item.setSizeY(item.sizeY > gridster.maxRows ? gridster.maxRows : item.sizeY);
 					item.setSizeX(item.sizeX > gridster.columns ? gridster.columns : item.sizeX);
 
-					var itemMoved = (originalCol !== item.col || originalRow !== item.row);
-
 					scope.$apply(function() {
-						// callback only if item really changed position
-						if (itemMoved && gridster.draggable && gridster.draggable.stop) {
+						if (gridster.draggable && gridster.draggable.stop) {
 							gridster.draggable.stop(event, $el, itemOptions);
 						}
 					});
@@ -1225,11 +1222,8 @@
 						item.setSizeY(item.sizeY);
 						item.setSizeX(item.sizeX > gridster.columns ? gridster.columns : item.sizeX);
 
-						var itemResized = (originalWidth !== item.sizeX || originalHeight !== item.sizeY);
-
 						scope.$apply(function() {
-							// callback only if item really changed size
-							if (itemResized && gridster.resizable && gridster.resizable.stop) {
+							if (gridster.resizable && gridster.resizable.stop) {
 								gridster.resizable.stop(e, $el, itemOptions); // options is the item model
 							}
 						});
