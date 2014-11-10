@@ -969,11 +969,8 @@
 					item.setSizeY(item.sizeY > gridster.maxRows ? gridster.maxRows : item.sizeY);
 					item.setSizeX(item.sizeX > gridster.columns ? gridster.columns : item.sizeX);
 
-					var itemMoved = (originalCol !== item.col || originalRow !== item.row);
-
 					scope.$apply(function() {
-						// callback only if item really changed position
-						if (itemMoved && gridster.draggable && gridster.draggable.stop) {
+						if (gridster.draggable && gridster.draggable.stop) {
 							gridster.draggable.stop(event, $el, itemOptions);
 						}
 					});
