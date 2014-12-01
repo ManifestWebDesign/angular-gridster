@@ -519,52 +519,56 @@
 							};
 						};
 
-						var refresh = function() {
-							gridster.setOptions(scope.config);
+var refresh = function() {
+                            gridster.setOptions(scope.config);
 
-							// resolve "auto" & "match" values
-							if (gridster.width === 'auto') {
-								gridster.curWidth = parseInt($elem.css('width')) || $elem.prop('offsetWidth');
-							} else {
-								gridster.curWidth = gridster.width;
-							}
-							if (gridster.colWidth === 'auto') {
-								gridster.curColWidth = parseInt((gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns);
-							} else {
-								gridster.curColWidth = gridster.colWidth;
-							}
-							if (typeof gridster.rowHeight === 'string') {
-								if (gridster.rowHeight === 'match') {
-									gridster.curRowHeight = gridster.curColWidth;
-								} else if (gridster.rowHeight.indexOf('*') !== -1) {
-									gridster.curRowHeight = gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', '');
-								} else if (gridster.rowHeight.indexOf('/') !== -1) {
-									gridster.curRowHeight = gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', '');
-								}
-							} else {
-								gridster.curRowHeight = gridster.rowHeight;
-							}
+                            // resolve "auto" & "match" values
+                            if (gridster.width === 'auto') {
+                                gridster.curWidth = parseInt($elem.css('width')) || $elem.prop('offsetWidth');
+                            } else {
+                                gridster.curWidth = gridster.width;
+                            }
 
-							gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
+                            if(gridster.colWidth === 'auto') {
+                                gridster.curColWidth = parseInt((gridster.curWidth +(gridster.outerMargin ? -gridster.margins[1]: gridster.margins[1])) / gridster.columns);
+                            } else {
+                                gridster.curColWidth = gridster.colWidth;
+                            }
 
-							// loop through all items and reset their CSS
-							for (var rowIndex = 0, l = gridster.grid.length; rowIndex < l; ++rowIndex) {
-								var columns = gridster.grid[rowIndex];
-								if (!columns) {
-									continue;
-								}
-								for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
-									if (columns[colIndex]) {
-										var item = columns[colIndex];
-										item.setElementPosition();
-										item.setElementSizeY();
-										item.setElementSizeX();
-									}
-								}
-							}
+                            if (typeof gridster.rowHeight === 'string') {
+                                if (gridster.rowHeight === 'match') {
+                                    gridster.curRowHeight = gridster.curColWidth;
+                                } else if (gridster.rowHeight.indexOf('*') !== -1) {
+                                    gridster.curRowHeight = gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', '');
+                                } else if (gridster.rowHeight.indexOf('/') !== -1) {
+                                    gridster.curRowHeight = gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', '');
+                                } else {
+                                    gridster.curRowHeight = gridster.rowHeight;
+                                }
 
-							updateHeight();
-						};
+                            }
+
+                            gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
+
+                            // loop through all items and reset their CSS
+                            for (var rowIndex = 0, l = gridster.grid.length; rowIndex < l; ++rowIndex) {
+                                var columns = gridster.grid[rowIndex];
+                                if (!columns) {
+                                    continue;
+                                }
+
+                                for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
+                                    if (columns[colIndex]) {
+                                        var item = columns[colIndex];
+                                        item.setElementPosition();
+                                        item.setElementSizeY();
+                                        item.setElementSizeX();
+                                    }
+                                }
+                            }
+
+                            updateHeight();
+                    };
 
 						// update grid items on config changes
 						scope.$watch('config', refresh, true);
