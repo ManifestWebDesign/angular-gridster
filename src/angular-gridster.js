@@ -832,7 +832,12 @@
 
 					dragStart(e);
 
+					$document.on('pointermove', mouseMove);
+					$document.on('touchmove', mouseMove);
 					$document.on('mousemove', mouseMove);
+
+					$document.on('pointerup', mouseUp);
+					$document.on('touchend', mouseUp);
 					$document.on('mouseup', mouseUp);
 
 					e.preventDefault();
@@ -888,8 +893,13 @@
 				}
 
 				function mouseUp(e) {
-					$document.off('mouseup', mouseUp);
-					$document.off('mousemove', mouseMove);
+				    $document.off('pointerup', mouseUp);
+				    $document.off('touchend', mouseUp);
+				    $document.off('mouseup', mouseUp);
+
+				    $document.off('pointermove', mouseMove);
+				    $document.off('touchmove', mouseMove);
+				    $document.off('mousemove', mouseMove);
 
 					mOffX = mOffY = 0;
 
@@ -994,6 +1004,9 @@
 						} else {
 							$dragHandle = $el;
 						}
+
+						$dragHandle.on('pointerdown', mouseDown);
+						$dragHandle.on('touchstart', mouseDown);
 						$dragHandle.on('mousedown', mouseDown);
 
 						enabled = true;
@@ -1005,11 +1018,18 @@
 						return;
 					}
 
+					$document.off('pointerup', mouseUp);
+					$document.off('touchend', mouseUp);
 					$document.off('mouseup', mouseUp);
+
+					$document.off('pointermove', mouseMove);
+					$document.off('touchmove', mouseMove);
 					$document.off('mousemove', mouseMove);
 
 					if ($dragHandle) {
-						$dragHandle.off('mousedown', mouseDown);
+					    $dragHandle.off('pointerdown', mouseDown);
+					    $dragHandle.off('touchstart', mouseDown);
+					    $dragHandle.off('mousedown', mouseDown);
 					}
 
 					enabled = false;
@@ -1074,7 +1094,12 @@
 
 						resizeStart(e);
 
+						$document.on('pointermove', mouseMove);
+						$document.on('touchmove', mouseMove);
 						$document.on('mousemove', mouseMove);
+
+						$document.on('pointerup', mouseUp);
+						$document.on('touchend', mouseUp);
 						$document.on('mouseup', mouseUp);
 
 						e.preventDefault();
@@ -1176,8 +1201,13 @@
 					}
 
 					function mouseUp(e) {
-						$document.off('mouseup', mouseUp);
-						$document.off('mousemove', mouseMove);
+					    $document.off('pointerup', mouseUp);
+					    $document.off('touchend', mouseUp);
+					    $document.off('mouseup', mouseUp);
+
+					    $document.off('pointermove', mouseMove);
+					    $document.off('touchmove', mouseMove);
+					    $document.off('mousemove', mouseMove);
 
 						mOffX = mOffY = 0;
 
@@ -1236,16 +1266,27 @@
 							$dragHandle = angular.element('<div class="gridster-item-resizable-handler handle-' + hClass + '"></div>');
 							$el.append($dragHandle);
 						}
+
+						$dragHandle.on('pointerdown', mouseDown);
+						$dragHandle.on('touchstart', mouseDown);
 						$dragHandle.on('mousedown', mouseDown);
 					};
 
 					this.disable = function() {
 						if ($dragHandle) {
-							$dragHandle.off('mousedown', mouseDown);
+						    $dragHandle.off('pointerdown', mouseDown);
+						    $dragHandle.off('touchstart', mouseDown);
+						    $dragHandle.off('mousedown', mouseDown);
 							$dragHandle.remove();
 							$dragHandle = null;
 						}
+
+						$document.off('pointerup', mouseUp);
+						$document.off('touchend', mouseUp);
 						$document.off('mouseup', mouseUp);
+
+						$document.off('pointermove', mouseMove);
+						$document.off('touchmove', mouseMove);
 						$document.off('mousemove', mouseMove);
 					};
 
