@@ -819,8 +819,13 @@
 				var originalCol, originalRow;
 
 				function mouseDown(e) {
-					lastMouseX = e.pageX;
-					lastMouseY = e.pageY;
+				    if (e.touches) { //e.touches
+				        lastMouseX = e.touches[0].pageX;
+				        lastMouseY = e.touches[0].pageY;
+				    } else {
+				        lastMouseX = e.pageX;
+				        lastMouseY = e.pageY;
+				    }
 
 					elmX = parseInt($el.css('left'));
 					elmY = parseInt($el.css('top'));
@@ -847,9 +852,14 @@
 				function mouseMove(e) {
 					var maxLeft = gridster.curWidth - 1;
 
-					// Get the current mouse position.
-					mouseX = e.pageX;
-					mouseY = e.pageY;
+				    // Get the current mouse position.
+					if (e.touches) { //e.touches
+					    mouseX = e.touches[0].pageX;
+					    mouseY = e.touches[0].pageY;
+					} else {
+					    mouseX = e.pageX;
+					    mouseY = e.pageY;
+					}
 
 					// Get the deltas
 					var diffX = mouseX - lastMouseX + mOffX;
