@@ -16,13 +16,23 @@
 }
 
 .gridster-item {
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-	list-style: none;
-	z-index: 2;
-	position: absolute;
-	display: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    list-style: none;
+    z-index: 2;
+    position: absolute;
+    display: none;
+
+    /* disable device touches on WP8 and Win 8 */
+    -ms-touch-action: none;
+    touch-action: none;
+
+    /* disable selection of text and controls on iPad/iPhone */
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .gridster-loaded {
