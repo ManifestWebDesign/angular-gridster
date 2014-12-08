@@ -823,8 +823,14 @@ var refresh = function() {
 				var originalCol, originalRow;
 
 				function mouseDown(e) {
-					lastMouseX = e.pageX;
-					lastMouseY = e.pageY;
+				    var touches = (e.touches || (e.originalEvent && e.originalEvent.touches));
+				    if (touches) {
+						lastMouseX = touches[0].pageX;
+						lastMouseY = touches[0].pageY;
+					} else {
+						lastMouseX = e.pageX;
+						lastMouseY = e.pageY;
+					}
 
 					elmX = parseInt($el.css('left'));
 					elmY = parseInt($el.css('top'));
@@ -836,7 +842,12 @@ var refresh = function() {
 
 					dragStart(e);
 
+					$document.on('pointermove', mouseMove);
+					$document.on('touchmove', mouseMove);
 					$document.on('mousemove', mouseMove);
+
+					$document.on('pointerup', mouseUp);
+					$document.on('touchend', mouseUp);
 					$document.on('mouseup', mouseUp);
 
 					e.preventDefault();
@@ -846,9 +857,15 @@ var refresh = function() {
 				function mouseMove(e) {
 					var maxLeft = gridster.curWidth - 1;
 
-					// Get the current mouse position.
-					mouseX = e.pageX;
-					mouseY = e.pageY;
+				    // Get the current mouse position.
+					var touches = (e.touches || (e.originalEvent && e.originalEvent.touches));
+					if (touches) {
+						mouseX = touches[0].pageX;
+						mouseY = touches[0].pageY;
+					} else {
+						mouseX = e.pageX;
+						mouseY = e.pageY;
+					}
 
 					// Get the deltas
 					var diffX = mouseX - lastMouseX + mOffX;
@@ -892,7 +909,12 @@ var refresh = function() {
 				}
 
 				function mouseUp(e) {
+					$document.off('pointerup', mouseUp);
+					$document.off('touchend', mouseUp);
 					$document.off('mouseup', mouseUp);
+
+					$document.off('pointermove', mouseMove);
+					$document.off('touchmove', mouseMove);
 					$document.off('mousemove', mouseMove);
 
 					mOffX = mOffY = 0;
@@ -919,6 +941,17 @@ var refresh = function() {
 						scrollSensitivity = gridster.draggable.scrollSensitivity,
 						scrollSpeed = gridster.draggable.scrollSpeed;
 
+					var pageX, pageY;
+
+					var touches = (event.touches || (event.originalEvent && event.originalEvent.touches));
+					if (touches) {
+						pageX = touches[0].pageX;
+						pageY = touches[0].pageY;
+					} else {
+						pageX = event.pageX;
+						pageY = event.pageY;
+					}
+
 					var row = gridster.pixelsToRows(elmY);
 					var col = gridster.pixelsToColumns(elmX);
 
@@ -939,15 +972,15 @@ var refresh = function() {
 						item.col = col;
 					}
 
-					if (event.pageY - realdocument.body.scrollTop < scrollSensitivity) {
+					if (pageY - realdocument.body.scrollTop < scrollSensitivity) {
 						realdocument.body.scrollTop = realdocument.body.scrollTop - scrollSpeed;
-					} else if ($window.innerHeight - (event.pageY - realdocument.body.scrollTop) < scrollSensitivity) {
+					} else if ($window.innerHeight - (pageY - realdocument.body.scrollTop) < scrollSensitivity) {
 						realdocument.body.scrollTop = realdocument.body.scrollTop + scrollSpeed;
 					}
 
-					if (event.pageX - realdocument.body.scrollLeft < scrollSensitivity) {
+					if (pageX - realdocument.body.scrollLeft < scrollSensitivity) {
 						realdocument.body.scrollLeft = realdocument.body.scrollLeft - scrollSpeed;
-					} else if ($window.innerWidth - (event.pageX - realdocument.body.scrollLeft) < scrollSensitivity) {
+					} else if ($window.innerWidth - (pageX - realdocument.body.scrollLeft) < scrollSensitivity) {
 						realdocument.body.scrollLeft = realdocument.body.scrollLeft + scrollSpeed;
 					}
 
@@ -998,6 +1031,9 @@ var refresh = function() {
 						} else {
 							$dragHandle = $el;
 						}
+
+						$dragHandle.on('pointerdown', mouseDown);
+						$dragHandle.on('touchstart', mouseDown);
 						$dragHandle.on('mousedown', mouseDown);
 
 						enabled = true;
@@ -1009,10 +1045,17 @@ var refresh = function() {
 						return;
 					}
 
+					$document.off('pointerup', mouseUp);
+					$document.off('touchend', mouseUp);
 					$document.off('mouseup', mouseUp);
+
+					$document.off('pointermove', mouseMove);
+					$document.off('touchmove', mouseMove);
 					$document.off('mousemove', mouseMove);
 
 					if ($dragHandle) {
+						$dragHandle.off('pointerdown', mouseDown);
+						$dragHandle.off('touchstart', mouseDown);
 						$dragHandle.off('mousedown', mouseDown);
 					}
 
@@ -1078,7 +1121,12 @@ var refresh = function() {
 
 						resizeStart(e);
 
+						$document.on('pointermove', mouseMove);
+						$document.on('touchmove', mouseMove);
 						$document.on('mousemove', mouseMove);
+
+						$document.on('pointerup', mouseUp);
+						$document.on('touchend', mouseUp);
 						$document.on('mouseup', mouseUp);
 
 						e.preventDefault();
@@ -1180,7 +1228,12 @@ var refresh = function() {
 					}
 
 					function mouseUp(e) {
+						$document.off('pointerup', mouseUp);
+						$document.off('touchend', mouseUp);
 						$document.off('mouseup', mouseUp);
+
+						$document.off('pointermove', mouseMove);
+						$document.off('touchmove', mouseMove);
 						$document.off('mousemove', mouseMove);
 
 						mOffX = mOffY = 0;
@@ -1240,16 +1293,27 @@ var refresh = function() {
 							$dragHandle = angular.element('<div class="gridster-item-resizable-handler handle-' + hClass + '"></div>');
 							$el.append($dragHandle);
 						}
+
+						$dragHandle.on('pointerdown', mouseDown);
+						$dragHandle.on('touchstart', mouseDown);
 						$dragHandle.on('mousedown', mouseDown);
 					};
 
 					this.disable = function() {
 						if ($dragHandle) {
+							$dragHandle.off('pointerdown', mouseDown);
+							$dragHandle.off('touchstart', mouseDown);
 							$dragHandle.off('mousedown', mouseDown);
 							$dragHandle.remove();
 							$dragHandle = null;
 						}
+
+						$document.off('pointerup', mouseUp);
+						$document.off('touchend', mouseUp);
 						$document.off('mouseup', mouseUp);
+
+						$document.off('pointermove', mouseMove);
+						$document.off('touchmove', mouseMove);
 						$document.off('mousemove', mouseMove);
 					};
 
