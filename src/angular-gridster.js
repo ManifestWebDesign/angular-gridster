@@ -819,9 +819,10 @@
 				var originalCol, originalRow;
 
 				function mouseDown(e) {
-					if (e.touches) {
-						lastMouseX = e.touches[0].pageX;
-						lastMouseY = e.touches[0].pageY;
+				    var touches = (e.touches || (e.originalEvent && e.originalEvent.touches));
+				    if (touches) {
+						lastMouseX = touches[0].pageX;
+						lastMouseY = touches[0].pageY;
 					} else {
 						lastMouseX = e.pageX;
 						lastMouseY = e.pageY;
@@ -852,10 +853,11 @@
 				function mouseMove(e) {
 					var maxLeft = gridster.curWidth - 1;
 
-					// Get the current mouse position.
-					if (e.touches) {
-						mouseX = e.touches[0].pageX;
-						mouseY = e.touches[0].pageY;
+				    // Get the current mouse position.
+					var touches = (e.touches || (e.originalEvent && e.originalEvent.touches));
+					if (touches) {
+						mouseX = touches[0].pageX;
+						mouseY = touches[0].pageY;
 					} else {
 						mouseX = e.pageX;
 						mouseY = e.pageY;
@@ -936,9 +938,11 @@
 						scrollSpeed = gridster.draggable.scrollSpeed;
 
 					var pageX, pageY;
-					if (event.touches) {
-						pageX = event.touches[0].pageX;
-						pageY = event.touches[0].pageY;
+
+					var touches = (event.touches || (event.originalEvent && event.originalEvent.touches));
+					if (touches) {
+						pageX = touches[0].pageX;
+						pageY = touches[0].pageY;
 					} else {
 						pageX = event.pageX;
 						pageY = event.pageY;
