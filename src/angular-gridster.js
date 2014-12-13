@@ -849,8 +849,12 @@
 					realdocument = $document[0];
 
 				var originalCol, originalRow;
+				var inputTags = ['select', 'input', 'textarea', 'button'];
 
 				function mouseDown(e) {
+					if (inputTags.indexOf(e.target.nodeName.toLowerCase()) !== -1) {
+						return;
+					}
 					switch (e.which) {
 						case 1:
 							// left mouse button
