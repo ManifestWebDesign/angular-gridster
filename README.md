@@ -85,7 +85,9 @@ This expects a scope similar to the previous example, but with customItemMap als
         sizeX: 'item.size.x',
         sizeY: 'item.size.y',
         row: 'item.position[0]',
-        col: 'item.position[1]'
+        col: 'item.position[1]',
+        minSizeY: 'item.minSizeY',
+        maxSizeY: 'item.maxSizeY'
     };
 ```
 The gridsterItem directive can be configured like this:
@@ -121,6 +123,10 @@ Simply pass your desired options to the gridster directive
 		maxRows: 100,
 		defaultSizeX: 2, // the default width of a gridster item, if not specifed
 		defaultSizeY: 1, // the default height of a gridster item, if not specified
+		minSizeX: 1, // minimum column width of an item
+		maxSizeX: null, // maximum column width of an item
+		minSizeY: 1, // minumum row height of an item
+		maxSizeY: null, // maximum row height of an item
 		resizable: {
 		   enabled: true,
 		   handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
