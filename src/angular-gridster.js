@@ -22,6 +22,10 @@
 		maxRows: 100, // maximum amount of rows in the grid
 		defaultSizeX: 2, // default width of an item in columns
 		defaultSizeY: 1, // default height of an item in rows
+		minSizeX: 1, // minimum column width of an item
+		maxSizeX: null, // maximum column width of an item
+		minSizeY: 1, // minumum row height of an item
+		maxSizeY: null, // maximum row height of an item
 		saveGridItemCalculatedHeightInMobile: false, // grid item height in mobile display. true- to use the calculated height by sizeY given
 		resizable: { // options to pass to resizable handler
 			enabled: true,
@@ -414,9 +418,7 @@
 			 */
 			this.updateHeight = function(plus) {
 				var maxHeight = this.minRows;
-				if (!plus) {
-					plus = 0;
-				}
+				plus = plus || 0;
 				for (var rowIndex = this.grid.length; rowIndex >= 0; --rowIndex) {
 					var columns = this.grid[rowIndex];
 					if (!columns) {
@@ -519,56 +521,56 @@
 							};
 						};
 
-var refresh = function() {
-                            gridster.setOptions(scope.config);
+						var refresh = function() {
+							gridster.setOptions(scope.config);
 
-                            // resolve "auto" & "match" values
-                            if (gridster.width === 'auto') {
-                                gridster.curWidth = parseInt($elem.css('width')) || $elem.prop('offsetWidth');
-                            } else {
-                                gridster.curWidth = gridster.width;
-                            }
+							// resolve "auto" & "match" values
+							if (gridster.width === 'auto') {
+								gridster.curWidth = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
+							} else {
+								gridster.curWidth = gridster.width;
+							}
 
-                            if(gridster.colWidth === 'auto') {
-                                gridster.curColWidth = parseInt((gridster.curWidth +(gridster.outerMargin ? -gridster.margins[1]: gridster.margins[1])) / gridster.columns);
-                            } else {
-                                gridster.curColWidth = gridster.colWidth;
-                            }
+							if (gridster.colWidth === 'auto') {
+								gridster.curColWidth = parseInt((gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns, 10);
+							} else {
+								gridster.curColWidth = gridster.colWidth;
+							}
 
-                            if (typeof gridster.rowHeight === 'string') {
-                                if (gridster.rowHeight === 'match') {
-                                    gridster.curRowHeight = gridster.curColWidth;
-                                } else if (gridster.rowHeight.indexOf('*') !== -1) {
-                                    gridster.curRowHeight = gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', '');
-                                } else if (gridster.rowHeight.indexOf('/') !== -1) {
-                                    gridster.curRowHeight = gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', '');
-                                } else {
-                                    gridster.curRowHeight = gridster.rowHeight;
-                                }
+							if (typeof gridster.rowHeight === 'string') {
+								if (gridster.rowHeight === 'match') {
+									gridster.curRowHeight = gridster.curColWidth;
+								} else if (gridster.rowHeight.indexOf('*') !== -1) {
+									gridster.curRowHeight = gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', '');
+								} else if (gridster.rowHeight.indexOf('/') !== -1) {
+									gridster.curRowHeight = gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', '');
+								} else {
+									gridster.curRowHeight = gridster.rowHeight;
+								}
 
-                            }
+							}
 
-                            gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
+							gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
 
-                            // loop through all items and reset their CSS
-                            for (var rowIndex = 0, l = gridster.grid.length; rowIndex < l; ++rowIndex) {
-                                var columns = gridster.grid[rowIndex];
-                                if (!columns) {
-                                    continue;
-                                }
+							// loop through all items and reset their CSS
+							for (var rowIndex = 0, l = gridster.grid.length; rowIndex < l; ++rowIndex) {
+								var columns = gridster.grid[rowIndex];
+								if (!columns) {
+									continue;
+								}
 
-                                for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
-                                    if (columns[colIndex]) {
-                                        var item = columns[colIndex];
-                                        item.setElementPosition();
-                                        item.setElementSizeY();
-                                        item.setElementSizeX();
-                                    }
-                                }
-                            }
+								for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
+									if (columns[colIndex]) {
+										var item = columns[colIndex];
+										item.setElementPosition();
+										item.setElementSizeY();
+										item.setElementSizeX();
+									}
+								}
+							}
 
-                            updateHeight();
-                    };
+							updateHeight();
+						};
 
 						// update grid items on config changes
 						scope.$watch('config', refresh, true);
@@ -587,10 +589,10 @@ var refresh = function() {
 
 						scope.$watch('gridster.gridHeight', updateHeight);
 
-						var prevWidth = parseInt($elem.css('width')) || $elem.prop('offsetWidth');
+						var prevWidth = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
 
 						function resize() {
-							var width = parseInt($elem.css('width')) || $elem.prop('offsetWidth');
+							var width = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
 
 							if (!width || width === prevWidth || gridster.movingItem) {
 								return;
@@ -624,8 +626,7 @@ var refresh = function() {
 						$win.on('resize', onResize);
 
 						scope.$watch(function() {
-							var _width = parseInt($elem.css('width')) || $elem.prop('offsetWidth');
-							return _width;
+							return $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
 						}, resize);
 
 						// be sure to cleanup
@@ -654,6 +655,10 @@ var refresh = function() {
 		this.col = null;
 		this.sizeX = null;
 		this.sizeY = null;
+		this.minSizeX = 0;
+		this.minSizeY = 0;
+		this.maxSizeX = null;
+		this.maxSizeY = null;
 
 		this.init = function($element, gridster) {
 			this.$element = $element;
@@ -719,6 +724,29 @@ var refresh = function() {
 			if (isNaN(value) || value === 0) {
 				value = this.gridster['default' + titleCase];
 			}
+			var max = key === 'X' ? this.gridster.columns : this.gridster.maxRows;
+			if (this['max' + titleCase]) {
+				max = Math.min(this['max' + titleCase], max);
+			}
+			if (this.gridster['max' + titleCase]) {
+				max = Math.min(this.gridster['max' + titleCase], max);
+			}
+			if (key === 'X' && this.cols) {
+				max -= this.cols;
+			} else if (key === 'Y' && this.rows) {
+				max -= this.rows;
+			}
+
+			var min = key === 'X' ? this.gridster.minColumns : this.gridster.minRows;
+			if (this['min' + titleCase]) {
+				min = Math.max(this['min' + titleCase], min);
+			}
+			if (this.gridster['min' + titleCase]) {
+				min = Math.max(this.gridster['min' + titleCase], min);
+			}
+
+			value = Math.max(Math.min(value, max), min);
+
 			var changed = !(this[camelCase] === value && this['old' + titleCase] && this['old' + titleCase] === value);
 			this['old' + titleCase] = this[camelCase] = value;
 
@@ -742,7 +770,7 @@ var refresh = function() {
 		 * @param {number} rows
 		 */
 		this.setSizeY = function(rows) {
-			this.setSize('y', rows);
+			this.setSize('Y', rows);
 		};
 
 		/**
@@ -751,7 +779,7 @@ var refresh = function() {
 		 * @param {number} rows
 		 */
 		this.setSizeX = function(columns) {
-			this.setSize('x', columns);
+			this.setSize('X', columns);
 		};
 
 		/**
@@ -823,13 +851,23 @@ var refresh = function() {
 				var originalCol, originalRow;
 
 				function mouseDown(e) {
+					switch (e.which) {
+						case 1:
+							// left mouse button
+							break;
+						case 2:
+						case 3:
+							// right or middle mouse button
+							return;
+					}
+
 					lastMouseX = e.pageX;
 					lastMouseY = e.pageY;
 
-					elmX = parseInt($el.css('left'));
-					elmY = parseInt($el.css('top'));
-					elmW = parseInt($el.css('width'));
-					elmH = parseInt($el.css('height'));
+					elmX = parseInt($el.css('left'), 10);
+					elmY = parseInt($el.css('top'), 10);
+					elmW = $el[0].offsetWidth;
+					elmH = $el[0].offsetHeight;
 
 					originalCol = item.col;
 					originalRow = item.row;
@@ -970,8 +1008,8 @@ var refresh = function() {
 					}
 					gridster.movingItem = null;
 					item.setPosition(item.row, item.col);
-					item.setSizeY(item.sizeY > gridster.maxRows ? gridster.maxRows : item.sizeY);
-					item.setSizeX(item.sizeX > gridster.columns ? gridster.columns : item.sizeX);
+					item.setSizeY(item.sizeY);
+					item.setSizeX(item.sizeX);
 
 					scope.$apply(function() {
 						if (gridster.draggable && gridster.draggable.stop) {
@@ -1063,15 +1101,25 @@ var refresh = function() {
 					var originalWidth, originalHeight;
 
 					function mouseDown(e) {
+						switch (e.which) {
+							case 1:
+								// left mouse button
+								break;
+							case 2:
+							case 3:
+								// right or middle mouse button
+								return;
+						}
+
 						// Get the current mouse position.
 						lastMouseX = e.pageX;
 						lastMouseY = e.pageY;
 
 						// Record current widget dimensions
-						elmX = parseInt($el.css('left'));
-						elmY = parseInt($el.css('top'));
-						elmW = parseInt($el.css('width'));
-						elmH = parseInt($el.css('height'));
+						elmX = parseInt($el.css('left'), 10);
+						elmY = parseInt($el.css('top'), 10);
+						elmW = $el[0].offsetWidth;
+						elmH = $el[0].offsetHeight;
 
 						originalWidth = item.sizeX;
 						originalHeight = item.sizeY;
@@ -1205,10 +1253,9 @@ var refresh = function() {
 							item.sizeX = sizeX;
 							item.sizeY = sizeY;
 						}
+						var isChanged = item.row !== oldRow || item.col !== oldCol || item.sizeX !== oldSizeX || item.sizeY !== oldSizeY;
 
-						if (
-							hasCallback || item.row !== oldRow || item.col !== oldCol || item.sizeX !== oldSizeX || item.sizeY !== oldSizeY
-						) {
+						if (hasCallback || isChanged) {
 							scope.$apply(function() {
 								if (hasCallback) {
 									gridster.resizable.resize(e, $el, itemOptions); // options is the item model
@@ -1224,7 +1271,7 @@ var refresh = function() {
 
 						item.setPosition(item.row, item.col);
 						item.setSizeY(item.sizeY);
-						item.setSizeX(item.sizeX > gridster.columns ? gridster.columns : item.sizeX);
+						item.setSizeX(item.sizeX);
 
 						scope.$apply(function() {
 							if (gridster.resizable && gridster.resizable.stop) {
@@ -1323,7 +1370,7 @@ var refresh = function() {
 					var gridster = controllers[0],
 						item = controllers[1];
 
-					//bind the items position properties
+					// bind the item's position properties
 					if (optionsKey) {
 						var $optionsGetter = $parse(optionsKey);
 						options = $optionsGetter(scope) || {};
@@ -1332,7 +1379,11 @@ var refresh = function() {
 								row: item.row,
 								col: item.col,
 								sizeX: item.sizeX,
-								sizeY: item.sizeY
+								sizeY: item.sizeY,
+								minSizeX: 0,
+								minSizeY: 0,
+								maxSizeX: null,
+								maxSizeY: null
 							};
 							$optionsGetter.assign(scope, options);
 						}
@@ -1344,7 +1395,7 @@ var refresh = function() {
 
 					$el.addClass('gridster-item');
 
-					var aspects = ['sizeX', 'sizeY', 'row', 'col'],
+					var aspects = ['minSizeX', 'maxSizeX', 'minSizeY', 'maxSizeY', 'sizeX', 'sizeY', 'row', 'col'],
 						$getters = {};
 
 					var aspectFn = function(aspect) {
@@ -1392,28 +1443,22 @@ var refresh = function() {
 						}
 					}
 					scope.$watch(function() {
-						return item.row;
-					}, positionChanged);
-					scope.$watch(function() {
-						return item.col;
+						return item.row + ',' + item.col;
 					}, positionChanged);
 
-					scope.$watch(function() {
-						return item.sizeY;
-					}, function(sizeY) {
-						item.setSizeY(sizeY);
-						if ($getters.sizeY && $getters.sizeY.assign) {
-							$getters.sizeY.assign(scope, item.sizeY);
-						}
-					});
-					scope.$watch(function() {
-						return item.sizeX;
-					}, function(sizeX) {
-						item.setSizeX(sizeX);
+					function sizeChanged() {
+						item.setSizeX(item.sizeX);
 						if ($getters.sizeX && $getters.sizeX.assign) {
 							$getters.sizeX.assign(scope, item.sizeX);
 						}
-					});
+						item.setSizeY(item.sizeY);
+						if ($getters.sizeY && $getters.sizeY.assign) {
+							$getters.sizeY.assign(scope, item.sizeY);
+						}
+					}
+					scope.$watch(function() {
+						return item.sizeY + ',' + item.sizeX + '|' + item.minSizeX + ',' + item.maxSizeX + ',' + item.minSizeY + ',' + item.maxSizeY;
+					}, sizeChanged);
 
 					var draggable = new GridsterDraggable($el, scope, gridster, item, options);
 					var resizable = new GridsterResizable($el, scope, gridster, item, options);
