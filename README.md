@@ -132,14 +132,14 @@ Simply pass your desired options to the gridster directive
 		   handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
 		   start: function(event, $element, widget) {}, // optional callback fired when resize is started,
 		   resize: function(event, $element, widget) {}, // optional callback fired when item is resized,
-		   stop: function(event, $element, widget) {} // optional callback fired when item is finished resizing
+		   stop: function(event, $element, widget, newSize) {} // optional callback fired when item is finished resizing
 		},
 		draggable: {
 		   enabled: true, // whether dragging items is supported
 		   handle: '.my-class', // optional selector for resize handle
 		   start: function(event, $element, widget) {}, // optional callback fired when drag is started,
 		   drag: function(event, $element, widget) {}, // optional callback fired when item is moved,
-		   stop: function(event, $element, widget) {} // optional callback fired when item is finished dragging
+		   stop: function(event, $element, widget, newPosition) {} // optional callback fired when item is finished dragging
 		}
     };
 ```

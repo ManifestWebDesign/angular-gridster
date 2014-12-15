@@ -1017,7 +1017,7 @@
 
 					scope.$apply(function() {
 						if (gridster.draggable && gridster.draggable.stop) {
-							gridster.draggable.stop(event, $el, itemOptions);
+							gridster.draggable.stop(event, $el, itemOptions, [row, col]);
 						}
 					});
 				}
@@ -1269,6 +1269,11 @@
 					}
 
 					function resizeStop(e) {
+						var newSize = {
+							x: item.sizeX,
+							y: item.sizeY
+						};
+
 						$el.removeClass('gridster-item-moving');
 
 						gridster.movingItem = null;
@@ -1279,7 +1284,7 @@
 
 						scope.$apply(function() {
 							if (gridster.resizable && gridster.resizable.stop) {
-								gridster.resizable.stop(e, $el, itemOptions); // options is the item model
+								gridster.resizable.stop(e, $el, itemOptions, newSize); // options is the item model
 							}
 						});
 					}
