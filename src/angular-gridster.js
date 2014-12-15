@@ -532,18 +532,18 @@
 							}
 
 							if (gridster.colWidth === 'auto') {
-								gridster.curColWidth = parseInt((gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns, 10);
+								gridster.curColWidth = (gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns;
 							} else {
 								gridster.curColWidth = gridster.colWidth;
 							}
 
 							if (typeof gridster.rowHeight === 'string') {
 								if (gridster.rowHeight === 'match') {
-									gridster.curRowHeight = gridster.curColWidth;
+									gridster.curRowHeight = Math.round(gridster.curColWidth);
 								} else if (gridster.rowHeight.indexOf('*') !== -1) {
-									gridster.curRowHeight = gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', '');
+									gridster.curRowHeight = Math.round(gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', ''));
 								} else if (gridster.rowHeight.indexOf('/') !== -1) {
-									gridster.curRowHeight = gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', '');
+									gridster.curRowHeight = Math.round(gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', ''));
 								} else {
 									gridster.curRowHeight = gridster.rowHeight;
 								}
