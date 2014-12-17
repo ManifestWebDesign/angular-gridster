@@ -1296,10 +1296,15 @@
 					if (gridster.swapping === true && hasItemsInTheWay) {
 						var itemInTheWay = itemsInTheWay[0];
 						var sameSize = itemInTheWay.sizeX === item.sizeX && itemInTheWay.sizeY === item.sizeY;
-						var samePosition = itemInTheWay.row === row && itemInTheWay.col === col;
+						var sameRow = itemInTheWay.row === row;
+						var sameCol = itemInTheWay.col === col;
+						var samePosition = sameRow && sameCol;
+						var inline = sameRow || sameCol;
 
 						if (samePosition && sameSize) {
 							gridster.swapItems(item, itemInTheWay);
+						} else if (sameSize && inline) {
+							return;
 						}
 					}
 					if (gridster.pushing !== false || !hasItemsInTheWay) {
