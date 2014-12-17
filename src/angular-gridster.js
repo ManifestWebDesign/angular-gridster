@@ -477,8 +477,9 @@
 						return Object.keys(theObject).length;
 					}
 
-					var n = 0;
-					for (var key in theObject) {
+					var n = 0,
+						key;
+					for (key in theObject) {
 						++n;
 					}
 
@@ -856,6 +857,7 @@
 								gridster.curColWidth = gridster.colWidth;
 							}
 
+							gridster.curRowHeight = gridster.rowHeight;
 							if (typeof gridster.rowHeight === 'string') {
 								if (gridster.rowHeight === 'match') {
 									gridster.curRowHeight = Math.round(gridster.curColWidth);
@@ -863,10 +865,7 @@
 									gridster.curRowHeight = Math.round(gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', ''));
 								} else if (gridster.rowHeight.indexOf('/') !== -1) {
 									gridster.curRowHeight = Math.round(gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', ''));
-								} else {
-									gridster.curRowHeight = gridster.rowHeight;
 								}
-
 							}
 
 							gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
