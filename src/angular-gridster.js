@@ -1055,7 +1055,7 @@
 				max -= this.rows;
 			}
 
-			var min = key === 'X' ? this.gridster.minColumns : this.gridster.minRows;
+			var min = 0;
 			if (this['min' + titleCase]) {
 				min = Math.max(this['min' + titleCase], min);
 			}
