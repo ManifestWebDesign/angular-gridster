@@ -853,22 +853,20 @@
 							}
 
 							if (gridster.colWidth === 'auto') {
-								gridster.curColWidth = parseInt((gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns, 10);
+								gridster.curColWidth = (gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns;
 							} else {
 								gridster.curColWidth = gridster.colWidth;
 							}
 
+							gridster.curRowHeight = gridster.rowHeight;
 							if (typeof gridster.rowHeight === 'string') {
 								if (gridster.rowHeight === 'match') {
-									gridster.curRowHeight = gridster.curColWidth;
+									gridster.curRowHeight = Math.round(gridster.curColWidth);
 								} else if (gridster.rowHeight.indexOf('*') !== -1) {
-									gridster.curRowHeight = gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', '');
+									gridster.curRowHeight = Math.round(gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', ''));
 								} else if (gridster.rowHeight.indexOf('/') !== -1) {
-									gridster.curRowHeight = gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', '');
-								} else {
-									gridster.curRowHeight = gridster.rowHeight;
+									gridster.curRowHeight = Math.round(gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', ''));
 								}
-
 							}
 
 							gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
@@ -1058,7 +1056,7 @@
 				max -= this.rows;
 			}
 
-			var min = key === 'X' ? this.gridster.minColumns : this.gridster.minRows;
+			var min = 0;
 			if (this['min' + titleCase]) {
 				min = Math.max(this['min' + titleCase], min);
 			}
@@ -1299,10 +1297,15 @@
 					if (gridster.swapping === true && hasItemsInTheWay) {
 						var itemInTheWay = itemsInTheWay[0];
 						var sameSize = itemInTheWay.sizeX === item.sizeX && itemInTheWay.sizeY === item.sizeY;
-						var samePosition = itemInTheWay.row === row && itemInTheWay.col === col;
+						var sameRow = itemInTheWay.row === row;
+						var sameCol = itemInTheWay.col === col;
+						var samePosition = sameRow && sameCol;
+						var inline = sameRow || sameCol;
 
 						if (samePosition && sameSize) {
 							gridster.swapItems(item, itemInTheWay);
+						} else if (sameSize && inline) {
+							return;
 						}
 					}
 					if (gridster.pushing !== false || !hasItemsInTheWay) {
