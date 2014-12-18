@@ -477,11 +477,12 @@
 						return Object.keys(theObject).length;
 					}
 
-					var n = 0,
-						key;
-					for (key in theObject) {
+					var n = 0;
+					/* jshint ignore:start */
+					for (var key in theObject) {
 						++n;
 					}
+					/* jshint ignore:end */
 
 					return n;
 				};
@@ -852,20 +853,22 @@
 							}
 
 							if (gridster.colWidth === 'auto') {
-								gridster.curColWidth = (gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns;
+								gridster.curColWidth = parseInt((gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns, 10);
 							} else {
 								gridster.curColWidth = gridster.colWidth;
 							}
 
-							gridster.curRowHeight = gridster.rowHeight;
 							if (typeof gridster.rowHeight === 'string') {
 								if (gridster.rowHeight === 'match') {
-									gridster.curRowHeight = Math.round(gridster.curColWidth);
+									gridster.curRowHeight = gridster.curColWidth;
 								} else if (gridster.rowHeight.indexOf('*') !== -1) {
-									gridster.curRowHeight = Math.round(gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', ''));
+									gridster.curRowHeight = gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', '');
 								} else if (gridster.rowHeight.indexOf('/') !== -1) {
-									gridster.curRowHeight = Math.round(gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', ''));
+									gridster.curRowHeight = gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', '');
+								} else {
+									gridster.curRowHeight = gridster.rowHeight;
 								}
+
 							}
 
 							gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
@@ -1055,7 +1058,7 @@
 				max -= this.rows;
 			}
 
-			var min = 0;
+			var min = key === 'X' ? this.gridster.minColumns : this.gridster.minRows;
 			if (this['min' + titleCase]) {
 				min = Math.max(this['min' + titleCase], min);
 			}
@@ -1296,15 +1299,10 @@
 					if (gridster.swapping === true && hasItemsInTheWay) {
 						var itemInTheWay = itemsInTheWay[0];
 						var sameSize = itemInTheWay.sizeX === item.sizeX && itemInTheWay.sizeY === item.sizeY;
-						var sameRow = itemInTheWay.row === row;
-						var sameCol = itemInTheWay.col === col;
-						var samePosition = sameRow && sameCol;
-						var inline = sameRow || sameCol;
+						var samePosition = itemInTheWay.row === row && itemInTheWay.col === col;
 
 						if (samePosition && sameSize) {
 							gridster.swapItems(item, itemInTheWay);
-						} else if (sameSize && inline) {
-							return;
 						}
 					}
 					if (gridster.pushing !== false || !hasItemsInTheWay) {
@@ -1432,6 +1430,7 @@
 						minWidth = gridster.curColWidth - gridster.margins[1];
 
 					var originalWidth, originalHeight;
+					var savedDraggable;
 
 					function mouseDown(e) {
 						switch (e.which) {
@@ -1442,6 +1441,13 @@
 							case 3:
 								// right or middle mouse button
 								return;
+						}
+
+						// save the draggable setting to restore after resize
+						savedDraggable = gridster.draggable.enabled;
+						if (savedDraggable) {
+							gridster.draggable.enabled = false;
+							scope.$broadcast('gridster-draggable-changed');
 						}
 
 						// Get the current mouse position.
@@ -1557,6 +1563,11 @@
 					}
 
 					function mouseUp(e) {
+						// restore draggable setting to its original state
+						if (gridster.draggable.enabled !== savedDraggable) {
+							gridster.draggable.enabled = savedDraggable;
+							scope.$broadcast('gridster-draggable-changed');
+						}
 
 						mOffX = mOffY = 0;
 
