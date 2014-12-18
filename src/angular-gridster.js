@@ -478,9 +478,11 @@
 					}
 
 					var n = 0;
+					/* jshint ignore:start */
 					for (var key in theObject) {
 						++n;
 					}
+					/* jshint ignore:end */
 
 					return n;
 				};
@@ -1428,6 +1430,7 @@
 						minWidth = gridster.curColWidth - gridster.margins[1];
 
 					var originalWidth, originalHeight;
+					var savedDraggable;
 
 					function mouseDown(e) {
 						switch (e.which) {
@@ -1438,6 +1441,13 @@
 							case 3:
 								// right or middle mouse button
 								return;
+						}
+
+						// save the draggable setting to restore after resize
+						savedDraggable = gridster.draggable.enabled;
+						if (savedDraggable) {
+							gridster.draggable.enabled = false;
+							scope.$broadcast('gridster-draggable-changed');
 						}
 
 						// Get the current mouse position.
@@ -1553,6 +1563,11 @@
 					}
 
 					function mouseUp(e) {
+						// restore draggable setting to its original state
+						if (gridster.draggable.enabled !== savedDraggable) {
+							gridster.draggable.enabled = savedDraggable;
+							scope.$broadcast('gridster-draggable-changed');
+						}
 
 						mOffX = mOffY = 0;
 
