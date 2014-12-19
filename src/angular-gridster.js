@@ -1179,6 +1179,11 @@
 						return false;
 					}
 
+					// exit, if the target has it's own click event
+					if (angular.element(e.target).attr('onclick') || angular.element(e.target).attr('ng-click')) {
+						return false;
+					}
+
 					switch (e.which) {
 						case 1:
 							// left mouse button
@@ -1449,11 +1454,11 @@
 								return;
 						}
 
-					    // save the draggable setting to restore after resize
+						// save the draggable setting to restore after resize
 						savedDraggable = gridster.draggable.enabled;
 						if (savedDraggable) {
-						    gridster.draggable.enabled = false;
-						    scope.$broadcast('gridster-draggable-changed');
+							gridster.draggable.enabled = false;
+							scope.$broadcast('gridster-draggable-changed');
 						}
 
 						// Get the current mouse position.
@@ -1569,11 +1574,11 @@
 					}
 
 					function mouseUp(e) {
-					    // restore draggable setting to its original state
-					    if (gridster.draggable.enabled !== savedDraggable) {
-					        gridster.draggable.enabled = savedDraggable;
-					        scope.$broadcast('gridster-draggable-changed');
-					    }
+						// restore draggable setting to its original state
+						if (gridster.draggable.enabled !== savedDraggable) {
+							gridster.draggable.enabled = savedDraggable;
+							scope.$broadcast('gridster-draggable-changed');
+						}
 
 						mOffX = mOffY = 0;
 
