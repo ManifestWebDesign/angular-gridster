@@ -1337,7 +1337,7 @@
 					$el.removeClass('gridster-item-moving');
 					var row = gridster.pixelsToRows(elmY);
 					var col = gridster.pixelsToColumns(elmX);
-					if ((gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0)) {
+					if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
 						item.row = row;
 						item.col = col;
 					}
