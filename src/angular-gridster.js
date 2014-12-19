@@ -1428,8 +1428,12 @@
 						maxTop = 9999,
 						minLeft = 0;
 
-					var minHeight = gridster.curRowHeight - gridster.margins[0],
-						minWidth = gridster.curColWidth - gridster.margins[1];
+					var getMinHeight = function() {
+						return gridster.curRowHeight - gridster.margins[0];
+					};
+					var getMinWidth = function(){
+						return gridster.curColWidth - gridster.margins[1];
+					};
 
 					var originalWidth, originalHeight;
 					var savedDraggable;
@@ -1509,8 +1513,8 @@
 							dX = diffX;
 
 						if (hClass.indexOf('n') >= 0) {
-							if (elmH - dY < minHeight) {
-								diffY = elmH - minHeight;
+							if (elmH - dY < getMinHeight()) {
+								diffY = elmH - getMinHeight();
 								mOffY = dY - diffY;
 							} else if (elmY + dY < minTop) {
 								diffY = minTop - elmY;
@@ -1520,8 +1524,8 @@
 							elmH -= diffY;
 						}
 						if (hClass.indexOf('s') >= 0) {
-							if (elmH + dY < minHeight) {
-								diffY = minHeight - elmH;
+							if (elmH + dY < getMinHeight()) {
+								diffY = getMinHeight() - elmH;
 								mOffY = dY - diffY;
 							} else if (elmY + elmH + dY > maxTop) {
 								diffY = maxTop - elmY - elmH;
@@ -1530,8 +1534,8 @@
 							elmH += diffY;
 						}
 						if (hClass.indexOf('w') >= 0) {
-							if (elmW - dX < minWidth) {
-								diffX = elmW - minWidth;
+							if (elmW - dX < getMinWidth()) {
+								diffX = elmW - getMinWidth();
 								mOffX = dX - diffX;
 							} else if (elmX + dX < minLeft) {
 								diffX = minLeft - elmX;
@@ -1541,8 +1545,8 @@
 							elmW -= diffX;
 						}
 						if (hClass.indexOf('e') >= 0) {
-							if (elmW + dX < minWidth) {
-								diffX = minWidth - elmW;
+							if (elmW + dX < getMinWidth()) {
+								diffX = getMinWidth() - elmW;
 								mOffX = dX - diffX;
 							} else if (elmX + elmW + dX > maxLeft) {
 								diffX = maxLeft - elmX - elmW;
