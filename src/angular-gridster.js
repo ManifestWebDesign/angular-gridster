@@ -1337,11 +1337,22 @@
 					$el.removeClass('gridster-item-moving');
 					var row = gridster.pixelsToRows(elmY);
 					var col = gridster.pixelsToColumns(elmX);
-					if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
+					if ((gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0)) {
 						item.row = row;
 						item.col = col;
 					}
 					gridster.movingItem = null;
+
+					if (gridster.isValidMove && !gridster.isValidMove(event, $el, {
+							row: row,
+							col: col,
+							sizeX: item.sizeX,
+							sizeY: item.sizeY
+						})) {
+						item.row = originalRow;
+						item.col = originalCol;
+					}
+
 					item.setPosition(item.row, item.col);
 					item.setSizeY(item.sizeY);
 					item.setSizeX(item.sizeX);
@@ -1431,7 +1442,7 @@
 					var minHeight = gridster.curRowHeight - gridster.margins[0],
 						minWidth = gridster.curColWidth - gridster.margins[1];
 
-					var originalWidth, originalHeight;
+					var originalWidth, originalHeight, originalRow, originalCol;
 					var savedDraggable;
 
 					function mouseDown(e) {
@@ -1445,11 +1456,11 @@
 								return;
 						}
 
-					    // save the draggable setting to restore after resize
+						// save the draggable setting to restore after resize
 						savedDraggable = gridster.draggable.enabled;
 						if (savedDraggable) {
-						    gridster.draggable.enabled = false;
-						    scope.$broadcast('gridster-draggable-changed');
+							gridster.draggable.enabled = false;
+							scope.$broadcast('gridster-draggable-changed');
 						}
 
 						// Get the current mouse position.
@@ -1464,6 +1475,8 @@
 
 						originalWidth = item.sizeX;
 						originalHeight = item.sizeY;
+						originalRow = item.row;
+						originalCol = item.col;
 
 						resizeStart(e);
 
@@ -1565,11 +1578,11 @@
 					}
 
 					function mouseUp(e) {
-					    // restore draggable setting to its original state
-					    if (gridster.draggable.enabled !== savedDraggable) {
-					        gridster.draggable.enabled = savedDraggable;
-					        scope.$broadcast('gridster-draggable-changed');
-					    }
+						// restore draggable setting to its original state
+						if (gridster.draggable.enabled !== savedDraggable) {
+							gridster.draggable.enabled = savedDraggable;
+							scope.$broadcast('gridster-draggable-changed');
+						}
 
 						mOffX = mOffY = 0;
 
@@ -1611,6 +1624,18 @@
 						$el.removeClass('gridster-item-resizing');
 
 						gridster.movingItem = null;
+
+						if (gridster.isValidMove && !gridster.isValidMove(e, $el, {
+								sizeX: item.sizeX,
+								sizeY: item.sizeY,
+								row: item.row,
+								col: item.col
+							})) {
+							item.row = originalRow;
+							item.col = originalCol;
+							item.sizeX = originalWidth;
+							item.sizeY = originalHeight;
+						}
 
 						item.setPosition(item.row, item.col);
 						item.setSizeY(item.sizeY);
