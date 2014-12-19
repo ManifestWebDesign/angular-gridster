@@ -1179,6 +1179,11 @@
 						return false;
 					}
 
+					// exit, if the target has it's own click event
+					if (angular.element(e.target).attr('onclick') || angular.element(e.target).attr('ng-click') || angular.element(e.target).attr('ngClick')) {
+						return false;
+					}
+
 					switch (e.which) {
 						case 1:
 							// left mouse button
