@@ -1066,7 +1066,7 @@
 
 			value = Math.max(Math.min(value, max), min);
 
-			var changed = !(this[camelCase] === value && this['old' + titleCase] && this['old' + titleCase] === value);
+			var changed = (this[camelCase] !== value || (this['old' + titleCase] && this['old' + titleCase] !== value));
 			this['old' + titleCase] = this[camelCase] = value;
 
 			if (!this.isMoving()) {
