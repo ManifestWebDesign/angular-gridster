@@ -1619,7 +1619,6 @@
 						$el.removeClass('gridster-item-resizing');
 
 						gridster.movingItem = null;
-						//TODO change this to (event, $element, itemOptions, itemModel)
 						if (gridster.isValidMove && !gridster.isValidMove(e, $el, itemOptions, item)) {
 							item.row = originalRow;
 							item.col = originalCol;
