@@ -1151,7 +1151,6 @@
 	.factory('GridsterDraggable', ['$document', '$timeout', '$window',
 		function($document, $timeout, $window) {
 			function GridsterDraggable($el, scope, gridster, item, itemOptions) {
-
 				var elmX, elmY, elmW, elmH,
 
 					mouseX = 0,
@@ -1343,12 +1342,8 @@
 					}
 					gridster.movingItem = null;
 
-					if (gridster.isValidMove && !gridster.isValidMove(event, $el, {
-							row: row,
-							col: col,
-							sizeX: item.sizeX,
-							sizeY: item.sizeY
-						})) {
+					//TODO change this to (event, $element, itemOptions, itemModel)
+					if (gridster.isValidMove && !gridster.isValidMove(event, $el, itemOptions, item)) {
 						item.row = originalRow;
 						item.col = originalCol;
 					}
@@ -1624,13 +1619,8 @@
 						$el.removeClass('gridster-item-resizing');
 
 						gridster.movingItem = null;
-
-						if (gridster.isValidMove && !gridster.isValidMove(e, $el, {
-								sizeX: item.sizeX,
-								sizeY: item.sizeY,
-								row: item.row,
-								col: item.col
-							})) {
+						//TODO change this to (event, $element, itemOptions, itemModel)
+						if (gridster.isValidMove && !gridster.isValidMove(e, $el, itemOptions, item)) {
 							item.row = originalRow;
 							item.col = originalCol;
 							item.sizeX = originalWidth;
