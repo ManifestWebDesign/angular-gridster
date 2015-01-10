@@ -1436,7 +1436,7 @@
 					var getMinHeight = function() {
 						return gridster.curRowHeight - gridster.margins[0];
 					};
-					var getMinWidth = function(){
+					var getMinWidth = function() {
 						return gridster.curColWidth - gridster.margins[1];
 					};
 
@@ -1594,10 +1594,30 @@
 							oldSizeY = item.sizeY,
 							hasCallback = gridster.resizable && gridster.resizable.resize;
 
-						var row = gridster.pixelsToRows(elmY, false);
-						var col = gridster.pixelsToColumns(elmX, false);
-						var sizeX = gridster.pixelsToColumns(elmW, true);
-						var sizeY = gridster.pixelsToRows(elmH, true);
+						var col = item.col;
+						// only change column if grabbing left edge
+						if (['w', 'nw', 'sw'].indexOf(handleClass) !== -1) {
+							col = gridster.pixelsToColumns(elmX, false);
+						}
+
+						var row = item.row;
+						// only change row if grabbing top edge
+						if (['n', 'ne', 'nw'].indexOf(handleClass) !== -1) {
+							row = gridster.pixelsToRows(elmY, false);
+						}
+
+						var sizeX = item.sizeX;
+						// only change row if grabbing left or right edge
+						if (['n', 's'].indexOf(handleClass) === -1) {
+							sizeX = gridster.pixelsToColumns(elmW, true);
+						}
+
+						var sizeY = item.sizeY;
+						// only change row if grabbing top or bottom edge
+						if (['e', 'w'].indexOf(handleClass) === -1) {
+							sizeY = gridster.pixelsToRows(elmH, true);
+						}
+
 						if (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0) {
 							item.row = row;
 							item.col = col;
