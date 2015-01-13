@@ -1149,6 +1149,21 @@
 				this.$element.css('width', (this.sizeX * this.gridster.curColWidth - this.gridster.margins[1]) + 'px');
 			}
 		};
+
+		/**
+		 * Gets an element's width
+		 */
+		this.getElementSizeX = function(){
+			return (this.sizeX * this.gridster.curColWidth - this.gridster.margins[1]);
+		};
+
+		/**
+		 * Gets an element's height
+		 */
+		this.getElementSizeY = function(){
+			return (this.sizeY * this.gridster.curRowHeight - this.gridster.margins[0]);
+		};
+
 	})
 
 	.factory('GridsterDraggable', ['$document', '$timeout', '$window',
@@ -1805,6 +1820,8 @@
 					for (var i = 0, l = aspects.length; i < l; ++i) {
 						aspectFn(aspects[i]);
 					}
+
+					scope.$broadcast('gridster-item-initialized', [item.sizeY, item.sizeX, item.getElementSizeY(), item.getElementSizeX()]);
 
 					function positionChanged() {
 						// call setPosition so the element and gridster controller are updated
