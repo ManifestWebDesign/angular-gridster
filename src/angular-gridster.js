@@ -490,11 +490,12 @@
 				var computeDocumentToElementDelta = function(theElement) {
 					var elementLeft = 0;
 					var elementTop = 0;
+					var oldIEUserAgent = navigator.userAgent.match(/\bMSIE\b/);
 
 					for (var offsetElement = theElement; offsetElement != null; offsetElement = offsetElement.offsetParent) {
 						//  the following is a major hack for versions of IE less than 8 to avoid an apparent problem on the IEBlog with double-counting the offsets
 						//  this may not be a general solution to IE7's problem with offsetLeft/offsetParent
-						if (navigator.userAgent.match(/\bMSIE\b/) &&
+						if (oldIEUserAgent &&
 							(!document.documentMode || document.documentMode < 8) &&
 							offsetElement.currentStyle.position === 'relative' && offsetElement.offsetParent && offsetElement.offsetParent.currentStyle.position === 'relative' && offsetElement.offsetLeft === offsetElement.offsetParent.offsetLeft) {
 							// add only the top
@@ -1031,7 +1032,7 @@
 		 * @param {string} key Can be either "x" or "y"
 		 * @param {number} value The size amount
 		 */
-		this.setSize = function(key, value) {
+		this.setSize = function(key, value, preventMove) {
 			key = key.toUpperCase();
 			var camelCase = 'size' + key,
 				titleCase = 'Size' + key;
@@ -1065,13 +1066,13 @@
 
 			value = Math.max(Math.min(value, max), min);
 
-			var changed = !(this[camelCase] === value && this['old' + titleCase] && this['old' + titleCase] === value);
+			var changed = (this[camelCase] !== value || (this['old' + titleCase] && this['old' + titleCase] !== value));
 			this['old' + titleCase] = this[camelCase] = value;
 
 			if (!this.isMoving()) {
 				this['setElement' + titleCase]();
 			}
-			if (changed) {
+			if (!preventMove && changed) {
 				this.gridster.moveOverlappingItems(this);
 
 				if (this.gridster.loaded) {
@@ -1080,6 +1081,8 @@
 
 				this.gridster.updateHeight(this.isMoving() ? this.sizeY : 0);
 			}
+
+			return changed;
 		};
 
 		/**
@@ -1087,8 +1090,8 @@
 		 *
 		 * @param {number} rows
 		 */
-		this.setSizeY = function(rows) {
-			this.setSize('Y', rows);
+		this.setSizeY = function(rows, preventMove) {
+			return this.setSize('Y', rows, preventMove);
 		};
 
 		/**
@@ -1096,8 +1099,8 @@
 		 *
 		 * @param {number} rows
 		 */
-		this.setSizeX = function(columns) {
-			this.setSize('X', columns);
+		this.setSizeX = function(columns, preventMove) {
+			return this.setSize('X', columns, preventMove);
 		};
 
 		/**
@@ -1348,8 +1351,6 @@
 					}
 					gridster.movingItem = null;
 					item.setPosition(item.row, item.col);
-					item.setSizeY(item.sizeY);
-					item.setSizeX(item.sizeX);
 
 					scope.$apply(function() {
 						if (gridster.draggable && gridster.draggable.stop) {
@@ -1822,13 +1823,23 @@
 					}, positionChanged);
 
 					function sizeChanged() {
-						item.setSizeX(item.sizeX);
-						if ($getters.sizeX && $getters.sizeX.assign) {
+						var changedX = item.setSizeX(item.sizeX, true);
+						if (changedX && $getters.sizeX && $getters.sizeX.assign) {
 							$getters.sizeX.assign(scope, item.sizeX);
 						}
-						item.setSizeY(item.sizeY);
-						if ($getters.sizeY && $getters.sizeY.assign) {
+						var changedY = item.setSizeY(item.sizeY, true);
+						if (changedY && $getters.sizeY && $getters.sizeY.assign) {
 							$getters.sizeY.assign(scope, item.sizeY);
+						}
+
+						if (changedX || changedY) {
+							item.gridster.moveOverlappingItems(item);
+
+							if (item.gridster.loaded) {
+								item.gridster.floatItemsUp();
+							}
+
+							item.gridster.updateHeight(item.isMoving() ? item.sizeY : 0);
 						}
 					}
 					scope.$watch(function() {
