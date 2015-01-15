@@ -1837,9 +1837,12 @@
 							$getters.col.assign(scope, item.col);
 						}
 					}
-					scope.$watch(function() {
-						return item.row + ',' + item.col;
-					}, positionChanged);
+					//Wait for placing items finish
+					$timeout(function () {
+						scope.$watch(function() {
+							return item.row + ',' + item.col;
+						}, positionChanged);
+					});
 
 					function sizeChanged() {
 						var changedX = item.setSizeX(item.sizeX, true);
