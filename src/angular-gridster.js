@@ -980,6 +980,7 @@
 		this.maxSizeY = null;
 
 		this.init = function($element, gridster) {
+			gridster.grid = [];
 			this.$element = $element;
 			this.gridster = gridster;
 			this.sizeX = gridster.defaultSizeX;
