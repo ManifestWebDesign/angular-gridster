@@ -1153,14 +1153,14 @@
 		/**
 		 * Gets an element's width
 		 */
-		this.getElementSizeX = function(){
+		this.getElementSizeX = function() {
 			return (this.sizeX * this.gridster.curColWidth - this.gridster.margins[1]);
 		};
 
 		/**
 		 * Gets an element's height
 		 */
-		this.getElementSizeY = function(){
+		this.getElementSizeY = function() {
 			return (this.sizeY * this.gridster.curRowHeight - this.gridster.margins[0]);
 		};
 
@@ -1469,6 +1469,8 @@
 								// right or middle mouse button
 								return;
 						}
+
+						console.log(e);
 
 						// save the draggable setting to restore after resize
 						savedDraggable = gridster.draggable.enabled;
