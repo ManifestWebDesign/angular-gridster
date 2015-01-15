@@ -1750,8 +1750,8 @@
 	/**
 	 * GridsterItem directive
 	 */
-	.directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable',
-		function($parse, GridsterDraggable, GridsterResizable) {
+	.directive('gridsterItem', ['$timeout', '$parse', 'GridsterDraggable', 'GridsterResizable',
+		function($timeout, $parse, GridsterDraggable, GridsterResizable) {
 			return {
 				restrict: 'EA',
 				controller: 'GridsterItemCtrl',
