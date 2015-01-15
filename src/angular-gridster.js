@@ -1470,8 +1470,6 @@
 								return;
 						}
 
-						console.log(e);
-
 						// save the draggable setting to restore after resize
 						savedDraggable = gridster.draggable.enabled;
 						if (savedDraggable) {
