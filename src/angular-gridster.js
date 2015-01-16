@@ -178,8 +178,7 @@
 						break;
 					}
 				}
-				this.floatItemsUp();
-				this.updateHeight();
+				this.layoutDirty = true;
 			};
 
 			/**
@@ -271,6 +270,7 @@
 					this.grid[row] = [];
 				}
 				this.grid[row][column] = item;
+				this.layoutDirty = true;
 			};
 
 			/**
@@ -289,6 +289,8 @@
 				item1.col = item2.col;
 				item2.row = item1Row;
 				item2.col = item1Col;
+
+				this.layoutDirty = true;
 			};
 
 			/**
@@ -908,6 +910,21 @@
 
 						scope.$watch('gridster.gridHeight', updateHeight);
 
+						scope.$watch('gridster.layoutDirty', function(isDirty) {
+							if (!isDirty) {
+								return;
+							}
+							if (gridster.loaded) {
+								gridster.floatItemsUp();
+							}
+							gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
+							gridster.layoutDirty = false;
+						});
+
+						scope.$watch('gridster.movingItem', function() {
+							gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
+						});
+
 						var prevWidth = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
 
 						function resize() {
@@ -1015,11 +1032,6 @@
 		 */
 		this.setPosition = function(row, column) {
 			this.gridster.putItem(this, row, column);
-			if (this.gridster.loaded) {
-				this.gridster.floatItemsUp();
-			}
-
-			this.gridster.updateHeight(this.isMoving() ? this.sizeY : 0);
 
 			if (!this.isMoving()) {
 				this.setElementPosition();
@@ -1074,12 +1086,6 @@
 			}
 			if (!preventMove && changed) {
 				this.gridster.moveOverlappingItems(this);
-
-				if (this.gridster.loaded) {
-					this.gridster.floatItemsUp();
-				}
-
-				this.gridster.updateHeight(this.isMoving() ? this.sizeY : 0);
 			}
 
 			return changed;
@@ -1851,12 +1857,6 @@
 
 						if (changedX || changedY) {
 							item.gridster.moveOverlappingItems(item);
-
-							if (item.gridster.loaded) {
-								item.gridster.floatItemsUp();
-							}
-
-							item.gridster.updateHeight(item.isMoving() ? item.sizeY : 0);
 						}
 					}
 					scope.$watch(function() {
