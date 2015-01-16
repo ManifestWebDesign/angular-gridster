@@ -376,8 +376,9 @@
 						continue;
 					}
 					for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
-						if (columns[colIndex]) {
-							this.floatItemUp(columns[colIndex]);
+						var item = columns[colIndex];
+						if (item && this.movingItem !== item) {
+							this.floatItemUp(item);
 						}
 					}
 				}
