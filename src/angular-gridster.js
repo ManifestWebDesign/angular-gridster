@@ -289,8 +289,6 @@
 				item1.col = item2.col;
 				item2.row = item1Row;
 				item2.col = item1Col;
-
-				this.layoutDirty = true;
 			};
 
 			/**
@@ -370,6 +368,7 @@
 				if (this.floating === false) {
 					return;
 				}
+				console.log('floatItemsUp');
 				for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 					var columns = this.grid[rowIndex];
 					if (!columns) {
@@ -911,6 +910,7 @@
 
 						scope.$watch('gridster.gridHeight', updateHeight);
 
+						gridster.layoutDirty = false;
 						scope.$watch('gridster.layoutDirty', function(isDirty) {
 							if (!isDirty) {
 								return;
