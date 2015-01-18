@@ -1382,32 +1382,27 @@
 							if (sameSize && samePosition) {
 								gridster.swapItems(item, itemsInTheWay[0]);
 							}
-						} else if (boundingBoxItem.sizeX <= item.sizeX && boundingBoxItem.sizeY <= item.sizeY) {
-							if (sameSize && inline && !samePosition) {
-								return;
-							}
+						} else if (sameSize && inline && !samePosition) {
+							return;
+						} else if (boundingBoxItem.sizeX <= item.sizeX && boundingBoxItem.sizeY <= item.sizeY && inline) {
+							var emptyRow = item.row <= row ? item.row : row + item.sizeY;
+							var emptyCol = item.col <= col ? item.col : col + item.sizeX;
+							var rowOffset = emptyRow - boundingBoxItem.row;
+							var colOffset = emptyCol - boundingBoxItem.col;
 
-							if (inline) {
-								var emptyRow = item.row <= row ? item.row : row + item.sizeY;
-								var emptyCol = item.col <= col ? item.col : col + item.sizeX;
+							for (var i = 0, l = itemsInTheWay.length; i < l; ++i) {
+								var itemInTheWay = itemsInTheWay[i];
 
-								var rowOffset = emptyRow - boundingBoxItem.row;
-								var colOffset = emptyCol - boundingBoxItem.col;
+								var itemsInFreeSpace = gridster.getItems(
+									itemInTheWay.row + rowOffset,
+									itemInTheWay.col + colOffset,
+									itemInTheWay.sizeX,
+									itemInTheWay.sizeY,
+									item
+								);
 
-								for (var i = 0, l = itemsInTheWay.length; i < l; ++i) {
-									var itemInTheWay = itemsInTheWay[i];
-
-									var itemsInFreeSpace = gridster.getItems(
-										itemInTheWay.row + rowOffset,
-										itemInTheWay.col + colOffset,
-										itemInTheWay.sizeX,
-										itemInTheWay.sizeY,
-										item
-									);
-
-									if (itemsInFreeSpace.length === 0) {
-										gridster.putItem(itemInTheWay, itemInTheWay.row + rowOffset, itemInTheWay.col + colOffset);
-									}
+								if (itemsInFreeSpace.length === 0) {
+									gridster.putItem(itemInTheWay, itemInTheWay.row + rowOffset, itemInTheWay.col + colOffset);
 								}
 							}
 						}
