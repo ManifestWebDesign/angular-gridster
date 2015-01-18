@@ -368,7 +368,6 @@
 				if (this.floating === false) {
 					return;
 				}
-				console.log('floatItemsUp');
 				for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 					var columns = this.grid[rowIndex];
 					if (!columns) {
@@ -575,7 +574,7 @@
 										which: theEvtObj.which,
 										pointerId: pointerId,
 										pageX: pageX,
-										pageY: pageY,
+										pageY: pageY
 									});
 								}
 
