@@ -1396,9 +1396,6 @@
 
 								for (var i = 0, l = itemsInTheWay.length; i < l; ++i) {
 									var itemInTheWay = itemsInTheWay[i];
-									if (itemInTheWay.sizeY > item.sizeY || itemInTheWay.sizeX > item.sizeX) {
-										break;
-									}
 
 									var itemsInFreeSpace = gridster.getItems(
 										itemInTheWay.row + rowOffset,
