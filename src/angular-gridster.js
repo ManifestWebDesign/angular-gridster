@@ -38,8 +38,10 @@
 		}
 	})
 
-	.controller('GridsterCtrl', ['gridsterConfig',
-		function(gridsterConfig) {
+	.controller('GridsterCtrl', ['gridsterConfig', '$timeout',
+		function(gridsterConfig, $timeout) {
+
+			var gridster = this;
 
 			/**
 			 * Create options from gridsterConfig constant
@@ -48,6 +50,22 @@
 
 			this.resizable = angular.extend({}, gridsterConfig.resizable || {});
 			this.draggable = angular.extend({}, gridsterConfig.draggable || {});
+
+			var flag = false;
+
+			function layoutChanged() {
+				if (flag) {
+					return;
+				}
+				flag = true;
+				$timeout(function() {
+					flag = false;
+					if (gridster.loaded) {
+						gridster.floatItemsUp();
+					}
+					gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
+				});
+			}
 
 			/**
 			 * A positional array of the items in the grid
@@ -178,7 +196,7 @@
 						break;
 					}
 				}
-				this.layoutDirty = true;
+				layoutChanged();
 			};
 
 			/**
@@ -270,7 +288,7 @@
 					this.grid[row] = [];
 				}
 				this.grid[row][column] = item;
-				this.layoutDirty = true;
+				layoutChanged();
 			};
 
 			/**
@@ -908,18 +926,6 @@
 						};
 
 						scope.$watch('gridster.gridHeight', updateHeight);
-
-						gridster.layoutDirty = false;
-						scope.$watch('gridster.layoutDirty', function(isDirty) {
-							if (!isDirty) {
-								return;
-							}
-							if (gridster.loaded) {
-								gridster.floatItemsUp();
-							}
-							gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
-							gridster.layoutDirty = false;
-						});
 
 						scope.$watch('gridster.movingItem', function() {
 							gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
