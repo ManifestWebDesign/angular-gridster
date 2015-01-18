@@ -33,8 +33,8 @@
 		},
 		draggable: { // options to pass to draggable handler
 			enabled: true,
-			scrollSensitivity: 20, //Distance in pixels from the edge of the viewport after which the viewport should scroll, relative to pointer
-			scrollSpeed: 20 //Speed at which the window should scroll once the mouse pointer gets within scrollSensitivity distance
+			scrollSensitivity: 20, // Distance in pixels from the edge of the viewport after which the viewport should scroll, relative to pointer
+			scrollSpeed: 15 // Speed at which the window should scroll once the mouse pointer gets within scrollSensitivity distance
 		}
 	})
 
@@ -179,6 +179,42 @@
 				return items;
 			};
 
+			this.getBoundingBox = function(items) {
+
+				if (items.length === 0) {
+					return null;
+				}
+				if (items.length === 1) {
+					return {
+						row: items[0].row,
+						col: items[0].col,
+						sizeY: items[0].sizeY,
+						sizeX: items[0].sizeX
+					};
+				}
+
+				var maxRow = 0;
+				var maxCol = 0;
+				var minRow = 9999;
+				var minCol = 9999;
+
+				for (var i = 0, l = items.length; i < l; ++i) {
+					var item = items[i];
+					minRow = Math.min(item.row, minRow);
+					minCol = Math.min(item.col, minCol);
+					maxRow = Math.max(item.row + item.sizeY, maxRow);
+					maxCol = Math.max(item.col + item.sizeX, maxCol);
+				}
+
+				return {
+					row: minRow,
+					col: minCol,
+					sizeY: maxRow - minRow,
+					sizeX: maxCol - minCol
+				};
+			};
+
+
 			/**
 			 * Removes an item from the grid
 			 *
@@ -265,8 +301,10 @@
 					row = Math.min(this.maxRows - item.sizeY, Math.max(0, row));
 				}
 
-				if (item && item.oldRow !== null && typeof item.oldRow !== 'undefined') {
-					if (item.oldRow === row && item.oldColumn === column) {
+				if (item.oldRow !== null && typeof item.oldRow !== 'undefined') {
+					var samePosition = item.oldRow === row && item.oldColumn === column;
+					var inGrid = this.grid[row] && this.grid[row][column] === item;
+					if (samePosition && inGrid) {
 						item.row = row;
 						item.col = column;
 						return;
@@ -288,6 +326,10 @@
 					this.grid[row] = [];
 				}
 				this.grid[row][column] = item;
+
+				if (this.movingItem === item) {
+					this.floatItemUp(item);
+				}
 				layoutChanged();
 			};
 
@@ -393,7 +435,7 @@
 					}
 					for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
 						var item = columns[colIndex];
-						if (item && this.movingItem !== item) {
+						if (item) {
 							this.floatItemUp(item);
 						}
 					}
@@ -1329,19 +1371,51 @@
 					var hasItemsInTheWay = itemsInTheWay.length !== 0;
 
 					if (gridster.swapping === true && hasItemsInTheWay) {
-						var itemInTheWay = itemsInTheWay[0];
-						var sameSize = itemInTheWay.sizeX === item.sizeX && itemInTheWay.sizeY === item.sizeY;
-						var sameRow = itemInTheWay.row === row;
-						var sameCol = itemInTheWay.col === col;
+						var boundingBoxItem = gridster.getBoundingBox(itemsInTheWay);
+						var sameSize = boundingBoxItem.sizeX === item.sizeX && boundingBoxItem.sizeY === item.sizeY;
+						var sameRow = boundingBoxItem.row === row;
+						var sameCol = boundingBoxItem.col === col;
 						var samePosition = sameRow && sameCol;
 						var inline = sameRow || sameCol;
 
-						if (samePosition && sameSize) {
-							gridster.swapItems(item, itemInTheWay);
-						} else if (sameSize && inline) {
-							return;
+						if (sameSize && itemsInTheWay.length === 1) {
+							if (sameSize && samePosition) {
+								gridster.swapItems(item, itemsInTheWay[0]);
+							}
+						} else if (boundingBoxItem.sizeX <= item.sizeX && boundingBoxItem.sizeY <= item.sizeY) {
+							if (sameSize && inline && !samePosition) {
+								return;
+							}
+
+							if (inline) {
+								var emptyRow = item.row <= row ? item.row : row + item.sizeY;
+								var emptyCol = item.col <= col ? item.col : col + item.sizeX;
+
+								var rowOffset = emptyRow - boundingBoxItem.row;
+								var colOffset = emptyCol - boundingBoxItem.col;
+
+								for (var i = 0, l = itemsInTheWay.length; i < l; ++i) {
+									var itemInTheWay = itemsInTheWay[i];
+									if (itemInTheWay.sizeY > item.sizeY || itemInTheWay.sizeX > item.sizeX) {
+										break;
+									}
+
+									var itemsInFreeSpace = gridster.getItems(
+										itemInTheWay.row + rowOffset,
+										itemInTheWay.col + colOffset,
+										itemInTheWay.sizeX,
+										itemInTheWay.sizeY,
+										item
+									);
+
+									if (itemsInFreeSpace.length === 0) {
+										gridster.putItem(itemInTheWay, itemInTheWay.row + rowOffset, itemInTheWay.col + colOffset);
+									}
+								}
+							}
 						}
 					}
+
 					if (gridster.pushing !== false || !hasItemsInTheWay) {
 						item.row = row;
 						item.col = col;
