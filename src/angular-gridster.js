@@ -1839,6 +1839,10 @@
 					var gridster = controllers[0],
 						item = controllers[1];
 
+					//fix IE > 9
+					gridster.grid = [];
+					gridster.gridHeight = 0;
+
 					// bind the item's position properties
 					if (optionsKey) {
 						var $optionsGetter = $parse(optionsKey);
