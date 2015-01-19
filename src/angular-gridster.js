@@ -1826,8 +1826,8 @@
 	/**
 	 * GridsterItem directive
 	 */
-	.directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable',
-		function($parse, GridsterDraggable, GridsterResizable) {
+	.directive('gridsterItem', ['$timeout', '$parse', 'GridsterDraggable', 'GridsterResizable',
+		function($timeout, $parse, GridsterDraggable, GridsterResizable) {
 			return {
 				restrict: 'EA',
 				controller: 'GridsterItemCtrl',
@@ -1913,9 +1913,12 @@
 							$getters.col.assign(scope, item.col);
 						}
 					}
-					scope.$watch(function() {
-						return item.row + ',' + item.col;
-					}, positionChanged);
+					//Wait for placing items finish
+					$timeout(function () {
+						scope.$watch(function() {
+							return item.row + ',' + item.col;
+						}, positionChanged);
+					});
 
 					function sizeChanged() {
 						var changedX = item.setSizeX(item.sizeX, true);
