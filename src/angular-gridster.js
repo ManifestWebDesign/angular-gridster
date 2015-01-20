@@ -1379,11 +1379,11 @@
 						var inline = sameRow || sameCol;
 
 						if (sameSize && itemsInTheWay.length === 1) {
-							if (sameSize && samePosition) {
+							if (samePosition) {
 								gridster.swapItems(item, itemsInTheWay[0]);
+							} else if (inline) {
+								return;
 							}
-						} else if (sameSize && inline && !samePosition) {
-							return;
 						} else if (boundingBoxItem.sizeX <= item.sizeX && boundingBoxItem.sizeY <= item.sizeY && inline) {
 							var emptyRow = item.row <= row ? item.row : row + item.sizeY;
 							var emptyCol = item.col <= col ? item.col : col + item.sizeX;
