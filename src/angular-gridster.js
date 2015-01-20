@@ -52,8 +52,7 @@
 			this.draggable = angular.extend({}, gridsterConfig.draggable || {});
 
 			var flag = false;
-
-			function layoutChanged() {
+			this.layoutChanged = function() {
 				if (flag) {
 					return;
 				}
@@ -65,7 +64,7 @@
 					}
 					gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
 				});
-			}
+			};
 
 			/**
 			 * A positional array of the items in the grid
@@ -232,7 +231,7 @@
 						break;
 					}
 				}
-				layoutChanged();
+				this.layoutChanged();
 			};
 
 			/**
@@ -330,7 +329,7 @@
 				if (this.movingItem === item) {
 					this.floatItemUp(item);
 				}
-				layoutChanged();
+				this.layoutChanged();
 			};
 
 			/**
@@ -1134,6 +1133,7 @@
 			}
 			if (!preventMove && changed) {
 				this.gridster.moveOverlappingItems(this);
+				this.gridster.layoutChanged();
 			}
 
 			return changed;
@@ -1929,6 +1929,7 @@
 
 						if (changedX || changedY) {
 							item.gridster.moveOverlappingItems(item);
+							gridster.layoutChanged();
 						}
 					}
 					scope.$watch(function() {
