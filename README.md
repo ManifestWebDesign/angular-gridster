@@ -165,9 +165,9 @@ $scope.$broadcast('gridster-resized', [width, height]);
 It can be handled like this:
 
 ```JavaScript
-$scope.$on('gridster-resized', function(newSizes){
-  var newWidth = sizes[0];
-  var newHeight = sizes[1];
+$scope.$on('gridster-resized', function(event, newSizes){
+  var newWidth = newSizes[0];
+  var newHeight = newSizes[1];
 });
 ```
 
