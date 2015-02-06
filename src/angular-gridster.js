@@ -992,7 +992,7 @@
 								$elem.addClass('gridster-loaded');
 							}
 
-							scope.$parent.$broadcast('gridster-resized', [width, $elem.offsetHeight]);
+							scope.$parent.$broadcast('gridster-resized', [width, $elem[0].offsetHeight]);
 						}
 
 						// track element width changes any way we can
