@@ -913,7 +913,14 @@
 							}
 
 							if (gridster.colWidth === 'auto') {
-								gridster.curColWidth = (gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns;
+
+								if ($elem[0].offsetWidth > gridster.mobileBreakPoint){
+
+									gridster.curColWidth = ($elem[0].offsetWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns;
+								} else {
+									gridster.curColWidth = $elem[0].offsetWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1]) ; 
+								}
+
 							} else {
 								gridster.curColWidth = gridster.colWidth;
 							}
@@ -992,7 +999,21 @@
 								$elem.addClass('gridster-loaded');
 							}
 
-							scope.$parent.$broadcast('gridster-resized', [width, $elem.offsetHeight]);
+							scope.$parent.$broadcast('gridster-resized', [width, $elem[0].offsetHeight]);
+							
+							//items resize
+							for (var rowIndex = 0, l = gridster.grid.length; rowIndex < l; ++rowIndex) {
+								var columns = gridster.grid[rowIndex];
+								if (!columns) {
+									continue;
+								}
+								for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
+									if (columns[colIndex]) {
+										var item = columns[colIndex];
+										scope.$broadcast('gridster-item-resized', item.row, item.col, [item.sizeY, item.sizeX, item.getElementSizeY(), item.getElementSizeX()]);
+									}
+								}
+							}
 						}
 
 						// track element width changes any way we can
@@ -1208,7 +1229,8 @@
 		 * Gets an element's width
 		 */
 		this.getElementSizeX = function() {
-			return (this.sizeX * this.gridster.curColWidth - this.gridster.margins[1]);
+			var sizeX = this.gridster.isMobile ? 1 : this.sizeX;
+			return (sizeX * this.gridster.curColWidth - this.gridster.margins[1]);
 		};
 
 		/**
@@ -1242,6 +1264,7 @@
 				var inputTags = ['select', 'input', 'textarea', 'button'];
 
 				function mouseDown(e) {
+
 					if (inputTags.indexOf(e.target.nodeName.toLowerCase()) !== -1) {
 						return false;
 					}
