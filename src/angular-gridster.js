@@ -852,7 +852,7 @@
 							}
 
 							if (gridster.colWidth === 'auto') {
-								gridster.curColWidth = (gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns;
+								gridster.curColWidth = Math.round((gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns);
 							} else {
 								gridster.curColWidth = gridster.colWidth;
 							}
