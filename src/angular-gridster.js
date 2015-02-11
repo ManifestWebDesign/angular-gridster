@@ -913,7 +913,7 @@
 							}
 
 							if (gridster.colWidth === 'auto') {
-								gridster.curColWidth = (gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns;
+								gridster.curColWidth = Math.round((gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns);
 							} else {
 								gridster.curColWidth = gridster.colWidth;
 							}
@@ -1223,7 +1223,6 @@
 	.factory('GridsterDraggable', ['$document', '$timeout', '$window',
 		function($document, $timeout, $window) {
 			function GridsterDraggable($el, scope, gridster, item, itemOptions) {
-
 				var elmX, elmY, elmW, elmH,
 
 					mouseX = 0,
@@ -1443,6 +1442,12 @@
 						item.col = col;
 					}
 					gridster.movingItem = null;
+
+					if (gridster.isValidMove && !gridster.isValidMove(event, $el, itemOptions, item)) {
+						item.row = originalRow;
+						item.col = originalCol;
+					}
+
 					item.setPosition(item.row, item.col);
 
 					scope.$apply(function() {
@@ -1534,7 +1539,7 @@
 						return gridster.curColWidth - gridster.margins[1];
 					};
 
-					var originalWidth, originalHeight;
+					var originalWidth, originalHeight, originalRow, originalCol;
 					var savedDraggable;
 
 					function mouseDown(e) {
@@ -1567,6 +1572,8 @@
 
 						originalWidth = item.sizeX;
 						originalHeight = item.sizeY;
+						originalRow = item.row;
+						originalCol = item.col;
 
 						resizeStart(e);
 
@@ -1734,6 +1741,12 @@
 						$el.removeClass('gridster-item-resizing');
 
 						gridster.movingItem = null;
+						if (gridster.isValidMove && !gridster.isValidMove(e, $el, itemOptions, item)) {
+							item.row = originalRow;
+							item.col = originalCol;
+							item.sizeX = originalWidth;
+							item.sizeY = originalHeight;
+						}
 
 						item.setPosition(item.row, item.col);
 						item.setSizeY(item.sizeY);
