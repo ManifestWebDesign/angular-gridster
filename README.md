@@ -1,4 +1,4 @@
-for of ManifestWebDesign/angular-gridster
+fork of ManifestWebDesign/angular-gridster
 
 Things I changed:
  * Added isValidMove, so you can verify if the item that has moved is a valid move.
