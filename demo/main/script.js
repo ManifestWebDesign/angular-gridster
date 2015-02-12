@@ -8,6 +8,9 @@ angular.module('app')
 				if (viewValue === '' || viewValue === null || typeof viewValue === 'undefined') {
 					return null;
 				}
+				if (viewValue === 'a') {
+					return 'auto';
+				}
 				return parseInt(viewValue, 10);
 			});
 		}
@@ -40,7 +43,8 @@ angular.module('app')
 		sizeX: 2,
 		sizeY: 2,
 		row: 0,
-		col: 2
+		col: 2,
+		lines: 3
 	}, {
 		sizeX: 2,
 		sizeY: 1,
@@ -175,4 +179,7 @@ angular.module('app')
 		col: 'item.position[1]'
 	};
 
+	$scope.getList = function(num) {
+		return new Array(parseInt(num, 10));
+	}
 });
