@@ -1896,7 +1896,7 @@
 
 					var aspectFn = function(aspect) {
 						var key;
-						if (typeof options[aspect] === 'string') {
+						if (typeof options[aspect] === 'string' && options[aspect] !== 'auto') {
 							key = options[aspect];
 						} else if (typeof options[aspect.toLowerCase()] === 'string') {
 							key = options[aspect.toLowerCase()];

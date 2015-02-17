@@ -41,7 +41,7 @@ angular.module('app')
 		col: 0
 	}, {
 		sizeX: 2,
-		sizeY: 2,
+		sizeY: 'auto',
 		row: 0,
 		col: 2,
 		lines: 3
@@ -180,6 +180,6 @@ angular.module('app')
 	};
 
 	$scope.getList = function(num) {
-		return new Array(parseInt(num, 10));
+		return new Array(parseInt(num, 10) || 0);
 	}
 });
