@@ -1826,8 +1826,8 @@
 	/**
 	 * GridsterItem directive
 	 */
-	.directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable',
-		function($parse, GridsterDraggable, GridsterResizable) {
+	.directive('gridsterItem', ['$parse', '$rootScope', 'GridsterDraggable', 'GridsterResizable',
+		function($parse, $rootScope, GridsterDraggable, GridsterResizable) {
 			return {
 				restrict: 'EA',
 				controller: 'GridsterItemCtrl',
@@ -1931,6 +1931,8 @@
 							item.gridster.moveOverlappingItems(item);
 							gridster.layoutChanged();
 						}
+
+						$rootScope.$broadcast('gridster-item-size-changed', item.sizeX, item.sizeY);
 					}
 					scope.$watch(function() {
 						return item.sizeY + ',' + item.sizeX + '|' + item.minSizeX + ',' + item.maxSizeX + ',' + item.minSizeY + ',' + item.maxSizeY;
