@@ -14,7 +14,7 @@
 		rowHeight: 'match', // height of grid rows. 'match' will make it the same as the column width, a numeric value will be interpreted as pixels, '/2' is half the column width, '*5' is five times the column width, etc.
 		margins: [10, 10], // margins in between grid items
 		outerMargin: true,
-		sparse: false, // set true, when number or items is significantly less, then gridster dimensions. This will increase performance of getItem operation
+		sparse: false, // "true" can increase performance of dragging and resizing for big grid (e.g. 20x50)
 		isMobile: false, // toggle mobile view
 		mobileBreakPoint: 600, // width threshold to toggle mobile mode
 		mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
