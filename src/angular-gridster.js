@@ -1419,7 +1419,7 @@
 					gridster.updateHeight(item.sizeY);
 					scope.$apply(function() {
 						if (gridster.draggable && gridster.draggable.start) {
-							gridster.draggable.start(event, $el, itemOptions);
+							gridster.draggable.start(event, $el, itemOptions, item);
 						}
 					});
 				}
@@ -1495,7 +1495,7 @@
 					if (hasCallback || oldRow !== item.row || oldCol !== item.col) {
 						scope.$apply(function() {
 							if (hasCallback) {
-								gridster.draggable.drag(event, $el, itemOptions);
+								gridster.draggable.drag(event, $el, itemOptions, item);
 							}
 						});
 					}
@@ -1514,7 +1514,7 @@
 
 					scope.$apply(function() {
 						if (gridster.draggable && gridster.draggable.stop) {
-							gridster.draggable.stop(event, $el, itemOptions);
+							gridster.draggable.stop(event, $el, itemOptions, item);
 						}
 					});
 				}
@@ -1653,7 +1653,7 @@
 					scope.$apply(function() {
 						// callback
 						if (gridster.resizable && gridster.resizable.start) {
-							gridster.resizable.start(e, $el, itemOptions); // options is the item model
+							gridster.resizable.start(e, $el, itemOptions, item); // options is the item model
 						}
 					});
 				}
@@ -1789,7 +1789,7 @@
 					if (hasCallback || isChanged) {
 						scope.$apply(function() {
 							if (hasCallback) {
-								gridster.resizable.resize(e, $el, itemOptions); // options is the item model
+								gridster.resizable.resize(e, $el, itemOptions, item); // options is the item model
 							}
 						});
 					}
@@ -1807,7 +1807,7 @@
 
 					scope.$apply(function() {
 						if (gridster.resizable && gridster.resizable.stop) {
-							gridster.resizable.stop(e, $el, itemOptions); // options is the item model
+							gridster.resizable.stop(e, $el, itemOptions, item); // options is the item model
 						}
 					});
 				}
