@@ -84,7 +84,7 @@
 			/**
 			 * Overrides default options
 			 *
-			 * @param {object} options The options to override
+			 * @param {Object} options The options to override
 			 */
 			this.setOptions = function(options) {
 				if (!options) {
@@ -120,10 +120,10 @@
 			/**
 			 * Check if item can occupy a specified position in the grid
 			 *
-			 * @param {object} item The item in question
-			 * @param {number} row The row index
-			 * @param {number} column The column index
-			 * @returns {boolean} True if if item fits
+			 * @param {Object} item The item in question
+			 * @param {Number} row The row index
+			 * @param {Number} column The column index
+			 * @returns {Boolean} True if if item fits
 			 */
 			this.canItemOccupy = function(item, row, column) {
 				return row > -1 && column > -1 && item.sizeX + column <= this.columns && item.sizeY + row <= this.maxRows;
@@ -132,7 +132,7 @@
 			/**
 			 * Set the item in the first suitable position
 			 *
-			 * @param {object} item The item to insert
+			 * @param {Object} item The item to insert
 			 */
 			this.autoSetItemPosition = function(item) {
 				// walk through each row and column looking for a place it will fit
@@ -152,12 +152,12 @@
 			/**
 			 * Gets items at a specific coordinate
 			 *
-			 * @param {number} row
-			 * @param {number} column
-			 * @param {number} sizeX
-			 * @param {number} sizeY
-			 * @param {array} excludeItems An array of items to exclude from selection
-			 * @returns {array} Items that match the criteria
+			 * @param {Number} row
+			 * @param {Number} column
+			 * @param {Number} sizeX
+			 * @param {Number} sizeY
+			 * @param {Array} excludeItems An array of items to exclude from selection
+			 * @returns {Array} Items that match the criteria
 			 */
 			this.getItems = function(row, column, sizeX, sizeY, excludeItems) {
 				var items = [];
@@ -217,7 +217,7 @@
 			/**
 			 * Removes an item from the grid
 			 *
-			 * @param {object} item
+			 * @param {Object} item
 			 */
 			this.removeItem = function(item) {
 				for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
@@ -237,10 +237,10 @@
 			/**
 			 * Returns the item at a specified coordinate
 			 *
-			 * @param {number} row
-			 * @param {number} column
-			 * @param {array} excludeitems Items to exclude from selection
-			 * @returns {object} The matched item or null
+			 * @param {Number} row
+			 * @param {Number} column
+			 * @param {Array} excludeitems Items to exclude from selection
+			 * @returns {Object} The matched item or null
 			 */
 			this.getItem = function(row, column, excludeItems) {
 				if (excludeItems && !(excludeItems instanceof Array)) {
@@ -270,7 +270,7 @@
 			/**
 			 * Insert an array of items into the grid
 			 *
-			 * @param {array} items An array of items to insert
+			 * @param {Array} items An array of items to insert
 			 */
 			this.putItems = function(items) {
 				for (var i = 0, l = items.length; i < l; ++i) {
@@ -281,10 +281,10 @@
 			/**
 			 * Insert a single item into the grid
 			 *
-			 * @param {object} item The item to insert
-			 * @param {number} row (Optional) Specifies the items row index
-			 * @param {number} column (Optional) Specifies the items column index
-			 * @param {array} ignoreItems
+			 * @param {Object} item The item to insert
+			 * @param {Number} row (Optional) Specifies the items row index
+			 * @param {Number} column (Optional) Specifies the items column index
+			 * @param {Array} ignoreItems
 			 */
 			this.putItem = function(item, row, column, ignoreItems) {
 				if (typeof row === 'undefined' || row === null) {
@@ -335,8 +335,8 @@
 			/**
 			 * Trade row and column if item1 with item2
 			 *
-			 * @param {object} item1
-			 * @param {object} item2
+			 * @param {Object} item1
+			 * @param {Object} item2
 			 */
 			this.swapItems = function(item1, item2) {
 				this.grid[item1.row][item1.col] = item2;
@@ -353,8 +353,8 @@
 			/**
 			 * Prevents items from being overlapped
 			 *
-			 * @param {object} item The item that should remain
-			 * @param {array} ignoreItems
+			 * @param {Object} item The item that should remain
+			 * @param {Array} ignoreItems
 			 */
 			this.moveOverlappingItems = function(item, ignoreItems) {
 				if (ignoreItems) {
@@ -378,9 +378,9 @@
 			/**
 			 * Moves an array of items to a specified row
 			 *
-			 * @param {array} items The items to move
-			 * @param {number} newRow The target row
-			 * @param {array} ignoreItems
+			 * @param {Array} items The items to move
+			 * @param {Number} newRow The target row
+			 * @param {Array} ignoreItems
 			 */
 			this.moveItemsDown = function(items, newRow, ignoreItems) {
 				if (!items || items.length === 0) {
@@ -444,7 +444,7 @@
 			/**
 			 * Float an item up to the most suitable row
 			 *
-			 * @param {object} item The item to move
+			 * @param {Object} item The item to move
 			 */
 			this.floatItemUp = function(item) {
 				if (this.floating === false) {
@@ -474,7 +474,7 @@
 			/**
 			 * Update gridsters height
 			 *
-			 * @param {number} plus (Optional) Additional height to add
+			 * @param {Number} plus (Optional) Additional height to add
 			 */
 			this.updateHeight = function(plus) {
 				var maxHeight = this.minRows;
@@ -496,8 +496,8 @@
 			/**
 			 * Returns the number of rows that will fit in given amount of pixels
 			 *
-			 * @param {number} pixels
-			 * @param {boolean} ceilOrFloor (Optional) Determines rounding method
+			 * @param {Number} pixels
+			 * @param {Boolean} ceilOrFloor (Optional) Determines rounding method
 			 */
 			this.pixelsToRows = function(pixels, ceilOrFloor) {
 				if (ceilOrFloor === true) {
@@ -512,9 +512,9 @@
 			/**
 			 * Returns the number of columns that will fit in a given amount of pixels
 			 *
-			 * @param {number} pixels
-			 * @param {boolean} ceilOrFloor (Optional) Determines rounding method
-			 * @returns {number} The number of columns
+			 * @param {Number} pixels
+			 * @param {Boolean} ceilOrFloor (Optional) Determines rounding method
+			 * @returns {Number} The number of columns
 			 */
 			this.pixelsToColumns = function(pixels, ceilOrFloor) {
 				if (ceilOrFloor === true) {
@@ -853,8 +853,9 @@
 	/**
 	 * The gridster directive
 	 *
-	 * @param {object} $parse
-	 * @param {object} $timeout
+	 * @param {Object} $timeout
+	 * @param {Object} $rootScope
+	 * @param {Object} $window
 	 */
 	.directive('gridster', ['$timeout', '$rootScope', '$window',
 		function($timeout, $rootScope, $window) {
@@ -1074,8 +1075,8 @@
 		/**
 		 * Set the items position
 		 *
-		 * @param {number} row
-		 * @param {number} column
+		 * @param {Number} row
+		 * @param {Number} column
 		 */
 		this.setPosition = function(row, column) {
 			this.gridster.putItem(this, row, column);
@@ -1088,8 +1089,9 @@
 		/**
 		 * Sets a specified size property
 		 *
-		 * @param {string} key Can be either "x" or "y"
-		 * @param {number} value The size amount
+		 * @param {String} key Can be either "x" or "y"
+		 * @param {Number} value The size amount
+		 * @param {Boolean} preventMove
 		 */
 		this.setSize = function(key, value, preventMove) {
 			key = key.toUpperCase();
@@ -1142,7 +1144,8 @@
 		/**
 		 * Sets the items sizeY property
 		 *
-		 * @param {number} rows
+		 * @param {Number} rows
+		 * @param {Boolean} preventMove
 		 */
 		this.setSizeY = function(rows, preventMove) {
 			return this.setSize('Y', rows, preventMove);
@@ -1151,7 +1154,8 @@
 		/**
 		 * Sets the items sizeX property
 		 *
-		 * @param {number} rows
+		 * @param {Number} columns
+		 * @param {Boolean} preventMove
 		 */
 		this.setSizeX = function(columns, preventMove) {
 			return this.setSize('X', columns, preventMove);
@@ -1159,9 +1163,6 @@
 
 		/**
 		 * Sets an elements position on the page
-		 *
-		 * @param {number} row
-		 * @param {number} column
 		 */
 		this.setElementPosition = function() {
 			if (this.gridster.isMobile) {
@@ -1825,6 +1826,9 @@
 
 	/**
 	 * GridsterItem directive
+	 * @param $parse
+	 * @param GridsterDraggable
+	 * @param GridsterResizable
 	 */
 	.directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable',
 		function($parse, GridsterDraggable, GridsterResizable) {
