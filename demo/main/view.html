@@ -12,7 +12,7 @@
 	<input type="text" ng-model="gridsterOpts.margins[1]" size="3" />
 
     <p>
-        Each item provides its own dimensions and position using the standard fields: { row: row, col: col, sizeX: sizeX, sizeY: sizeY }.
+        Each item provides its own dimensions and position using the standard fields: { row: row, col: col, sizeX: sizeX, sizeY: sizeY, lines: lines }. sizeY could be 'a' for auto height.
     </p>
     <div gridster="gridsterOpts">
         <ul>
@@ -22,6 +22,9 @@
                 <br />
                 <input type="text" integer ng-model="item.sizeX" size="1" />x
                 <input type="text" integer ng-model="item.sizeY" size="1" />
+		<br />
+		<input type="text" ng-model="item.lines" size="1" />
+		<p ng-if="item.lines > 0" ng-repeat="line in getList(item.lines) track by $index">{{$index+1}}</p>
             </li>
         </ul>
     </div>

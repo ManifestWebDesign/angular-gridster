@@ -22,7 +22,7 @@ describe('Controller: GridsterCtrl', function() {
 			expect(items.length).toEqual(11);
 		});
 
-		browser.findElement(by.css('h2:first-child')).then(function(el) {
+		element(by.css('h2:first-child')).then(function(el) {
 			return el.getText().then(function(text) {
 				expect(text).toBe('Standard Items');
 			});
@@ -36,7 +36,7 @@ describe('Controller: GridsterCtrl', function() {
 			expect(size.width).toBeGreaterThan(0);
 			width = size.width;
 		}).then(function() {
-			return firstItem.findElement(by.model('item.sizeX'));
+			return firstItem.element(by.model('item.sizeX'));
 		}).then(function(input) {
 			return input.sendKeys('2').then(function() {
 				input.sendKeys(protractor.Key.TAB);
