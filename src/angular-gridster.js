@@ -694,13 +694,13 @@
 						}
 						if (typeof $elem.resize === 'function') {
 							$elem.resize(onResize);
+						} else {
+							scope.$watch(function() {
+								return $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
+							}, resize);
 						}
 						var $win = angular.element($window);
 						$win.on('resize', onResize);
-
-						scope.$watch(function() {
-							return $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
-						}, resize);
 
 						// be sure to cleanup
 						scope.$on('$destroy', function() {
