@@ -4,11 +4,11 @@ angular-gridster
 
 An implementation of gridster-like widgets for Angular JS.  This is not a wrapper on the original gridster jQuery plugin (http://gridster.net/).  It is instead completely rewritten as Angular directives.  Rewriting allowed for some additional features and better use of Angular data binding.  Even more importantly, the original plugin had unpredictable behavior and crashed when wrapped with an Angular directive in my initial tests.
 
-##Demo
+## Demo
 
 See <a href="https://rawgit.com/ManifestWebDesign/angular-gridster/master/index.html">Live Demo</a>
 
-##Usage
+## Usage
 
 Here is an example of the default usage:
 ```HTML
@@ -154,24 +154,100 @@ You can also override the default configuration site wide by modifying the ```gr
 	}]);
 ```
 
-##Watching gridster element size changes
+## Gridster Events
 
-When the window or gridster element are resized, all the gridster item elements are resized accordingly and this event is broadcast:
+#### gridster-mobile-changed
+When the gridster goes in or out of mobile mode, a 'gridster-mobile-changed' event is broadcast on rootScope:
 
-```JavaScript
-$scope.$broadcast('gridster-resized', [width, height]);
+```js
+scope.$on('gridster-mobile-changed', function(gridster) {
+})
 ```
 
-It can be handled like this:
+#### gridster-draggable-changed
+When the gridster draggable properties change, a 'gridster-draggable-changed' event is broadcast on rootScope:
 
-```JavaScript
-$scope.$on('gridster-resized', function(event, newSizes){
-  var newWidth = newSizes[0];
-  var newHeight = newSizes[1];
-});
+```js
+scope.$on('gridster-draggable-changed', function(gridster) {
+})
 ```
 
-##Watching item changes of size and position
+#### gridster-resizable-changed
+When the gridster resizable properties change, a 'gridster-resizable-changed' event is broadcast on rootScope:
+
+```js
+scope.$on('gridster-resizable-changed', function(gridster) {
+})
+```
+
+#### gridster-resized
+When the gridster element's size changes, a 'gridster-resized' event is broadcast on rootScope:
+
+```js
+scope.$on('gridster-resized', function(sizes, gridster) {
+	// sizes[0] = width
+	// sizes[1] = height
+	// gridster.
+})
+```
+
+## Gridster Item Events
+
+#### gridster-item-transition-end
+Gridster items have CSS transitions by default.  Gridster items listen for css transition-end across different browsers and broadcast the event 'gridster-item-transition-end'.  You can listen for it like this from within the gridster-item directive:
+
+```js
+scope.$on('gridster-item-transition-end', function(item) {
+	// item.$element
+	// item.gridster
+	// item.row
+	// item.col
+	// item.sizeX
+	// item.sizeY
+	// item.minSizeX
+	// item.minSizeY
+	// item.maxSizeX
+	// item.maxSizeY
+})
+```
+
+#### gridster-item-initialized
+After a gridster item's controller has finished with setup, it broadcasts an event 'gridster-item-initialized' on its own scope.  You can listen for it like this from within the gridster-item directive:
+
+```js
+scope.$on('gridster-item-initialized', function(item) {
+	// item.$element
+	// item.gridster
+	// item.row
+	// item.col
+	// item.sizeX
+	// item.sizeY
+	// item.minSizeX
+	// item.minSizeY
+	// item.maxSizeX
+	// item.maxSizeY
+})
+```
+
+#### gridster-item-resized
+After a gridster item's size changes (rows or columns), it broadcasts an event 'gridster-item-resized' on its own scope.  You can listen for it like this from within the gridster-item directive:
+
+```js
+scope.$on('gridster-item-resized', function(item) {
+	// item.$element
+	// item.gridster
+	// item.row
+	// item.col
+	// item.sizeX
+	// item.sizeY
+	// item.minSizeX
+	// item.minSizeY
+	// item.maxSizeX
+	// item.maxSizeY
+})
+```
+
+## Watching item changes of size and position
 
 The typical Angular way would be to do a $scope.$watch on your item or items in the scope.  Example:
 
@@ -203,7 +279,7 @@ $scope.$watch('items[0].sizeX', function(){
 The third argument, true, is to make the watch based on the value of the object, rather than just matching the reference to the object.
 
 
-##Note
+## Note
 This directive/plugin does not generate style tags, like the jQuery plugin.  It also uses standard camelCase for variables and object properties, while the original plugin used lower\_case\_with_underscores.  These options have not and may never be implemented:
 
 * widget_class - not necessary since directives already whatever classes and attributes you want to add
@@ -227,7 +303,7 @@ This directive/plugin does not generate style tags, like the jQuery plugin.  It 
 * collision.on_overlap
 * collision.on\_overlap\_stop
 
-##Installation
+## Installation
 
 ```bash
   bower install angular-gridster
@@ -242,18 +318,18 @@ Then, import the following in your HTML alongside `jQuery` and `angular`:
 
 `jquery.resize` is a jQuery plugin needed to check for changes in the gridster size.
 
-##Contributing
+## Contributing
 
-####Install project dependencies
+#### Install project dependencies
 ```bash
   npm install
   bower install
 ```
 
-####Style Guide
+#### Style Guide
 Please respect the formatting specified in .editorconfig
 
-####Grunt Tasks
+#### Grunt Tasks
 ```grunt default``` Runs jshint & compiles project
 
 ```grunt dev``` Opens demo page, starts karma test runner, runs unit tests on src & test folder changes
