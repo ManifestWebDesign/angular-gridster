@@ -1958,8 +1958,6 @@
 						}
 					});
 
-					scope.$broadcast('gridster-item-initialized', item);
-
 					function positionChanged() {
 						// call setPosition so the element and gridster controller are updated
 						item.setPosition(item.row, item.col);
@@ -2039,6 +2037,8 @@
 					}, 10);
 
 					$el.on(whichTransitionEvent(), debouncedTransitionEndPublisher);
+
+					scope.$broadcast('gridster-item-initialized', item);
 
 					return scope.$on('$destroy', function() {
 						try {
