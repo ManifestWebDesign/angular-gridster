@@ -654,7 +654,7 @@
 
 						scope.$watch(function() {
 							return gridster.resizable;
-						}, function(resizable) {
+						}, function() {
 							$rootScope.$broadcast('gridster-resizable-changed', gridster);
 						}, true);
 
@@ -1842,19 +1842,24 @@
 		return GridsterResizable;
 	}])
 
-	.factory('gridsterDebounce', function () {
+	.factory('gridsterDebounce', function() {
 		return function gridsterDebounce(func, wait, immediate) {
 			var timeout;
 			return function() {
-				var context = this, args = arguments;
+				var context = this,
+					args = arguments;
 				var later = function() {
 					timeout = null;
-					if (!immediate) func.apply(context, args);
+					if (!immediate) {
+						func.apply(context, args);
+					}
 				};
 				var callNow = immediate && !timeout;
 				clearTimeout(timeout);
 				timeout = setTimeout(later, wait);
-				if (callNow) func.apply(context, args);
+				if (callNow) {
+					func.apply(context, args);
+				}
 			};
 		};
 	})
@@ -1994,6 +1999,9 @@
 
 					var draggable = new GridsterDraggable($el, scope, gridster, item, options);
 					var resizable = new GridsterResizable($el, scope, gridster, item, options);
+
+					resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
+					draggable.toggle(!gridster.isMobile && gridster.draggable && gridster.draggable.enabled);
 
 					scope.$on('gridster-draggable-changed', function() {
 						draggable.toggle(!gridster.isMobile && gridster.draggable && gridster.draggable.enabled);

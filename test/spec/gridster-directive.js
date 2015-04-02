@@ -10,7 +10,6 @@ describe('gridster directive', function() {
 	var startCount;
 	var resizeCount;
 	var stopCount;
-	var rootScope;
 	var broadcastOnRootScope;
 
 	var dragHelper = function(el, dx, dy) {
@@ -22,8 +21,7 @@ describe('gridster directive', function() {
 	};
 
 	beforeEach(inject(function($rootScope, $compile) {
-		rootScope = $rootScope;
-		broadcastOnRootScope = spyOn(rootScope, '$broadcast').and.callThrough();
+		broadcastOnRootScope = spyOn($rootScope, '$broadcast').and.callThrough();
 
 		$scope = $rootScope.$new();
 		startCount = resizeCount = stopCount = 0;
@@ -95,7 +93,7 @@ describe('gridster directive', function() {
 	it('should initialize resizable', function() {
 		var $widget = $el.find('li:first-child');
 
-		expect($widget.find('.handle-n').length).toBe(1);
+		expect($widget.find('.handle-s').length).toBe(1);
 	});
 
 	it('should update widget dimensions on resize & trigger custom resize events', function() {
@@ -117,7 +115,7 @@ describe('gridster directive', function() {
 		expect(stopCount).toBe(1);
 	});
 
-	it('should broadcast "size changed" event on resize', function() {
+	it('should broadcast "gridster-item-resized" event on resize', function() {
 		// arrange
 		var eHandle = $el.find('li:first-child').find('.handle-e');
 		var sHandle = $el.find('li:first-child').find('.handle-s');
@@ -127,7 +125,10 @@ describe('gridster directive', function() {
 		dragHelper(eHandle, 50);
 
 		// assert
-		expect(broadcastOnRootScope).toHaveBeenCalledWith('gridster-item-size-changed', 2, 1);
+		expect(broadcastOnRootScope).toHaveBeenCalledWith('gridster-item-resized', jasmine.objectContaining({
+			sizeX: 2,
+			sizeY: 1
+		}));
 
 		// arrange
 		broadcastOnRootScope.calls.reset();
@@ -136,7 +137,10 @@ describe('gridster directive', function() {
 		dragHelper(sHandle, 0, 50);
 
 		// assert
-		expect(broadcastOnRootScope).toHaveBeenCalledWith('gridster-item-size-changed', 2, 2);
+		expect(broadcastOnRootScope).toHaveBeenCalledWith('gridster-item-resized', jasmine.objectContaining({
+			sizeX: 2,
+			sizeY: 2
+		}));
 	});
 
 });
