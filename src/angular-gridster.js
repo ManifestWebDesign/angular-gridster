@@ -79,6 +79,7 @@
 					this.grid.length = 0;
 					this.grid = null;
 				}
+				this.$element = null;
 			};
 
 			/**
@@ -557,6 +558,7 @@
 
 					return function(scope, $elem, attrs, gridster) {
 						gridster.loaded = false;
+						gridster.$element = $elem;
 
 						scope.gridsterClass = function() {
 							return {
@@ -641,24 +643,32 @@
 						scope.$watch(function() {
 							return gridster.isMobile;
 						}, function() {
-							$rootScope.$broadcast('gridster-mobile-changed');
+							$rootScope.$broadcast('gridster-mobile-changed', gridster);
 						});
 
-						scope.$watch('config.draggable', function() {
-							$rootScope.$broadcast('gridster-draggable-changed');
+						scope.$watch(function() {
+							return gridster.draggable;
+						}, function() {
+							$rootScope.$broadcast('gridster-draggable-changed', gridster);
 						}, true);
 
-						scope.$watch('config.resizable', function() {
-							$rootScope.$broadcast('gridster-resizable-changed');
+						scope.$watch(function() {
+							return gridster.resizable;
+						}, function(resizable) {
+							$rootScope.$broadcast('gridster-resizable-changed', gridster);
 						}, true);
 
 						var updateHeight = function() {
 							$elem.css('height', (gridster.gridHeight * gridster.curRowHeight) + (gridster.outerMargin ? gridster.margins[0] : -gridster.margins[0]) + 'px');
 						};
 
-						scope.$watch('gridster.gridHeight', updateHeight);
+						scope.$watch(function() {
+							return gridster.gridHeight;
+						}, updateHeight);
 
-						scope.$watch('gridster.movingItem', function() {
+						scope.$watch(function() {
+							return gridster.movingItem;
+						}, function() {
 							gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
 						});
 
@@ -682,7 +692,7 @@
 								$elem.addClass('gridster-loaded');
 							}
 
-							scope.$parent.$broadcast('gridster-resized', [width, $elem[0].offsetHeight]);
+							$rootScope.$broadcast('gridster-resized', [width, $elem[0].offsetHeight], gridster);
 						}
 
 						// track element width changes any way we can
@@ -1562,7 +1572,7 @@
 					savedDraggable = gridster.draggable.enabled;
 					if (savedDraggable) {
 						gridster.draggable.enabled = false;
-						scope.$broadcast('gridster-draggable-changed');
+						scope.$broadcast('gridster-draggable-changed', gridster);
 					}
 
 					// Get the current mouse position.
@@ -1681,7 +1691,7 @@
 					// restore draggable setting to its original state
 					if (gridster.draggable.enabled !== savedDraggable) {
 						gridster.draggable.enabled = savedDraggable;
-						scope.$broadcast('gridster-draggable-changed');
+						scope.$broadcast('gridster-draggable-changed', gridster);
 					}
 
 					mOffX = mOffY = 0;
@@ -1926,7 +1936,7 @@
 						}
 					});
 
-					scope.$broadcast('gridster-item-initialized', [item.sizeY, item.sizeX, item.getElementSizeY(), item.getElementSizeX()]);
+					scope.$broadcast('gridster-item-initialized', item);
 
 					function positionChanged() {
 						// call setPosition so the element and gridster controller are updated
@@ -1957,10 +1967,10 @@
 						if (changedX || changedY) {
 							item.gridster.moveOverlappingItems(item);
 							gridster.layoutChanged();
+							$rootScope.$broadcast('gridster-item-resized', item);
 						}
-
-						$rootScope.$broadcast('gridster-item-size-changed', item.sizeX, item.sizeY);
 					}
+
 					scope.$watch(function() {
 						return item.sizeY + ',' + item.sizeX + ',' + item.minSizeX + ',' + item.maxSizeX + ',' + item.minSizeY + ',' + item.maxSizeY;
 					}, sizeChanged);
@@ -1999,7 +2009,7 @@
 
 					$el.on(whichTransitionEvent(), function() {
 						scope.$apply(function() {
-							scope.$broadcast('gridster-item-transition-end');
+							scope.$broadcast('gridster-item-transition-end', item);
 						});
 					});
 
