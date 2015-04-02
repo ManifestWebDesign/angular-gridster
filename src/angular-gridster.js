@@ -1842,14 +1842,31 @@
 		return GridsterResizable;
 	}])
 
+	.factory('gridsterDebounce', function () {
+		return function gridsterDebounce(func, wait, immediate) {
+			var timeout;
+			return function() {
+				var context = this, args = arguments;
+				var later = function() {
+					timeout = null;
+					if (!immediate) func.apply(context, args);
+				};
+				var callNow = immediate && !timeout;
+				clearTimeout(timeout);
+				timeout = setTimeout(later, wait);
+				if (callNow) func.apply(context, args);
+			};
+		};
+	})
+
 	/**
 	 * GridsterItem directive
 	 * @param $parse
 	 * @param GridsterDraggable
 	 * @param GridsterResizable
 	 */
-	.directive('gridsterItem', ['$parse', '$rootScope', 'GridsterDraggable', 'GridsterResizable',
-		function($parse, $rootScope, GridsterDraggable, GridsterResizable) {
+	.directive('gridsterItem', ['$parse', '$rootScope', 'GridsterDraggable', 'GridsterResizable', 'gridsterDebounce',
+		function($parse, $rootScope, GridsterDraggable, GridsterResizable, gridsterDebounce) {
 			return {
 				restrict: 'EA',
 				controller: 'GridsterItemCtrl',
@@ -2007,11 +2024,13 @@
 						}
 					}
 
-					$el.on(whichTransitionEvent(), function() {
+					var debouncedTransitionEndPublisher = gridsterDebounce(function() {
 						scope.$apply(function() {
 							scope.$broadcast('gridster-item-transition-end', item);
 						});
-					});
+					}, 10);
+
+					$el.on(whichTransitionEvent(), debouncedTransitionEndPublisher);
 
 					return scope.$on('$destroy', function() {
 						try {
