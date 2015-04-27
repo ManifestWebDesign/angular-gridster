@@ -10,7 +10,15 @@ See <a href="https://rawgit.com/ManifestWebDesign/angular-gridster/master/index.
 
 ## Usage
 
-Here is an example of the default usage:
+
+```js
+
+// load the gridster module
+angular.module('myModule', ['gridster']);
+
+```
+
+Default usage:
 ```HTML
 <div gridster>
 	<ul>
