@@ -9,7 +9,7 @@
 	height: 0;
 }
 
-.gridster-content > ul {
+.gridster > ul {
 	margin: 0;
 	list-style: none;
 	padding: 0;
@@ -38,6 +38,34 @@
 		-moz-transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
 		-o-transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
 		transition: opacity .3s, left .3s, top .3s, width .3s, height .3s;
+		-webkit-transition-delay: 50ms;
+		-moz-transition-delay: 50ms;
+		-o-transition-delay: 50ms;
+		transition-delay: 50ms;
+	}
+
+	.gridster-preview-holder {
+		display: none;
+		z-index: 1;
+		position: absolute;
+		background-color: #ddd;
+		border-color: #fff;
+		opacity: 0.2;
+		-webkit-transition: width .2s, height .3s;
+		-moz-transition: width .2s, height .3s;
+		-o-transition: width .2s, height .3s;
+		transition: width .2s, height .3s;
+		-webkit-transition-delay: 50ms;
+		-moz-transition-delay: 50ms;
+		-o-transition-delay: 50ms;
+		transition-delay: 50ms;
+	}
+
+	.gridster-item.gridster-item-moving {
+		-webkit-transition: none;
+		-moz-transition: none;
+		-o-transition: none;
+		transition: none;
 	}
 }
 
@@ -49,23 +77,6 @@
 		position: static;
 		float: none;
 	}
-}
-
-.gridster-preview-holder {
-	display: none;
-	z-index: 1;
-	position: absolute;
-	background-color: #ddd;
-	border-color: #fff;
-	opacity: 0.2;
-}
-
-.gridster-item.gridster-item-moving,
-.gridster-item.gridster-preview-holder {
-	-webkit-transition: none;
-	-moz-transition: none;
-	-o-transition: none;
-	transition: none;
 }
 
 .gridster-item.ng-leave.ng-leave-active {
