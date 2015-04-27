@@ -1438,7 +1438,7 @@
 					var itemsInTheWay = gridster.getItems(row, col, item.sizeX, item.sizeY, item);
 					var hasItemsInTheWay = itemsInTheWay.length !== 0;
 
-					if ((gridster.swapping === true || oldCol === col) && hasItemsInTheWay) {
+					if (gridster.swapping === true && hasItemsInTheWay) {
 						var boundingBoxItem = gridster.getBoundingBox(itemsInTheWay),
 							sameSize = boundingBoxItem.sizeX === item.sizeX && boundingBoxItem.sizeY === item.sizeY,
 							sameRow = boundingBoxItem.row === oldRow,
