@@ -1521,8 +1521,8 @@
 				}
 
 				var enabled = false;
-				var $dragHandle = null;
-				var unifiedInput;
+				var $dragHandles = null;
+				var unifiedInputs = [];
 
 				this.enable = function() {
 					var self = this;
@@ -1531,17 +1531,19 @@
 						self.disable();
 
 						if (gridster.draggable && gridster.draggable.handle) {
-							$dragHandle = angular.element($el[0].querySelector(gridster.draggable.handle));
-							if ($dragHandle.length === 0) {
+							$dragHandles = angular.element($el[0].querySelectorAll(gridster.draggable.handle));
+							if ($dragHandles.length === 0) {
 								// fall back to element if handle not found...
-								$dragHandle = $el;
+								$dragHandles = $el;
 							}
 						} else {
-							$dragHandle = $el;
+							$dragHandles = $el;
 						}
 
-						unifiedInput = new GridsterTouch($dragHandle[0], mouseDown, mouseMove, mouseUp);
-						unifiedInput.enable();
+						for (var h = 0, hl = $dragHandles.length; h < hl; ++h) {
+							unifiedInputs[h] = new GridsterTouch($dragHandles[h], mouseDown, mouseMove, mouseUp);
+							unifiedInputs[h].enable();
+						}
 
 						enabled = true;
 					});
@@ -1552,8 +1554,11 @@
 						return;
 					}
 
-					unifiedInput.disable();
-					unifiedInput = undefined;
+					for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
+						unifiedInputs[u].disable();
+					}
+
+					unifiedInputs = [];
 					enabled = false;
 				};
 
