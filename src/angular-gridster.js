@@ -20,6 +20,7 @@
 		minColumns: 1, // minimum amount of columns the grid can scale down to
 		minRows: 1, // minimum amount of rows to show if the grid is empty
 		maxRows: 100, // maximum amount of rows in the grid
+        fixRows: false, //optional Boolean to set fixed amount of rows
 		defaultSizeX: 2, // default width of an item in columns
 		defaultSizeY: 1, // default height of an item in rows
 		minSizeX: 1, // minimum column width of an item
@@ -498,6 +499,10 @@
 			 */
 			this.updateHeight = function(plus) {
 				var maxHeight = this.minRows;
+			    if (this.fixRows) {
+		            this.gridHeight = this.maxRows;
+		            return;
+	            }
 				plus = plus || 0;
 				for (var rowIndex = this.grid.length; rowIndex >= 0; --rowIndex) {
 					var columns = this.grid[rowIndex];
@@ -510,7 +515,10 @@
 						}
 					}
 				}
-				this.gridHeight = this.maxRows - maxHeight > 0 ? Math.min(this.maxRows, maxHeight) : Math.max(this.maxRows, maxHeight);
+			    var newHeight = this.maxRows - maxHeight > 0 ? Math.min(this.maxRows, maxHeight) : Math.max(this.maxRows, maxHeight);
+			    if(newHeight>this.maxRows)
+				    newHeight=this.maxRows;
+				this.gridHeight = newHeight;
 			};
 
 			/**
@@ -527,6 +535,22 @@
 				}
 
 				return Math.round(pixels / this.curRowHeight);
+			};
+
+		    /**
+			 * Returns the number of pixels that will fit in given amount of rows
+			 *
+			 * @param {Number} rows
+			 * @param {Boolean} ceilOrFloor (Optional) Determines rounding method
+			 */
+			this.rowsToPixels = function (rows, ceilOrFloor) {
+			    if (ceilOrFloor === true) {
+			        return Math.ceil(rows * this.curRowHeight);
+			    } else if (ceilOrFloor === false) {
+			        return Math.floor(rows + this.curRowHeight);
+			    }
+
+			    return Math.round(rows * this.curRowHeight);
 			};
 
 			/**
@@ -612,7 +636,16 @@
 							// resolve "auto" & "match" values
 							if (gridster.width === 'auto') {
 								gridster.curWidth = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
-							} else {
+							}
+							else if (gridster.width === 'match') {
+							    if(gridster.colWidth === 'auto'){
+							        gridster.curWidth = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
+							    }
+							    else {
+							        gridster.curWidth = gridster.colWidth * gridster.columns +(gridster.outerMargin ? +gridster.margins[1] : gridster.margins[1]);
+							    }
+							}
+							else {
 								gridster.curWidth = gridster.width;
 							}
 
@@ -700,10 +733,18 @@
 						function updateHeight() {
 							$elem.css('height', (gridster.gridHeight * gridster.curRowHeight) + (gridster.outerMargin ? gridster.margins[0] : -gridster.margins[0]) + 'px');
 						}
-
-						scope.$watch(function() {
-							return gridster.gridHeight;
+						scope.$watch(function () {
+						    return gridster.gridHeight;
 						}, updateHeight);
+
+						function updateWidth() {
+						    if (gridster.width === 'match') {
+						        $elem.css('width', (gridster.curWidth + 'px'));
+						    }
+						}
+						scope.$watch(function () {
+						    return gridster.curWidth;
+						}, updateWidth);
 
 						scope.$watch(function() {
 							return gridster.movingItem;
@@ -1356,6 +1397,9 @@
 					}
 
 					var maxLeft = gridster.curWidth - 1;
+					if (gridster.maxRows != null) {
+					    maxTop = gridster.rowsToPixels(gridster.maxRows)+(gridster.outerMargin ? +gridster.margins[0] : gridster.margins[0])-2;
+					}
 
 					// Get the current mouse position.
 					mouseX = e.pageX;
