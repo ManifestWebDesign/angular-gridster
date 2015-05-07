@@ -744,9 +744,7 @@
 
 
 						// see https://github.com/sdecima/javascript-detect-element-resize
-						if (typeof $elem.resize === 'function') {
-							$elem.resize(onResize);
-						} else if (typeof window.addResizeListener === 'function') {
+						if (typeof window.addResizeListener === 'function') {
 							window.addResizeListener($elem[0], onResize);
 						} else {
 							scope.$watch(function() {
