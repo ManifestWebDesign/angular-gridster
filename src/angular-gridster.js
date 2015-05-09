@@ -20,6 +20,9 @@
 		minColumns: 1, // minimum amount of columns the grid can scale down to
 		minRows: 1, // minimum amount of rows to show if the grid is empty
 		maxRows: 100, // maximum amount of rows in the grid
+		fixRows: false, //optional Boolean to set fixed amount of rows
+		gridsterLayout: false, //Show the layout to make styling for columns and rows available
+		headers: [], //array of the header names in Strings. if array is empty the headers are not shown
 		defaultSizeX: 2, // default width of an item in columns
 		defaultSizeY: 1, // default height of an item in rows
 		minSizeX: 1, // minimum column width of an item
@@ -38,8 +41,8 @@
 		}
 	})
 
-	.controller('GridsterCtrl', ['gridsterConfig', '$timeout',
-		function(gridsterConfig, $timeout) {
+	.controller('GridsterCtrl', ['gridsterConfig', '$timeout', '$rootScope',
+		function(gridsterConfig, $timeout, $rootScope) {
 
 			var gridster = this;
 
@@ -147,7 +150,7 @@
 						}
 					}
 				}
-				throw new Error('Unable to place item!');
+				$rootScope.$broadcast('gridster-item-unplacable', item);
 			};
 
 			/**
@@ -492,12 +495,52 @@
 			};
 
 			/**
+			 * checks if the items which are in the way can be pushed away
+			 * if they can't fit because there is a maxRows Limit set, then they are not pushed
+			 *
+			 * @param {Object} itemsInTheWay The items in the way
+			 * @param {Number} row The current row
+			 * @param {Number} col The current column
+			 * @param {Object} item The item which would be placed where the items in the Way are placed
+			 *
+			 */
+			this.itemsInTheWayCanFit = function (itemsInTheWay, row, col, item) {
+				var itemsInTheWayCanFit = true;
+				var itemsInTheWaySizeY = 0;
+				/* check for all items in the way */
+				for (var i = 0, l = itemsInTheWay.length; i < l; ++i) {
+					var itemInTheWay = itemsInTheWay[i];
+					/* add the size y for all items to make sure they are not pushed out when they wouldn't ALL fit */
+					itemsInTheWaySizeY += itemInTheWay.sizeY;
+					if (row + item.sizeY + itemInTheWay.sizeY > this.maxRows) {
+						/** items can't be pushed because they would be pushed over the limit of maxRows */
+						return false;
+					}
+					/* call the function recursive to check if the itemsInTheWay have itemsInTheWay */
+					var childItemsInTheWay = this.getItems(row + item.sizeY, col, itemInTheWay.sizeX, itemInTheWay.sizeY, itemInTheWay);
+					var childHasItemsInTheWay = childItemsInTheWay.length !== 0;
+					if (childHasItemsInTheWay) {
+						itemsInTheWayCanFit = this.itemsInTheWayCanFit(childItemsInTheWay, row + item.sizeY, col, itemInTheWay);
+					}
+				}
+				if (row + item.sizeY + itemsInTheWaySizeY > this.maxRows) {
+					/* not ALL items could be pushed */
+					return false;
+				}
+				return itemsInTheWayCanFit;
+			}
+
+			/**
 			 * Update gridsters height
 			 *
 			 * @param {Number} plus (Optional) Additional height to add
 			 */
 			this.updateHeight = function(plus) {
 				var maxHeight = this.minRows;
+				if (this.fixRows) {
+					this.gridHeight = this.maxRows;
+					return;
+				}
 				plus = plus || 0;
 				for (var rowIndex = this.grid.length; rowIndex >= 0; --rowIndex) {
 					var columns = this.grid[rowIndex];
@@ -510,7 +553,10 @@
 						}
 					}
 				}
-				this.gridHeight = this.maxRows - maxHeight > 0 ? Math.min(this.maxRows, maxHeight) : Math.max(this.maxRows, maxHeight);
+				var newHeight = this.maxRows - maxHeight > 0 ? Math.min(this.maxRows, maxHeight) : Math.max(this.maxRows, maxHeight);
+				if(newHeight>this.maxRows)
+					newHeight=this.maxRows;
+				this.gridHeight = newHeight;
 			};
 
 			/**
@@ -527,6 +573,22 @@
 				}
 
 				return Math.round(pixels / this.curRowHeight);
+			};
+
+			/**
+			 * Returns the number of pixels that will fit in given amount of rows
+			 *
+			 * @param {Number} rows
+			 * @param {Boolean} ceilOrFloor (Optional) Determines rounding method
+			 */
+			this.rowsToPixels = function (rows, ceilOrFloor) {
+				if (ceilOrFloor === true) {
+					return Math.ceil(rows * this.curRowHeight);
+				} else if (ceilOrFloor === false) {
+					return Math.floor(rows + this.curRowHeight);
+				}
+
+				return Math.round(rows * this.curRowHeight);
 			};
 
 			/**
@@ -547,6 +609,61 @@
 			};
 		}
 	])
+
+	/** Layout for the gridster to activate styling for columns and rows */
+	.directive('gridsterLayout', function() {
+		return {
+			restrict: 'E',
+			template: ''+
+				'<div class="gridLayout">' +
+					'<div ng-if="gridster.headers.length>0" class="headers" style="top:-{{gridster.headersHeight}}px;">' +
+						'<div ng-repeat="header in gridster.headers" class="row-header" style="height: {{gridster.curRowHeight}}px;width: {{gridster.curColWidth-gridster.margins[1]}}px;">{{header}}</div>' +
+					'</div>'+
+					'<div ng-repeat="column in range(gridster.columns) track by $index" class="column" style="width: {{gridster.curColWidth-gridster.margins[1]}}px; margin-left: {{gridster.margins[1]}}px; margin-top: {{gridster.margins[0]}}px;">' +
+						'<div ng-repeat="row in range(gridster.maxRows-1) track by $index" class="row" style="height: {{gridster.curRowHeight}}px;"></div>' +
+					'</div>'+
+				'</div>',
+			scope: true,
+			require: '^gridster',
+			link: function (scope, $el, attrs, gridster) {
+				/**
+				 * converts an integer to an array for ng-repeat
+				 * @returns {Array} count 
+				 */
+				scope.range = function (count) {
+					return new Array(+count);
+				}
+				/** calcualte the current rowHeight */
+				gridster.curRowHeight = gridster.rowHeight;
+				if (typeof gridster.rowHeight === 'string') {
+					if (gridster.rowHeight === 'match') {
+						gridster.curRowHeight = Math.round(gridster.curColWidth);
+					} else if (gridster.rowHeight.indexOf('*') !== -1) {
+						gridster.curRowHeight = Math.round(gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', ''));
+					} else if (gridster.rowHeight.indexOf('/') !== -1) {
+						gridster.curRowHeight = Math.round(gridster.curColWidth / gridster.rowHeight.replace('/', '').replace(' ', ''));
+					}
+				}
+				/* show headers? */
+				if (gridster.headers.length > 0) {
+					/** move gridster down, headers are set negative top like top: -30px */
+					gridster.headersHeight=30;
+					if (gridster.curRowHeight > 30) {
+						gridster.headersHeight=gridster.curRowHeight;
+					}
+					gridster.$element[0].style.top = gridster.headersHeight + 'px';
+					gridster.$element[0].style.marginBottom = gridster.headersHeight + 'px';
+				}
+				/** calculate column width */
+				if (gridster.colWidth === 'auto') {
+					gridster.curColWidth = (gridster.curWidth + (gridster.outerMargin ? -gridster.margins[1] : gridster.margins[1])) / gridster.columns;
+				} else {
+					gridster.curColWidth = gridster.colWidth;
+				}
+			}
+
+		};
+	})
 
 	.directive('gridsterPreview', function() {
 		return {
@@ -594,7 +711,7 @@
 				controller: 'GridsterCtrl',
 				controllerAs: 'gridster',
 				compile: function($tplElem) {
-
+					$tplElem.prepend('<gridster-layout ng-if="gridster.gridsterLayout"></gridster-layout>');
 					$tplElem.prepend('<div ng-if="gridster.movingItem" gridster-preview></div>');
 
 					return function(scope, $elem, attrs, gridster) {
@@ -612,7 +729,16 @@
 							// resolve "auto" & "match" values
 							if (gridster.width === 'auto') {
 								gridster.curWidth = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
-							} else {
+							}
+							else if (gridster.width === 'match') {
+								if(gridster.colWidth === 'auto'){
+									gridster.curWidth = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
+								}
+								else {
+									gridster.curWidth = gridster.colWidth * gridster.columns +(gridster.outerMargin ? +gridster.margins[1] : gridster.margins[1]);
+								}
+							}
+							else {
 								gridster.curWidth = gridster.width;
 							}
 
@@ -700,10 +826,18 @@
 						function updateHeight() {
 							$elem.css('height', (gridster.gridHeight * gridster.curRowHeight) + (gridster.outerMargin ? gridster.margins[0] : -gridster.margins[0]) + 'px');
 						}
-
-						scope.$watch(function() {
+						scope.$watch(function () {
 							return gridster.gridHeight;
 						}, updateHeight);
+
+						function updateWidth() {
+							if (gridster.width === 'match') {
+								$elem.css('width', (gridster.curWidth + 'px'));
+							}
+						}
+						scope.$watch(function () {
+							return gridster.curWidth;
+						}, updateWidth);
 
 						scope.$watch(function() {
 							return gridster.movingItem;
@@ -1356,6 +1490,9 @@
 					}
 
 					var maxLeft = gridster.curWidth - 1;
+					if (gridster.maxRows != null) {
+						maxTop = gridster.rowsToPixels(gridster.maxRows)+(gridster.outerMargin ? +gridster.margins[0] : gridster.margins[0]);
+					}
 
 					// Get the current mouse position.
 					mouseX = e.pageX;
@@ -1476,7 +1613,12 @@
 						}
 					}
 
-					if (gridster.pushing !== false || !hasItemsInTheWay) {
+					/** check if the items in the way can be pushed away */
+					var itemsInTheWayCanFit = true;
+					if (hasItemsInTheWay) {
+						itemsInTheWayCanFit = gridster.itemsInTheWayCanFit(itemsInTheWay, row, col, item);
+					}
+					if ((gridster.pushing !== false || !hasItemsInTheWay) && itemsInTheWayCanFit) {
 						item.row = row;
 						item.col = col;
 					}
@@ -1506,7 +1648,15 @@
 					$el.removeClass('gridster-item-moving');
 					var row = gridster.pixelsToRows(elmY);
 					var col = gridster.pixelsToColumns(elmX);
-					if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
+					var itemsInTheWay = gridster.getItems(row, col, item.sizeX, item.sizeY, item);
+					var hasItemsInTheWay = itemsInTheWay.length !== 0;
+
+					/** check if the items in the way can be pushed away */
+					var itemsInTheWayCanFit = true;
+					if (hasItemsInTheWay) {
+						itemsInTheWayCanFit = gridster.itemsInTheWayCanFit(itemsInTheWay, row, col, item);
+					}
+					if ((gridster.pushing !== false || !hasItemsInTheWay) && itemsInTheWayCanFit) {
 						item.row = row;
 						item.col = col;
 					}
@@ -1923,8 +2073,8 @@
 	 * @param GridsterResizable
 	 * @param gridsterDebounce
 	 */
-	.directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable', 'gridsterDebounce',
-		function($parse, GridsterDraggable, GridsterResizable, gridsterDebounce) {
+	.directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable', 'gridsterDebounce', '$rootScope',
+		function($parse, GridsterDraggable, GridsterResizable, gridsterDebounce, $rootScope) {
 			return {
 				scope: true,
 				restrict: 'EA',
@@ -1958,6 +2108,14 @@
 								maxSizeY: null
 							};
 							$optionsGetter.assign(scope, options);
+						}
+						else {
+							//set item's id
+							item.id = options.id;
+							if ((options.sizeY > scope.gridster.maxRows) || (options.sizeX > scope.gridster.columns)) {
+								$rootScope.$broadcast('gridster-item-unplacable', item);
+								return;
+							}
 						}
 					} else {
 						options = attrs;
