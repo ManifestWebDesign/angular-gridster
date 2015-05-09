@@ -1512,7 +1512,7 @@
 					if (elmX + dX < minLeft) {
 						diffX = minLeft - elmX;
 						mOffX = dX - diffX;
-					} else if (elmX + elmW + dX > maxLeft) { 
+					} else if (elmX + elmW + dX > maxLeft) {
 						diffX = maxLeft - elmX - elmW;
 						mOffX = dX - diffX;
 					}
