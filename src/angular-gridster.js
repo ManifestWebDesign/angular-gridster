@@ -42,7 +42,7 @@
 	})
 
 	.controller('GridsterCtrl', ['gridsterConfig', '$timeout', '$rootScope',
-		function (gridsterConfig, $timeout, $rootScope) {
+		function(gridsterConfig, $timeout, $rootScope) {
 
 			var gridster = this;
 
@@ -327,16 +327,17 @@
 						}
 					}
 				}
-				
+
 				item.oldRow = item.row = row;
 				item.oldColumn = item.col = column;
-				
+
 				this.moveOverlappingItems(item, ignoreItems);
-				
+
 				if (!this.grid[row]) {
 					this.grid[row] = [];
 				}
 				this.grid[row][column] = item;
+
 				if (this.movingItem === item) {
 					this.floatItemUp(item);
 				}
@@ -367,7 +368,7 @@
 			 * @param {Object} item The item that should remain
 			 * @param {Array} ignoreItems
 			 */
-			this.moveOverlappingItems = function (item, ignoreItems) {
+			this.moveOverlappingItems = function(item, ignoreItems) {
 				// don't move item, so ignore it
 				if (!ignoreItems) {
 					ignoreItems = [item];
@@ -394,7 +395,7 @@
 			 * @param {Number} newRow The target row
 			 * @param {Array} ignoreItems
 			 */
-			this.moveItemsDown = function (items, newRow, ignoreItems) {
+			this.moveItemsDown = function(items, newRow, ignoreItems) {
 				if (!items || items.length === 0) {
 					return;
 				}
@@ -431,7 +432,7 @@
 			 * @param {Number} newRow The target row
 			 * @param {Array} ignoreItems
 			 */
-			this.moveItemDown = function (item, newRow, ignoreItems) {
+			this.moveItemDown = function(item, newRow, ignoreItems) {
 				if (item.row >= newRow) {
 					return;
 				}
@@ -957,9 +958,9 @@
 		 * @param {Number} row
 		 * @param {Number} column
 		 */
-		this.setPosition = function (row, column) {
+		this.setPosition = function(row, column) {
 			this.gridster.putItem(this, row, column);
-			
+
 			if (!this.isMoving()) {
 				this.setElementPosition();
 			}
@@ -1511,7 +1512,7 @@
 					if (elmX + dX < minLeft) {
 						diffX = minLeft - elmX;
 						mOffX = dX - diffX;
-					} else if (elmX + elmW + dX > maxLeft){ 
+					} else if (elmX + elmW + dX > maxLeft) { 
 						diffX = maxLeft - elmX - elmW;
 						mOffX = dX - diffX;
 					}
@@ -2073,7 +2074,7 @@
 	 * @param gridsterDebounce
 	 */
 	.directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable', 'gridsterDebounce', '$rootScope',
-		function ($parse, GridsterDraggable, GridsterResizable, gridsterDebounce, $rootScope) {
+		function($parse, GridsterDraggable, GridsterResizable, gridsterDebounce, $rootScope) {
 			return {
 				scope: true,
 				restrict: 'EA',
