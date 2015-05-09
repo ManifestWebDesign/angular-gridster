@@ -501,7 +501,7 @@
 			 * @param {Object} itemsInTheWay The items in the way
 			 * @param {Number} row The current row
 			 * @param {Number} col The current column
-			 * @param {Number} row The item which would be placed where the items in the Way are placed
+			 * @param {Object} item The item which would be placed where the items in the Way are placed
 			 *
 			 */
 			this.itemsInTheWayCanFit = function (itemsInTheWay, row, col, item) {
