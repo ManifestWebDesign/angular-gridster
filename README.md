@@ -133,7 +133,7 @@ $scope.gridsterOpts = {
 	pushing: true, // whether to push other items out of the way on move or resize
 	floating: true, // whether to automatically float items up so they stack (you can temporarily disable if you are adding unsorted items with ng-repeat)
 	swapping: false, // whether or not to have items of the same size switch places instead of pushing down if they are the same size
-	width: 'auto', // can be an integer or 'auto'. 'auto' scales gridster to be the full width of its containing element
+	width: 'auto', // can be an integer, 'match' or 'auto'. 'auto' scales gridster to be the full width of its containing element. 'match' requires the colWidth to be an integer and calculates the width accordingly
 	colWidth: 'auto', // can be an integer or 'auto'.  'auto' uses the pixel width of the element divided by 'columns'
 	rowHeight: 'match', // can be an integer or 'match'.  Match uses the colWidth, giving you square widgets.
 	margins: [10, 10], // the pixel distance between each widget
@@ -143,7 +143,10 @@ $scope.gridsterOpts = {
 	mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
 	minColumns: 1, // the minimum columns the grid must have
 	minRows: 2, // the minimum height of the grid, in rows
-	maxRows: 100,
+	maxRows: 100, // maximum amount of rows in the grid
+	fixRows: false, //set true to keep the shown rows always at the maxRows limit
+	gridsterLayout: false, //Show the layout to make styling for columns and rows available. It is highly recommended to set a maxRows limit to increase the performance.
+	headers: [], //array of the header names in Strings. if array is empty the headers are not shown
 	defaultSizeX: 2, // the default width of a gridster item, if not specifed
 	defaultSizeY: 1, // the default height of a gridster item, if not specified
 	minSizeX: 1, // minimum column width of an item
@@ -287,6 +290,43 @@ scope.$on('gridster-item-resized', function(item) {
 })
 ```
 
+## Gridster Error Events
+
+#### gridster-item-unplacable
+After adding an item to the array of items, the ng-repeat will automatically add the item to the gridster, no matter what. However, you can listen to the event gridster-item-unplacable which is fired when an item doesn't fit in.
+```js
+$scope.$on('gridster-item-unplacable', function (event, item) {
+	//item is unplacable
+});
+```
+As an example, you could handle the error like the following (which deletes the item out of the array if the error event is fired):
+```js
+$scope.$on('gridster-item-unplacable', function (event, item) {
+	//item is unplacable
+	$scope.itemUnplacable(item);
+});
+```
+whereas $scope.itemUnplacable(item) contains
+```js
+$scope.itemUnplacable = function (item) {
+	for (var i = 0; i < $scope.standardItems.length; i++) {
+		if ($scope.standardItems[i].id == item.id) {
+			$scope.standardItems.splice(i, 1);
+		}
+	}
+}
+```
+The above function iterates over all the items and checks for the item's id, which can be set like this:
+```js
+$scope.standardItems = [
+	{ sizeX: 1, sizeY: 9, row: 0, col: 0, id: 1 },
+	{ sizeX: 1, sizeY: 4, row: 0, col: 2, id: 2 },
+	{ sizeX: 1, sizeY: 3, row: 0, col: 4, id: 3 },
+	{ sizeX: 1, sizeY: 6, row: 0, col: 5, id: 4 },
+	{ sizeX: 1, sizeY: 5, row: 1, col: 0, id: 5 },
+];
+```
+
 ## Watching item changes of size and position
 
 The typical Angular way would be to do a $scope.$watch on your item or items in the scope.  Example:
@@ -320,7 +360,7 @@ The third argument, true, is to make the watch based on the value of the object,
 
 
 ## Note
-This directive/plugin does not generate style tags, like the jQuery plugin.  It also uses standard camelCase for variables and object properties, while the original plugin used lower\_case\_with_underscores.  These options have not and may never be implemented:
+This directive/plugin does, unlike the jQuery plugin, use standard camelCase for variables and object properties, while the original plugin used lower\_case\_with_underscores.  These options have not and may never be implemented:
 
 * widget_class - not necessary since directives already whatever classes and attributes you want to add
 * widget_margins - replaced by 'margins'
