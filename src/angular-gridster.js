@@ -1,8 +1,24 @@
-(function(angular) {
+/*global define:true*/
+(function(root, factory) {
 
 	'use strict';
 
-	angular.module('gridster', [])
+	if (typeof define === 'function' && define.amd) {
+		// AMD
+		define(['angular'], factory);
+	} else if (typeof exports === 'object') {
+		// CommonJS
+		module.exports = factory(require('angular'));
+	} else {
+		// Browser, nothing "exported". Only registered as a module with angular.
+		factory(root.angular);
+	}
+}(this, function(angular) {
+
+	'use strict';
+
+	// This returned angular module 'gridster' is what is exported.
+	return angular.module('gridster', [])
 
 	.constant('gridsterConfig', {
 		columns: 6, // number of columns in the grid
@@ -2118,4 +2134,4 @@
 
 	;
 
-})(angular);
+}));
