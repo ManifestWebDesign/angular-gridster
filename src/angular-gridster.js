@@ -91,9 +91,10 @@
 			 * Clean up after yourself
 			 */
 			this.destroy = function() {
+				// empty the grid to cut back on the possibility
+				// of circular references
 				if (this.grid) {
-					this.grid.length = 0;
-					this.grid = null;
+					this.grid = [];
 				}
 				this.$element = null;
 			};
@@ -812,6 +813,7 @@
 		};
 
 		this.destroy = function() {
+			// set these to null to avoid the possibility of circular references
 			this.gridster = null;
 			this.$element = null;
 		};
