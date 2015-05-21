@@ -1328,17 +1328,20 @@
 						return false;
 					}
 
+					var $target = angular.element(e.target);
+
 					// exit, if a resize handle was hit
-					if (angular.element(e.target).hasClass('gridster-item-resizable-handler')) {
+					if ($target.hasClass('gridster-item-resizable-handler')) {
 						return false;
 					}
 
 					// exit, if the target has it's own click event
-					if (angular.element(e.target).attr('onclick') || angular.element(e.target).attr('ng-click')) {
+					if ($target.attr('onclick') || $target.attr('ng-click')) {
 						return false;
 					}
 
-					if(angular.element(e.target).closest('.gridster-no-drag').length){
+					// only works if you have jQuery
+					if ($target.closest && $target.closest('.gridster-no-drag').length) {
 						return false;
 					}
 
@@ -2134,13 +2137,13 @@
 		}
 	])
 
-	.directive('gridsterNoDrag', function(){
+	.directive('gridsterNoDrag', function() {
 		return {
-			restrict:'A',
-			link:function(scope, elem){
-				elem.addClass('gridster-no-drag');
+			restrict: 'A',
+			link: function(scope, $element) {
+				$element.addClass('gridster-no-drag');
 			}
-		}
+		};
 	})
 
 	;
