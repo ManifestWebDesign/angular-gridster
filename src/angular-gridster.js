@@ -1338,6 +1338,10 @@
 						return false;
 					}
 
+					if(angular.element(e.target).closest('.gridster-no-drag').length){
+						return false;
+					}
+
 					switch (e.which) {
 						case 1:
 							// left mouse button
@@ -2129,6 +2133,15 @@
 			};
 		}
 	])
+
+	.directive('gridsterNoDrag', function(){
+		return {
+			restrict:'A',
+			link:function(scope, elem){
+				elem.addClass('gridster-no-drag');
+			}
+		}
+	})
 
 	;
 
