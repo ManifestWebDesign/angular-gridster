@@ -1614,10 +1614,10 @@
 					minLeft = 0;
 
 				var getMinHeight = function() {
-					return gridster.curRowHeight - gridster.margins[0];
+					return (item.minSizeY ? item.minSizeY : 1) * gridster.curRowHeight - gridster.margins[0];
 				};
 				var getMinWidth = function() {
-					return gridster.curColWidth - gridster.margins[1];
+					return (item.minSizeX ? item.minSizeX : 1) * gridster.curColWidth - gridster.margins[1];
 				};
 
 				var originalWidth, originalHeight;
