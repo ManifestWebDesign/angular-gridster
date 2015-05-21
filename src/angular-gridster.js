@@ -1541,11 +1541,15 @@
 					});
 				}
 
-				var enabled = false;
+				var enabled = null;
 				var $dragHandles = null;
 				var unifiedInputs = [];
 
 				this.enable = function() {
+					if (enabled === true) {
+						return;
+					}
+
 					var self = this;
 					// disable and timeout required for some template rendering
 					$timeout(function() {
@@ -1571,16 +1575,21 @@
 				};
 
 				this.disable = function() {
-					if (!enabled) {
+					if (enabled === false) {
 						return;
 					}
 
-					for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
-						unifiedInputs[u].disable();
-					}
+					// timeout to avoid race contition with the enable timeout
+					$timeout(function() {
 
-					unifiedInputs = [];
-					enabled = false;
+						for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
+							unifiedInputs[u].disable();
+						}
+
+						unifiedInputs = [];
+						enabled = false;
+
+					});
 				};
 
 				this.toggle = function(enabled) {
