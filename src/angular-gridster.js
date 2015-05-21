@@ -623,8 +623,16 @@
 
 						$elem.addClass('gridster');
 
+						var isVisible = function(ele) {
+							return ele.style.visibility !== 'hidden' && ele.style.display !== 'none';
+						};
+
 						function refresh(config) {
 							gridster.setOptions(config);
+
+							if (!isVisible($elem[0])) {
+								return;
+							}
 
 							// resolve "auto" & "match" values
 							if (gridster.width === 'auto') {
@@ -759,6 +767,9 @@
 							});
 						}, 100);
 
+						scope.$watch(function() {
+							return isVisible($elem[0]);
+						}, onResize);
 
 						// see https://github.com/sdecima/javascript-detect-element-resize
 						if (typeof window.addResizeListener === 'function') {
