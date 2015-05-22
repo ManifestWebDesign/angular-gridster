@@ -1563,10 +1563,13 @@
 						return;
 					}
 
-					var self = this;
 					// disable and timeout required for some template rendering
 					$timeout(function() {
-						self.disable();
+						// disable any existing draghandles
+						for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
+							unifiedInputs[u].disable();
+						}
+						unifiedInputs = [];
 
 						if (gridster.draggable && gridster.draggable.handle) {
 							$dragHandles = angular.element($el[0].querySelectorAll(gridster.draggable.handle));
@@ -2098,21 +2101,22 @@
 					var draggable = new GridsterDraggable($el, scope, gridster, item, options);
 					var resizable = new GridsterResizable($el, scope, gridster, item, options);
 
-					resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
-					draggable.toggle(!gridster.isMobile && gridster.draggable && gridster.draggable.enabled);
+					var updateResizable = function() {
+						resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
+					};
+					updateResizable();
 
-					scope.$on('gridster-draggable-changed', function() {
+					var updateDraggable = function() {
 						draggable.toggle(!gridster.isMobile && gridster.draggable && gridster.draggable.enabled);
-					});
-					scope.$on('gridster-resizable-changed', function() {
-						resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
-					});
-					scope.$on('gridster-resized', function() {
-						resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
-					});
+					};
+					updateDraggable();
+
+					scope.$on('gridster-draggable-changed', updateDraggable);
+					scope.$on('gridster-resizable-changed', updateResizable);
+					scope.$on('gridster-resized', updateResizable);
 					scope.$on('gridster-mobile-changed', function() {
-						resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
-						draggable.toggle(!gridster.isMobile && gridster.draggable && gridster.draggable.enabled);
+						updateResizable();
+						updateDraggable();
 					});
 
 					function whichTransitionEvent() {
