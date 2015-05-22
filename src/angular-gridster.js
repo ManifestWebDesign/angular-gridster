@@ -62,9 +62,9 @@
 			},
 			getByHandle: function(handle) {
 				if (!handle) {
-					return this.getInstances['current'] || null;
+					return instances['current'] || null;
 				}
-				return this.getInstances[handle] || null;
+				return instances[handle] || null;
 			},
 			_register: function(handle, instance) {
 				instances[handle] = instance;
@@ -89,7 +89,7 @@
 			 * Create options from gridsterConfig constant
 			 */
 			angular.extend(this, gridsterConfig);
-
+			this.itemInstances = [];
 			this.resizable = angular.extend({}, gridsterConfig.resizable || {});
 			this.draggable = angular.extend({}, gridsterConfig.draggable || {});
 
@@ -106,6 +106,10 @@
 					}
 					gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
 				}, 30);
+			};
+
+			this.getItemInstances = function() {
+				return this.itemInstances;
 			};
 
 			/**
@@ -268,6 +272,10 @@
 			 * @param {Object} item
 			 */
 			this.removeItem = function(item) {
+				var index = this.itemInstances.indexOf(item);
+				if (index >= 0) {
+					this.itemInstances.splice(index, 1);
+				}
 				for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 					var columns = this.grid[rowIndex];
 					if (!columns) {
@@ -335,6 +343,10 @@
 			 * @param {Array} ignoreItems
 			 */
 			this.putItem = function(item, row, column, ignoreItems) {
+				// register instance for programmatically calls
+				if (this.itemInstances.indexOf(item) === -1) {
+					this.itemInstances.push(item);
+				}
 				// auto place item if no row specified
 				if (typeof row === 'undefined' || row === null) {
 					row = item.row;
