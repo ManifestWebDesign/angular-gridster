@@ -54,8 +54,34 @@
 		}
 	})
 
-	.controller('GridsterCtrl', ['gridsterConfig', '$timeout',
-		function(gridsterConfig, $timeout) {
+	.factory('GridsterDelegate', function() {
+		var instances = {};
+		return {
+			getInstances: function(handle) {
+				return instances;
+			},
+			getByHandle: function(handle) {
+				if (!handle) {
+					return this.getInstances['current'] || null;
+				}
+				return this.getInstances[handle] || null;
+			},
+			_register: function(handle, instance) {
+				instances[handle] = instance;
+			},
+			_unregister: function(handle) {
+				delete instances[handle];
+			}
+		}
+	})
+
+	.controller('GridsterCtrl', ['$scope', '$attrs', 'gridsterConfig', '$timeout', 'GridsterDelegate',
+		function($scope, $attrs, gridsterConfig, $timeout, GridsterDelegate) {
+
+			GridsterDelegate._register($attrs.delegateHandle || 'current', this);
+			$scope.$on('$destroy', function() {
+				GridsterDelegate._unregister($attrs.delegateHandle);
+			});
 
 			var gridster = this;
 
