@@ -150,7 +150,7 @@
 						}
 					}
 				}
-				$rootScope.$broadcast('gridster-item-unplacable', item);
+				$rootScope.$broadcast('gridster-item-unplaceable', item);
 			};
 
 			/**
@@ -615,7 +615,7 @@
 		return {
 			restrict: 'E',
 			template: ''+
-				'<div class="gridLayout">' +
+				'<div class="grid-layout">' +
 					'<div ng-if="gridster.headers.length>0" class="headers" style="top:-{{gridster.headersHeight}}px;">' +
 						'<div ng-repeat="header in gridster.headers" class="row-header" style="height: {{gridster.curRowHeight}}px;width: {{gridster.curColWidth-gridster.margins[1]}}px;">{{header}}</div>' +
 					'</div>'+
@@ -2113,7 +2113,7 @@
 							//set item's id
 							item.id = options.id;
 							if ((options.sizeY > scope.gridster.maxRows) || (options.sizeX > scope.gridster.columns)) {
-								$rootScope.$broadcast('gridster-item-unplacable', item);
+								$rootScope.$broadcast('gridster-item-unplaceable', item);
 								return;
 							}
 						}
