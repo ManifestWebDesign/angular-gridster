@@ -78,9 +78,9 @@
 	.controller('GridsterCtrl', ['$scope', '$attrs', 'gridsterConfig', '$timeout', 'GridsterDelegate',
 		function($scope, $attrs, gridsterConfig, $timeout, GridsterDelegate) {
 
-			GridsterDelegate._register($attrs.delegateHandle || 'current', this);
+			GridsterDelegate._register($scope.delegateHandle || 'current', this);
 			$scope.$on('$destroy', function() {
-				GridsterDelegate._unregister($attrs.delegateHandle);
+				GridsterDelegate._unregister($scope.delegateHandle || 'current');
 			});
 
 			var gridster = this;
@@ -644,7 +644,9 @@
 	.directive('gridster', ['$timeout', '$window', '$rootScope', 'gridsterDebounce',
 		function($timeout, $window, $rootScope, gridsterDebounce) {
 			return {
-				scope: true,
+				scope: {
+					delegateHandle: "@",
+				},
 				restrict: 'EAC',
 				controller: 'GridsterCtrl',
 				controllerAs: 'gridster',
