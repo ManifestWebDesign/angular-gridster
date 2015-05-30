@@ -616,11 +616,11 @@
 			restrict: 'E',
 			template: ''+
 				'<div class="grid-layout">' +
-					'<div ng-if="gridster.headers.length>0" class="headers" style="top:-{{gridster.headersHeight}}px;">' +
-						'<div ng-repeat="header in gridster.headers" class="row-header" style="height: {{gridster.curRowHeight}}px;width: {{gridster.curColWidth-gridster.margins[1]}}px;">{{header}}</div>' +
+					'<div ng-if="gridster.headers.length>0" class="headers" ng-attr-style="top:-{{gridster.headersHeight}}px;">' +
+						'<div ng-repeat="header in gridster.headers" class="row-header" ng-attr-style="height: {{gridster.curRowHeight}}px;width: {{gridster.curColWidth-gridster.margins[1]}}px;">{{header}}</div>' +
 					'</div>'+
-					'<div ng-repeat="column in range(gridster.columns) track by $index" class="column" style="width: {{gridster.curColWidth-gridster.margins[1]}}px; margin-left: {{gridster.margins[1]}}px; margin-top: {{gridster.margins[0]}}px;">' +
-						'<div ng-repeat="row in range(gridster.maxRows-1) track by $index" class="row" style="height: {{gridster.curRowHeight}}px;"></div>' +
+					'<div ng-repeat="column in range(gridster.columns) track by $index" class="column" ng-attr-style="width: {{gridster.curColWidth-gridster.margins[1]}}px; margin-left: {{gridster.margins[1]}}px; margin-top: {{gridster.margins[0]}}px;">' +
+						'<div ng-repeat="row in range(gridster.maxRows-1) track by $index" class="row" ng-attr-style="height: {{gridster.curRowHeight}}px;"></div>' +
 					'</div>'+
 				'</div>',
 			scope: true,
