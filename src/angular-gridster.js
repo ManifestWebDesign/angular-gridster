@@ -1830,7 +1830,9 @@
 						sizeY = gridster.pixelsToRows(elmH, true);
 					}
 
-					if (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0) {
+
+                    var canOccupy = row > -1 && column > -1 && item.sizeX + col <= gridster.columns && item.sizeY + row <= gridster.maxRows;
+					if (canOccupy && (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0)) {
 						item.row = row;
 						item.col = col;
 						item.sizeX = sizeX;
