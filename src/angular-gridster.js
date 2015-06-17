@@ -1358,6 +1358,11 @@
 						return false;
 					}
 
+					// if draggable turned off for individual widget
+					if (!$target.draggable) {
+						return false;
+					}
+
 					switch (e.which) {
 						case 1:
 							// left mouse button
@@ -2001,7 +2006,9 @@
 								minSizeX: 0,
 								minSizeY: 0,
 								maxSizeX: null,
-								maxSizeY: null
+								maxSizeY: null,
+								draggable: true,
+								resizable: true
 							};
 							$optionsGetter.assign(scope, options);
 						}
@@ -2013,7 +2020,7 @@
 
 					$el.addClass('gridster-item');
 
-					var aspects = ['minSizeX', 'maxSizeX', 'minSizeY', 'maxSizeY', 'sizeX', 'sizeY', 'row', 'col'],
+					var aspects = ['minSizeX', 'maxSizeX', 'minSizeY', 'maxSizeY', 'sizeX', 'sizeY', 'row', 'col', 'draggable', 'resizable'],
 						$getters = {};
 
 					var expressions = [];
