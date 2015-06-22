@@ -1134,6 +1134,7 @@
 							} else {
 								document.addEventListener('mousemove', doEvent, false);
 								document.addEventListener('mouseup', doEvent, false);
+								document.addEventListener('dragend', doEvent, false);
 							}
 						}
 					} else if (theEvtObj.type.match(/move$/i)) {
@@ -1177,12 +1178,13 @@
 						//  nothing is required for the iOS touch model because capture is implied on touchstart
 						if (target.msReleasePointerCapture) {
 							target.msReleasePointerCapture(pointerId);
-						} else if (theEvtObj.type === 'mouseup' && numberOfKeys(lastXYById) === 0) {
+						} else if ((theEvtObj.type === 'mouseup' || theEvtObj.type === 'dragend') && numberOfKeys(lastXYById) === 0) {
 							if (useSetReleaseCapture) {
 								target.releaseCapture();
 							} else {
 								document.removeEventListener('mousemove', doEvent, false);
 								document.removeEventListener('mouseup', doEvent, false);
+								document.removeEventListener('dragend', doEvent, false);
 							}
 						}
 					}
@@ -1245,6 +1247,7 @@
 
 						target.addEventListener('mousemove', doEvent, false);
 						target.addEventListener('mouseup', doEvent, false);
+						target.addEventListener('dragend', doEvent, false);
 					}
 				} else if (target.attachEvent && target.setCapture) {
 					//  legacy IE mode - mouse with capture
@@ -1260,6 +1263,11 @@
 						return false;
 					});
 					target.attachEvent('onmouseup', function() {
+						doEvent(window.event);
+						window.event.returnValue = false;
+						return false;
+					});
+					target.attachEvent('dragend', function() {
 						doEvent(window.event);
 						window.event.returnValue = false;
 						return false;
@@ -1301,6 +1309,7 @@
 
 						target.removeEventListener('mousemove', doEvent, false);
 						target.removeEventListener('mouseup', doEvent, false);
+						target.removeEventListener('dragend', doEvent, false);
 					}
 				} else if (target.detachEvent && target.setCapture) {
 					//  legacy IE mode - mouse with capture
@@ -1308,6 +1317,7 @@
 					target.detachEvent('onmousedown');
 					target.detachEvent('onmousemove');
 					target.detachEvent('onmouseup');
+					target.detachEvent('ondragend');
 				}
 			};
 
@@ -1337,7 +1347,14 @@
 				var inputTags = ['select', 'input', 'textarea', 'button'];
 
 				function mouseDown(e) {
+
 					if (inputTags.indexOf(e.target.nodeName.toLowerCase()) !== -1) {
+						return false;
+					}
+
+					// if draggable turned off for individual widget
+					if (itemOptions.draggable === false) {
+						angular.element(document).find('body').addClass('action-not-allowed');
 						return false;
 					}
 
@@ -1355,11 +1372,6 @@
 
 					// only works if you have jQuery
 					if ($target.closest && $target.closest('.gridster-no-drag').length) {
-						return false;
-					}
-
-					// if draggable turned off for individual widget
-					if (!$target.draggable) {
 						return false;
 					}
 
@@ -1441,6 +1453,12 @@
 				}
 
 				function mouseUp(e) {
+
+					if (angular.element(document).find('body').hasClass('action-not-allowed')) {
+						angular.element(document).find('body').removeClass('action-not-allowed');
+						return false;
+					}
+
 					if (!$el.hasClass('gridster-item-moving') || $el.hasClass('gridster-item-resizing')) {
 						return false;
 					}
@@ -1624,6 +1642,10 @@
 				this.destroy = function() {
 					this.disable();
 				};
+
+				this.updateDraggable = function(draggable) {
+					itemOptions.draggable = draggable;
+				};
 			}
 
 			return GridsterDraggable;
@@ -1661,6 +1683,13 @@
 				var savedDraggable;
 
 				function mouseDown(e) {
+
+					// if resize has been individually turned off for this widget
+					if (itemOptions.resizable === false) {
+						angular.element(document).find('body').addClass('action-not-allowed');
+						return false;
+					}
+
 					switch (e.which) {
 						case 1:
 							// left mouse button
@@ -1716,6 +1745,11 @@
 				}
 
 				function mouseMove(e) {
+
+					if (angular.element(document).find('body').hasClass('action-not-allowed')) {
+						return false;
+					}
+
 					var maxLeft = gridster.curWidth - 1;
 
 					// Get the current mouse position.
@@ -1791,6 +1825,12 @@
 				}
 
 				function mouseUp(e) {
+
+					if (angular.element(document).find('body').hasClass('action-not-allowed')) {
+						angular.element(document).find('body').removeClass('action-not-allowed');
+						return false;
+					}
+
 					// restore draggable setting to its original state
 					if (gridster.draggable.enabled !== savedDraggable) {
 						gridster.draggable.enabled = savedDraggable;
@@ -1941,6 +1981,10 @@
 					handles[c].destroy();
 				}
 			};
+
+			this.updateResizable = function(resizable) {
+				itemOptions.resizable = resizable;
+			};
 		}
 		return GridsterResizable;
 	}])
@@ -1990,6 +2034,7 @@
 						item = controllers[1];
 
 					scope.gridster = gridster;
+					scope.myGridsterItem = scope.$eval(attrs.gridsterItem);
 
 					// bind the item's position properties
 					// options can be an object specified by gridster-item="object"
@@ -2125,6 +2170,14 @@
 						updateResizable();
 						updateDraggable();
 					});
+
+					// need to dynamically update draggable/resizable of individual gridster item if properties change
+					scope.$watch("myGridsterItem.draggable", function(newVal) {
+						draggable.updateDraggable(newVal);
+					}, true);
+					scope.$watch("myGridsterItem.resizable", function(newVal) {
+						resizable.updateResizable(newVal);
+					}, true);
 
 					function whichTransitionEvent() {
 						var el = document.createElement('div');
