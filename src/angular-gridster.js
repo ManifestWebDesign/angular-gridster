@@ -644,6 +644,12 @@
 							if (typeof gridster.rowHeight === 'string') {
 								if (gridster.rowHeight === 'match') {
 									gridster.curRowHeight = Math.round(gridster.curColWidth);
+								} else if (gridster.rowHeight.indexOf('screen-height') !== -1) {
+									var body = document.getElementsByTagName('body')[0],
+										screenHeight = body.clientHeight;
+									var split = gridster.rowHeight.split("screen-height");
+									var additional = split.length > 1 ? parseInt(split[1].replace(/\s/g, "")) : 0;
+									gridster.curRowHeight = (screenHeight + additional) / gridster.minRows;
 								} else if (gridster.rowHeight.indexOf('*') !== -1) {
 									gridster.curRowHeight = Math.round(gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', ''));
 								} else if (gridster.rowHeight.indexOf('/') !== -1) {
@@ -1467,7 +1473,7 @@
 					$el.addClass('gridster-item-moving');
 					gridster.movingItem = item;
 
-					gridster.updateHeight(item.sizeY);
+					//gridster.updateHeight(item.sizeY);
 					scope.$apply(function() {
 						if (gridster.draggable && gridster.draggable.start) {
 							gridster.draggable.start(event, $el, itemOptions);
