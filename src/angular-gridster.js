@@ -173,8 +173,25 @@
 				for (var h = 0; h < sizeY; ++h) {
 					for (var w = 0; w < sizeX; ++w) {
 						var item = this.getItem(row + h, column + w, excludeItems);
-						if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && items.indexOf(item) === -1) {
-							items.push(item);
+						if (item)
+						{
+							//console.log("item " + item.id + " found at row " + String(row + h) + " col " + String(column + w));
+							 if(!excludeItems || excludeItems.indexOf(item) === -1)
+							 {
+								 //console.log("not in exclude items");
+								 for (var i = 0, len = items.length, foundItem = false; i < len; i++)
+								 {
+									 if (items[i].id === item.id) {
+										 foundItem = true;
+										 break;
+									 }
+								 }
+
+								if (foundItem === false) {
+									//console.log("not in items");
+									items.push(item);
+								}
+							 }
 						}
 					}
 				}
@@ -293,7 +310,7 @@
 			 * @param {Number} column (Optional) Specifies the items column index
 			 * @param {Array} ignoreItems
 			 */
-			this.putItem = function(item, row, column, ignoreItems) {
+			this.putItem = function(item, row, column, ignoreItems, noPush) {
 				// auto place item if no row specified
 				if (typeof row === 'undefined' || row === null) {
 					row = item.row;
@@ -330,12 +347,19 @@
 				item.oldRow = item.row = row;
 				item.oldColumn = item.col = column;
 
-				this.moveOverlappingItems(item, ignoreItems);
+				if (noPush !== true) this.moveOverlappingItems(item, ignoreItems);
 
-				if (!this.grid[row]) {
-					this.grid[row] = [];
+				if (item.row >= 19 || item.col >= 19) {
+					this.removeItem(item);
+					return;
 				}
-				this.grid[row][column] = item;
+
+				console.log("putItem " + item.row + ", " + item.col);
+
+				if (!this.grid[item.row]) {
+					this.grid[item.row] = [];
+				}
+				this.grid[item.row][item.col] = item;
 
 				if (this.movingItem === item) {
 					this.floatItemUp(item);
@@ -368,23 +392,44 @@
 			 * @param {Array} ignoreItems
 			 */
 			this.moveOverlappingItems = function(item, ignoreItems) {
-				// don't move item, so ignore it
-				if (!ignoreItems) {
-					ignoreItems = [item];
-				} else if (ignoreItems.indexOf(item) === -1) {
-					ignoreItems = ignoreItems.slice(0);
-					ignoreItems.push(item);
-				}
 
-				// get the items in the space occupied by the item's coordinates
-				var overlappingItems = this.getItems(
-					item.row,
-					item.col,
-					item.sizeX,
-					item.sizeY,
-					ignoreItems
-				);
-				this.moveItemsDown(overlappingItems, item.row + item.sizeY, ignoreItems);
+				if (this.pushing === false)
+				{
+					ignoreItems = this.getItems(0, 0, 20, 20, [item]);
+
+					console.log("no pushing, " + ignoreItems.length + " not to be moved");
+					// get the items in the space occupied by the item's coordinates
+					var overlappingItems = this.getItems(
+						item.row,
+						item.col,
+						item.sizeX,
+						item.sizeY);
+
+					if (overlappingItems.length > 0)
+					{
+						this.moveItemsDown([item], item.row + item.sizeY, ignoreItems);
+					}
+				}
+				else
+				{
+					// don't move item, so ignore it
+					if (!ignoreItems) {
+						ignoreItems = [item];
+					} else if (ignoreItems.indexOf(item) === -1) {
+						ignoreItems = ignoreItems.slice(0);
+						ignoreItems.push(item);
+					}
+
+					// get the items in the space occupied by the item's coordinates
+					var overlappingItems = this.getItems(
+						item.row,
+						item.col,
+						item.sizeX,
+						item.sizeY,
+						ignoreItems
+					);
+					this.moveItemsDown(overlappingItems, item.row + item.sizeY, ignoreItems);
+				}
 			};
 
 			/**
@@ -415,12 +460,39 @@
 					}
 				}
 
-				// move each item down from the top row in its column to the row
-				for (i = 0, l = items.length; i < l; ++i) {
-					item = items[i];
-					var rowsToMove = newRow - topRows[item.col];
-					this.moveItemDown(item, item.row + rowsToMove, ignoreItems);
-					ignoreItems.push(item);
+				//calculate next free position to place item
+				if (this.pushing === false)
+				{
+					var overlap = this.getItems(item.row, item.col, item.sizeX, item.sizeY);
+					while (overlap.length > 0) {
+
+						if (item.row == 19 && item.col == 19) {
+							console.log("NO FREE SPACE LEFT");
+							return;
+						}
+
+						if (item.row < 19) item.row++;
+						else {
+							item.row = 0;
+							item.col++;
+						}
+
+						overlap = this.getItems(item.row, item.col, item.sizeX, item.sizeY);
+					}
+
+					console.log("put item at row " + item.row);
+					this.putItem(item, item.row, item.col, ignoreItems, true);
+				}
+				else
+				{
+
+					// move each item down from the top row in its column to the row
+					for (i = 0, l = items.length; i < l; ++i) {
+						item = items[i];
+						var rowsToMove = newRow - topRows[item.col];
+						this.moveItemDown(item, item.row + rowsToMove, ignoreItems);
+						ignoreItems.push(item);
+					}
 				}
 			};
 
@@ -437,9 +509,10 @@
 				}
 				while (item.row < newRow) {
 					++item.row;
-					this.moveOverlappingItems(item, ignoreItems);
+					if (this.pushing === true) this.moveOverlappingItems(item, ignoreItems);
 				}
-				this.putItem(item, item.row, item.col, ignoreItems);
+				console.log("put item at row " + item.row);
+				this.putItem(item, item.row, item.col, ignoreItems, true);
 			};
 
 			/**
@@ -1338,7 +1411,7 @@
 					mOffY = 0,
 
 					minTop = 0,
-					maxTop = 9999,
+					maxTop = (gridster.gridHeight * gridster.curRowHeight) + (gridster.outerMargin ? gridster.margins[0] : -gridster.margins[0]),
 					minLeft = 0,
 					realdocument = $document[0];
 
@@ -1473,7 +1546,7 @@
 					$el.addClass('gridster-item-moving');
 					gridster.movingItem = item;
 
-					//gridster.updateHeight(item.sizeY);
+					gridster.updateHeight(item.sizeY);
 					scope.$apply(function() {
 						if (gridster.draggable && gridster.draggable.start) {
 							gridster.draggable.start(event, $el, itemOptions);
@@ -2054,7 +2127,8 @@
 								maxSizeX: null,
 								maxSizeY: null,
 								draggable: true,
-								resizable: true
+								resizable: true,
+								id: null
 							};
 							$optionsGetter.assign(scope, options);
 						}
@@ -2066,7 +2140,7 @@
 
 					$el.addClass('gridster-item');
 
-					var aspects = ['minSizeX', 'maxSizeX', 'minSizeY', 'maxSizeY', 'sizeX', 'sizeY', 'row', 'col', 'draggable', 'resizable'],
+					var aspects = ['minSizeX', 'maxSizeX', 'minSizeY', 'maxSizeY', 'sizeX', 'sizeY', 'row', 'col', 'draggable', 'resizable', 'id'],
 						$getters = {};
 
 					var expressions = [];
@@ -2141,7 +2215,7 @@
 						}
 
 						if (changedX || changedY) {
-							item.gridster.moveOverlappingItems(item);
+							item.gridster.moveOverlappingItems(item, [], true);
 							gridster.layoutChanged();
 							scope.$broadcast('gridster-item-resized', item);
 						}
