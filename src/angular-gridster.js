@@ -150,9 +150,9 @@
 						}
 					}
 				}
+
 				console.warn('Unable to place item!');
-
-
+				$rootScope.$broadcast("gridster-item-not-added", item);
 			};
 
 			/**
@@ -241,7 +241,6 @@
 					}
 				}
 				this.layoutChanged();
-				$rootScope.$broadcast('gridster-item-removed', item);
 			};
 
 			/**
@@ -341,6 +340,7 @@
 				// if have tried to find space for item but there is no room left
 				if (item.row >= this.maxRows - 1 || item.col >= this.columns - 1) {
 					this.removeItem(item);
+					$rootScope.$broadcast('gridster-item-removed', item);
 					return;
 				}
 
@@ -447,19 +447,38 @@
 
 				//calculate next free position to place item
 				if (this.locking === true) {
+
 					var overlap = this.getItems(item.row, item.col, item.sizeX, item.sizeY);
+					var maxRow = this.maxRows - 1,
+						maxCol = this.columns - 1,
+						startRow = item.row,
+						startCol = item.col,
+						restarted = false;
+
 					while (overlap.length > 0) {
 
-						if (item.row == this.maxRows - 1 && item.col == this.columns - 1) {
-							console.warn("Unable to place item!");
-							return;
-						}
-
-						if (item.row < 19) {
-							++item.row;
+						if (item.row == maxRow && item.col == maxCol) {
+							// if checked all space after item, now check space before it
+							if (!restarted) {
+								restarted = true;
+								item.col = 0;
+								item.row = 0;
+								maxRow = startRow;
+								maxCol = startCol;
+							} else {
+								console.warn("Unable to place item!");
+								$rootScope.$broadcast("gridster-item-not-added", item);
+								item.col = this.columns - 1;
+								item.row = this.maxRows - 1;
+								return;
+							}
 						} else {
-							item.row = 0;
-							++item.col;
+							if (item.row < maxRow) {
+								++item.row;
+							} else {
+								item.row = 0;
+								++item.col;
+							}
 						}
 
 						if (item.row + item.sizeY < this.maxRows && item.col + item.sizeX < this.columns) {
