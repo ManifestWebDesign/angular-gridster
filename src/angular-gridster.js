@@ -11,6 +11,7 @@
 		floating: true, // whether to automatically float items up so they stack
 		swapping: false, // whether or not to have items switch places instead of push down if they are the same size
 		locking: false, // whether an item added to the grid earlier will have priority position and any items added later will have to find space around them rather than pushing them out the way
+						// !important if locking is set to true it will override pushing, floating & swapping and setting these values to true will have no effect
 		width: 'auto', // width of the grid. "auto" will expand the grid to its parent container
 		colWidth: 'auto', // width of grid columns. "auto" will divide the width of the grid evenly among the columns
 		rowHeight: 'match', // height of grid rows. 'match' will make it the same as the column width, 'screen-height' matches viewport height and can specify +/- px value ie. 'screen-height - 120px', a numeric value will be interpreted as pixels, '/2' is half the column width, '*5' is five times the column width, etc.
@@ -151,7 +152,6 @@
 					}
 				}
 
-				console.warn('Unable to place item!');
 				$rootScope.$broadcast("gridster-item-not-added", item);
 			};
 
@@ -466,7 +466,6 @@
 								maxRow = startRow;
 								maxCol = startCol;
 							} else {
-								console.warn("Unable to place item!");
 								$rootScope.$broadcast("gridster-item-not-added", item);
 								item.col = this.columns - 1;
 								item.row = this.maxRows - 1;
@@ -523,7 +522,7 @@
 			 * Moves all items up as much as possible
 			 */
 			this.floatItemsUp = function() {
-				if (this.floating === false) {
+				if (this.floating === false || this.locking === true) {
 					return;
 				}
 				for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
@@ -546,7 +545,7 @@
 			 * @param {Object} item The item to move
 			 */
 			this.floatItemUp = function(item) {
-				if (this.floating === false) {
+				if (this.floating === false || this.locking === true) {
 					return;
 				}
 				var colIndex = item.col,
@@ -1570,7 +1569,7 @@
 					var itemsInTheWay = gridster.getItems(row, col, item.sizeX, item.sizeY, item);
 					var hasItemsInTheWay = itemsInTheWay.length !== 0;
 
-					if (gridster.swapping === true && hasItemsInTheWay) {
+					if (gridster.swapping === true && hasItemsInTheWay && !gridster.locking) {
 						var boundingBoxItem = gridster.getBoundingBox(itemsInTheWay),
 							sameSize = boundingBoxItem.sizeX === item.sizeX && boundingBoxItem.sizeY === item.sizeY,
 							sameRow = boundingBoxItem.row === oldRow,
@@ -1608,7 +1607,7 @@
 						}
 					}
 
-					if (gridster.pushing !== false || !hasItemsInTheWay) {
+					if ((gridster.pushing !== false && !gridster.locking) || !hasItemsInTheWay) {
 						item.row = row;
 						item.col = col;
 					}
@@ -1638,7 +1637,7 @@
 					$el.removeClass('gridster-item-moving');
 					var row = gridster.pixelsToRows(elmY);
 					var col = gridster.pixelsToColumns(elmX);
-					if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
+					if ((gridster.pushing !== false && !gridster.locking) || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
 						item.row = row;
 						item.col = col;
 					}
@@ -1950,7 +1949,7 @@
 						sizeY = gridster.pixelsToRows(elmH, true);
 					}
 
-					if (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0) {
+					if ((gridster.pushing !== false && !gridster.locking) || gridster.getItems(row, col, sizeX, sizeY, item).length === 0) {
 						item.row = row;
 						item.col = col;
 						item.sizeX = sizeX;
