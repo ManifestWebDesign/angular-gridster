@@ -39,8 +39,8 @@
 		}
 	})
 
-	.controller('GridsterCtrl', ['gridsterConfig', '$timeout',
-		function(gridsterConfig, $timeout) {
+	.controller('GridsterCtrl', ['gridsterConfig', '$timeout', '$scope',
+		function(gridsterConfig, $timeout, $scope) {
 
 			var gridster = this;
 
@@ -149,7 +149,9 @@
 						}
 					}
 				}
-				throw new Error('Unable to place item!');
+				console.warn('Unable to place item!');
+
+
 			};
 
 			/**
@@ -235,27 +237,6 @@
 					sizeY: maxRow - minRow,
 					sizeX: maxCol - minCol
 				};
-			};
-
-
-			/**
-			 * Removes an item from the grid
-			 *
-			 * @param {Object} item
-			 */
-			this.removeItem = function(item) {
-				for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
-					var columns = this.grid[rowIndex];
-					if (!columns) {
-						continue;
-					}
-					var index = columns.indexOf(item);
-					if (index !== -1) {
-						columns[index] = null;
-						break;
-					}
-				}
-				this.layoutChanged();
 			};
 
 			/**
@@ -350,7 +331,7 @@
 				if (noPush !== true) this.moveOverlappingItems(item, ignoreItems);
 
 				if (item.row >= 19 || item.col >= 19) {
-					this.removeItem(item);
+					item.removeItem();
 					return;
 				}
 
@@ -395,7 +376,7 @@
 
 				if (this.pushing === false)
 				{
-					ignoreItems = this.getItems(0, 0, 20, 20, [item]);
+					ignoreItems = ignoreItems || this.getItems(0, 0, 20, 20, [item]);
 
 					console.log("no pushing, " + ignoreItems.length + " not to be moved");
 					// get the items in the space occupied by the item's coordinates
@@ -477,7 +458,10 @@
 							item.col++;
 						}
 
-						overlap = this.getItems(item.row, item.col, item.sizeX, item.sizeY);
+						if (item.row + item.sizeY < 20 && item.col + item.sizeX < 20) {
+							overlap = this.getItems(item.row, item.col, item.sizeX, item.sizeY);
+						}
+
 					}
 
 					console.log("put item at row " + item.row);
@@ -876,7 +860,7 @@
 		}
 	])
 
-	.controller('GridsterItemCtrl', function() {
+	.controller('GridsterItemCtrl', ['$scope', '$rootScope', function($scope, $rootScope) {
 		this.$element = null;
 		this.gridster = null;
 		this.row = null;
@@ -1064,7 +1048,22 @@
 			return (this.sizeY * this.gridster.curRowHeight - this.gridster.margins[0]);
 		};
 
-	})
+		this.removeItem = function() {
+			for (var rowIndex = 0, l = this.gridster.grid.length; rowIndex < l; ++rowIndex) {
+				var columns = this.gridster.grid[rowIndex];
+				if (!columns) {
+					continue;
+				}
+				var index = columns.indexOf(this);
+				if (index !== -1) {
+					columns[index] = null;
+					break;
+				}
+			}
+			this.gridster.layoutChanged();
+			$rootScope.$broadcast('gridster-item-removed', this);
+		};
+	}])
 
 	.factory('GridsterTouch', [function() {
 		return function GridsterTouch(target, startEvent, moveEvent, endEvent) {
@@ -1973,8 +1972,8 @@
 					gridster.movingItem = null;
 
 					item.setPosition(item.row, item.col);
-					item.setSizeY(item.sizeY);
-					item.setSizeX(item.sizeX);
+					item.setSizeY(Math.min(gridster.maxRows - item.row, item.sizeY));
+					item.setSizeX(Math.min(gridster.columns - item.col, item.sizeX));
 
 					scope.$apply(function() {
 						if (gridster.resizable && gridster.resizable.stop) {
@@ -2128,7 +2127,7 @@
 								maxSizeY: null,
 								draggable: true,
 								resizable: true,
-								id: null
+								onremove: null
 							};
 							$optionsGetter.assign(scope, options);
 						}
@@ -2137,10 +2136,11 @@
 					}
 
 					item.init($el, gridster);
+					if (optionsKey.id) item.id = optionsKey.id;
 
 					$el.addClass('gridster-item');
 
-					var aspects = ['minSizeX', 'maxSizeX', 'minSizeY', 'maxSizeY', 'sizeX', 'sizeY', 'row', 'col', 'draggable', 'resizable', 'id'],
+					var aspects = ['minSizeX', 'maxSizeX', 'minSizeY', 'maxSizeY', 'sizeX', 'sizeY', 'row', 'col', 'draggable', 'resizable', 'onremove'],
 						$getters = {};
 
 					var expressions = [];
@@ -2214,10 +2214,12 @@
 							$getters.sizeY.assign(scope, item.sizeY);
 						}
 
-						if (changedX || changedY) {
-							item.gridster.moveOverlappingItems(item, [], true);
-							gridster.layoutChanged();
-							scope.$broadcast('gridster-item-resized', item);
+						if (this.pushing === true) {
+							if (changedX || changedY) {
+								item.gridster.moveOverlappingItems(item, [], true);
+								gridster.layoutChanged();
+								scope.$broadcast('gridster-item-resized', item);
+							}
 						}
 					}
 
@@ -2286,7 +2288,7 @@
 						} catch (e) {}
 
 						try {
-							gridster.removeItem(item);
+							item.removeItem();
 						} catch (e) {}
 
 						try {
