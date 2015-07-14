@@ -1567,8 +1567,14 @@
 						return;
 					}
 
-					// disable and timeout required for some template rendering
-					$timeout(function() {
+					enabled = true;
+
+					// timeout required for some template rendering
+					$el.ready(function() {
+						if (enabled !== true) {
+							return;
+						}
+
 						// disable any existing draghandles
 						for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
 							unifiedInputs[u].disable();
@@ -1589,8 +1595,6 @@
 							unifiedInputs[h] = new GridsterTouch($dragHandles[h], mouseDown, mouseMove, mouseUp);
 							unifiedInputs[h].enable();
 						}
-
-						enabled = true;
 					});
 				};
 
@@ -1599,17 +1603,13 @@
 						return;
 					}
 
-					// timeout to avoid race contition with the enable timeout
-					$timeout(function() {
+					enabled = false;
 
-						for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
-							unifiedInputs[u].disable();
-						}
+					for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
+						unifiedInputs[u].disable();
+					}
 
-						unifiedInputs = [];
-						enabled = false;
-
-					});
+					unifiedInputs = [];
 				};
 
 				this.toggle = function(enabled) {
