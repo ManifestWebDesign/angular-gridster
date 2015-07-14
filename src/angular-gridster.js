@@ -1319,8 +1319,8 @@
 		};
 	}])
 
-	.factory('GridsterDraggable', ['$document', '$timeout', '$window', 'GridsterTouch',
-		function($document, $timeout, $window, GridsterTouch) {
+	.factory('GridsterDraggable', ['$document', '$window', 'GridsterTouch',
+		function($document, $window, GridsterTouch) {
 			function GridsterDraggable($el, scope, gridster, item, itemOptions) {
 
 				var elmX, elmY, elmW, elmH,
