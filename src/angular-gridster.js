@@ -635,7 +635,7 @@
 	/** Layout for the gridster to activate styling for columns and rows */
 	.directive('gridsterLayout', function() {
 		return {
-			restrict: 'E',
+			restrict: 'EA',
 			template: '' +
 				'<div class="grid-layout">' +
 				'<div ng-if="gridster.headers.length>0" class="headers" ng-attr-style="top:-{{gridster.headersHeight}}px;">' +
@@ -736,7 +736,7 @@
 				controller: 'GridsterCtrl',
 				controllerAs: 'gridster',
 				compile: function($tplElem) {
-					$tplElem.prepend('<gridster-layout ng-if="gridster.gridsterLayout"></gridster-layout>');
+					$tplElem.prepend('<div gridster-layout ng-if="gridster.gridsterLayout"></div>');
 					$tplElem.prepend('<div ng-if="gridster.movingItem" gridster-preview></div>');
 
 					return function(scope, $elem, attrs, gridster) {
