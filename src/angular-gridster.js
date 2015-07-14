@@ -538,8 +538,10 @@
 			 */
 			this.pixelsToRows = function(pixels, ceilOrFloor) {
 				if (ceilOrFloor === true) {
+					pixels += this.margins[0] / 2;
 					return Math.ceil(pixels / this.curRowHeight);
 				} else if (ceilOrFloor === false) {
+					pixels += this.margins[0] / 2;
 					return Math.floor(pixels / this.curRowHeight);
 				}
 
@@ -555,8 +557,10 @@
 			 */
 			this.pixelsToColumns = function(pixels, ceilOrFloor) {
 				if (ceilOrFloor === true) {
+					pixels += this.margins[1] / 2;
 					return Math.ceil(pixels / this.curColWidth);
 				} else if (ceilOrFloor === false) {
+					pixels += this.margins[1] / 2;
 					return Math.floor(pixels / this.curColWidth);
 				}
 
@@ -1831,7 +1835,7 @@
 					}
 
 
-                    var canOccupy = row > -1 && col > -1 && sizeX + col <= gridster.columns && sizeY + row <= gridster.maxRows;
+					var canOccupy = row > -1 && col > -1 && sizeX + col <= gridster.columns && sizeY + row <= gridster.maxRows;
 					if (canOccupy && (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0)) {
 						item.row = row;
 						item.col = col;
