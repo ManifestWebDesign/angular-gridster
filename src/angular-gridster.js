@@ -537,11 +537,13 @@
 			 * @param {Boolean} ceilOrFloor (Optional) Determines rounding method
 			 */
 			this.pixelsToRows = function(pixels, ceilOrFloor) {
-				if (ceilOrFloor === true) {
+				if (!this.outerMargin) {
 					pixels += this.margins[0] / 2;
+				}
+
+				if (ceilOrFloor === true) {
 					return Math.ceil(pixels / this.curRowHeight);
 				} else if (ceilOrFloor === false) {
-					pixels += this.margins[0] / 2;
 					return Math.floor(pixels / this.curRowHeight);
 				}
 
@@ -556,11 +558,13 @@
 			 * @returns {Number} The number of columns
 			 */
 			this.pixelsToColumns = function(pixels, ceilOrFloor) {
-				if (ceilOrFloor === true) {
+				if (!this.outerMargin) {
 					pixels += this.margins[1] / 2;
+				}
+
+				if (ceilOrFloor === true) {
 					return Math.ceil(pixels / this.curColWidth);
 				} else if (ceilOrFloor === false) {
-					pixels += this.margins[1] / 2;
 					return Math.floor(pixels / this.curColWidth);
 				}
 
