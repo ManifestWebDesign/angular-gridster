@@ -11,7 +11,7 @@
 		floating: true, // whether to automatically float items up so they stack
 		swapping: false, // whether or not to have items switch places instead of push down if they are the same size
 		locking: false, // whether an item added to the grid earlier will have priority position and any items added later will have to find space around them rather than pushing them out the way
-		// !important if locking is set to true it will override pushing, floating & swapping and setting these values to true will have no effect
+						// !important if locking is set to true it will override pushing, floating & swapping and setting these values to true will have no effect
 		width: 'auto', // width of the grid. "auto" will expand the grid to its parent container
 		colWidth: 'auto', // width of grid columns. "auto" will divide the width of the grid evenly among the columns
 		rowHeight: 'match', // height of grid rows. 'match' will make it the same as the column width, 'screen-height' matches viewport height and can specify +/- px value ie. 'screen-height - 120px', a numeric value will be interpreted as pixels, '/2' is half the column width, '*5' is five times the column width, etc.
