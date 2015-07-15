@@ -11,7 +11,7 @@
 		floating: true, // whether to automatically float items up so they stack
 		swapping: false, // whether or not to have items switch places instead of push down if they are the same size
 		locking: false, // whether an item added to the grid earlier will have priority position and any items added later will have to find space around them rather than pushing them out the way
-						// !important if locking is set to true it will override pushing, floating & swapping and setting these values to true will have no effect
+		// !important if locking is set to true it will override pushing, floating & swapping and setting these values to true will have no effect
 		width: 'auto', // width of the grid. "auto" will expand the grid to its parent container
 		colWidth: 'auto', // width of grid columns. "auto" will divide the width of the grid evenly among the columns
 		rowHeight: 'match', // height of grid rows. 'match' will make it the same as the column width, 'screen-height' matches viewport height and can specify +/- px value ie. 'screen-height - 120px', a numeric value will be interpreted as pixels, '/2' is half the column width, '*5' is five times the column width, etc.
@@ -152,7 +152,7 @@
 					}
 				}
 
-				$rootScope.$broadcast("gridster-item-not-added", item);
+				$rootScope.$broadcast('gridster-item-not-added', item);
 			};
 
 			/**
@@ -380,13 +380,12 @@
 			 * @param {Array} ignoreItems
 			 */
 			this.moveOverlappingItems = function(item, ignoreItems) {
-
-				if (this.locking === true)
-				{
+				var overlappingItems;
+				if (this.locking === true) {
 					ignoreItems = ignoreItems || this.getItems(0, 0, this.columns, this.maxRows, [item]);
 
 					// get the items in the space occupied by the item's coordinates
-					var overlappingItems = this.getItems(
+					overlappingItems = this.getItems(
 						item.row,
 						item.col,
 						item.sizeX,
@@ -406,7 +405,7 @@
 					}
 
 					// get the items in the space occupied by the item's coordinates
-					var overlappingItems = this.getItems(
+					overlappingItems = this.getItems(
 						item.row,
 						item.col,
 						item.sizeX,
@@ -457,7 +456,7 @@
 
 					while (overlap.length > 0) {
 
-						if (item.row == maxRow && item.col == maxCol) {
+						if (item.row === maxRow && item.col === maxCol) {
 							// if checked all space after item, now check space before it
 							if (!restarted) {
 								restarted = true;
@@ -466,7 +465,7 @@
 								maxRow = startRow;
 								maxCol = startCol;
 							} else {
-								$rootScope.$broadcast("gridster-item-not-added", item);
+								$rootScope.$broadcast('gridster-item-not-added', item);
 								item.col = this.columns - 1;
 								item.row = this.maxRows - 1;
 								return;
@@ -638,7 +637,7 @@
 			 */
 			this.calcGridsterHeight = function() {
 				return (this.gridHeight * this.curRowHeight) + (this.outerMargin ? this.margins[0] : -this.margins[0]);
-			}
+			};
 		}
 	])
 
@@ -731,8 +730,8 @@
 								} else if (gridster.rowHeight.indexOf('screen-height') !== -1) {
 									var body = document.getElementsByTagName('body')[0],
 										screenHeight = body.clientHeight;
-									var split = gridster.rowHeight.split("screen-height");
-									var additional = split.length > 1 ? parseInt(split[1].replace(/\s/g, "")) : 0;
+									var split = gridster.rowHeight.split('screen-height');
+									var additional = split.length > 1 ? parseInt(split[1].replace(/\s/g, '')) : 0;
 									gridster.curRowHeight = (screenHeight + additional) / gridster.minRows;
 								} else if (gridster.rowHeight.indexOf('*') !== -1) {
 									gridster.curRowHeight = Math.round(gridster.curColWidth * gridster.rowHeight.replace('*', '').replace(' ', ''));
@@ -2255,10 +2254,10 @@
 					});
 
 					// need to dynamically update draggable/resizable of individual gridster item if properties change
-					scope.$watch("myGridsterItem.draggable", function(newVal) {
+					scope.$watch('myGridsterItem.draggable', function(newVal) {
 						draggable.updateDraggable(newVal);
 					}, true);
-					scope.$watch("myGridsterItem.resizable", function(newVal) {
+					scope.$watch('myGridsterItem.resizable', function(newVal) {
 						resizable.updateResizable(newVal);
 					}, true);
 
