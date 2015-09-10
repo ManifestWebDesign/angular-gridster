@@ -6,7 +6,8 @@ exports.config = {
 
 	// Capabilities to be passed to the webdriver instance.
 	capabilities: {
-		'browserName': 'phantomjs'
+		'browserName': 'phantomjs',
+		'phantomjs.binary.path': 'node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs'
 	},
 
 	// Spec patterns are relative to the location of the spec file. They may
