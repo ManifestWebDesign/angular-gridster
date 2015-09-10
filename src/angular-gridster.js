@@ -153,8 +153,6 @@
 			 * @param {Object} item The item to insert
 			 */
 			this.autoSetItemPosition = function(item) {
-				console.log(this.maxRows);
-				console.log(this.columns);
 				// walk through each row and column looking for a place it will fit
 				for (var rowIndex = 0; rowIndex < this.maxRows; ++rowIndex) {
 					for (var colIndex = 0; colIndex < this.columns - item.sizeX + 1; ++colIndex) {
