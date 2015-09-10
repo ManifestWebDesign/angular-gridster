@@ -155,12 +155,16 @@
 			this.autoSetItemPosition = function(item) {
 				// walk through each row and column looking for a place it will fit
 				for (var rowIndex = 0; rowIndex < this.maxRows; ++rowIndex) {
-					for (var colIndex = 0; colIndex < this.columns; ++colIndex) {
+					for (var colIndex = 0; colIndex < this.columns - item.sizeX + 1; ++colIndex) {
 						// only insert if position is not already taken and it can fit
-						var items = this.getItems(rowIndex, colIndex, item.sizeX, item.sizeY, item);
-						if (items.length === 0 && this.canItemOccupy(item, rowIndex, colIndex)) {
+						var singleItem = this.getSingleItem(rowIndex, colIndex, item.sizeX, item.sizeY, item);
+						if (singleItem === null && this.canItemOccupy(item, rowIndex, colIndex)) {
 							this.putItem(item, rowIndex, colIndex);
 							return;
+						}
+						//Performance optimization to avoid scanning over found item.
+						if (singleItem) {
+							colIndex = singleItem.col + singleItem.sizeX - 1;
 						}
 					}
 				}
@@ -185,15 +189,63 @@
 				if (excludeItems && !(excludeItems instanceof Array)) {
 					excludeItems = [excludeItems];
 				}
+				var bottom = row + sizeY - 1;
+				var right = column + sizeX - 1;
+				var self = this;
+				angular.forEach(self.grid, function(rowItem) {
+					angular.forEach(rowItem, function(item) {
+						if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && items.indexOf(item) === -1 && self.intersect(item, column, right, row, bottom)) {
+							items.push(item);
+						}
+					});
+				});
+				return items;
+			};
+
+			/**
+			 * Checks if item intersects specified box
+			 *
+			 * @param {object} item
+			 * @param {number} left
+			 * @param {number} right
+			 * @param {number} top
+			 * @param {number} bottom
+			 */
+
+			this.intersect = function(item, left, right, top, bottom) {
+				return (left <= item.col + item.sizeX - 1 &&
+					right >= item.col &&
+					top <= item.row + item.sizeY - 1 &&
+					bottom >= item.row);
+			};
+
+			/**
+			 * Gets single item at a specific coordinate
+			 *
+			 * @param {Number} row
+			 * @param {Number} column
+			 * @param {Number} sizeX
+			 * @param {Number} sizeY
+			 * @param {Array} excludeItems An array of items to exclude from selection
+			 * @returns {Array} Items that match the criteria
+			 */
+			this.getSingleItem = function(row, column, sizeX, sizeY, excludeItems) {
+
+				if (!sizeX || !sizeY) {
+					sizeX = sizeY = 1;
+				}
+				if (excludeItems && !(excludeItems instanceof Array)) {
+					excludeItems = [excludeItems];
+				}
 				for (var h = 0; h < sizeY; ++h) {
 					for (var w = 0; w < sizeX; ++w) {
 						var item = this.getItem(row + h, column + w, excludeItems);
-						if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && items.indexOf(item) === -1) {
-							items.push(item);
+						if (item && (!excludeItems || excludeItems.indexOf(item) === -1)) {
+							return item;
 						}
 					}
 				}
-				return items;
+				return null;
 			};
 
 			/**
