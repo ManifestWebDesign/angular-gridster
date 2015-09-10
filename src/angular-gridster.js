@@ -153,14 +153,20 @@
 			 * @param {Object} item The item to insert
 			 */
 			this.autoSetItemPosition = function(item) {
+				console.log(this.maxRows);
+				console.log(this.columns);
 				// walk through each row and column looking for a place it will fit
 				for (var rowIndex = 0; rowIndex < this.maxRows; ++rowIndex) {
-					for (var colIndex = 0; colIndex < this.columns; ++colIndex) {
+					for (var colIndex = 0; colIndex < this.columns - item.sizeX + 1; ++colIndex) {
 						// only insert if position is not already taken and it can fit
-						var items = this.getItems(rowIndex, colIndex, item.sizeX, item.sizeY, item);
-						if (items.length === 0 && this.canItemOccupy(item, rowIndex, colIndex)) {
+						var singleItem = this.getSingleItem(rowIndex, colIndex, item.sizeX, item.sizeY, item);
+						if (singleItem === null && this.canItemOccupy(item, rowIndex, colIndex)) {
 							this.putItem(item, rowIndex, colIndex);
 							return;
+						}
+						//Performance optimization to avoid scanning over found item.
+						if (singleItem) {
+							colIndex = singleItem.col + singleItem.sizeX - 1;
 						}
 					}
 				}
@@ -194,6 +200,35 @@
 					}
 				}
 				return items;
+			};
+
+			/**
+			 * Gets single item at a specific coordinate
+			 *
+			 * @param {Number} row
+			 * @param {Number} column
+			 * @param {Number} sizeX
+			 * @param {Number} sizeY
+			 * @param {Array} excludeItems An array of items to exclude from selection
+			 * @returns {Array} Items that match the criteria
+			 */
+			this.getSingleItem = function(row, column, sizeX, sizeY, excludeItems) {
+
+				if (!sizeX || !sizeY) {
+					sizeX = sizeY = 1;
+				}
+				if (excludeItems && !(excludeItems instanceof Array)) {
+					excludeItems = [excludeItems];
+				}
+				for (var h = 0; h < sizeY; ++h) {
+					for (var w = 0; w < sizeX; ++w) {
+						var item = this.getItem(row + h, column + w, excludeItems);
+						if (item && (!excludeItems || excludeItems.indexOf(item) === -1)) {
+							return item;
+						}
+					}
+				}
+				return null;
 			};
 
 			/**
