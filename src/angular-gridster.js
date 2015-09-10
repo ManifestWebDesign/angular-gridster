@@ -189,15 +189,34 @@
 				if (excludeItems && !(excludeItems instanceof Array)) {
 					excludeItems = [excludeItems];
 				}
-				for (var h = 0; h < sizeY; ++h) {
-					for (var w = 0; w < sizeX; ++w) {
-						var item = this.getItem(row + h, column + w, excludeItems);
-						if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && items.indexOf(item) === -1) {
+				var bottom = row + sizeY - 1;
+				var right = column + sizeX - 1;
+				var self = this;
+				angular.forEach(self.grid, function(rowItem) {
+					angular.forEach(rowItem, function(item) {
+						if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && items.indexOf(item) === -1 && self.intersect(item, column, right, row, bottom)) {
 							items.push(item);
 						}
-					}
-				}
+					});
+				});
 				return items;
+			};
+
+			/**
+			 * Checks if item intersects specified box
+			 *
+			 * @param {object} item
+			 * @param {number} left
+			 * @param {number} right
+			 * @param {number} top
+			 * @param {number} bottom
+			 */
+
+			this.intersect = function(item, left, right, top, bottom) {
+				return (left <= item.col + item.sizeX - 1 &&
+					right >= item.col &&
+					top <= item.row + item.sizeY - 1 &&
+					bottom >= item.row);
 			};
 
 			/**
