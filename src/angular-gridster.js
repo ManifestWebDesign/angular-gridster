@@ -1884,13 +1884,15 @@
 				var unifiedInput;
 
 				this.enable = function() {
-					if (!$dragHandle) {
+					if (!$dragHandle && itemOptions.resizable) {
 						$dragHandle = angular.element('<div class="gridster-item-resizable-handler handle-' + hClass + '"></div>');
 						$el.append($dragHandle);
 					}
 
+				if ($dragHandle) {
 					unifiedInput = new GridsterTouch($dragHandle[0], mouseDown, mouseMove, mouseUp);
 					unifiedInput.enable();
+					}
 				};
 
 				this.disable = function() {
@@ -1898,9 +1900,10 @@
 						$dragHandle.remove();
 						$dragHandle = null;
 					}
-
+				if (unifiedInput) {
 					unifiedInput.disable();
 					unifiedInput = undefined;
+					}
 				};
 
 				this.destroy = function() {
