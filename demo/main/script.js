@@ -175,4 +175,134 @@ angular.module('app')
 		col: 'item.position[1]'
 	};
 
+	$scope.noSparseGridsterOpts = {
+		sparse: true,
+		pushing: true,
+		floating: true,
+		swapping: true,
+		width: 'auto',
+		columns: 24,
+		colWidth: 'auto',
+		minColumns: 1,
+		rowHeight: 8,
+		minRows: 5,
+		maxRows: 1000,
+		defaultSizeX: 6,
+		defaultSizeY: 7,
+		margins: [8, 8],
+		outerMargin: true,
+		mobileBreakPoint: 512,
+		mobileModeEnabled: true,
+		saveGridItemCalculatedHeightInMobile: true,
+		resizable: {
+			enabled: true,
+			handles: ['s', 'e', 'n', 'w', 'se', 'ne', 'sw', 'nw']
+		},
+		draggable: {
+			enabled: true,
+			scrollSensitivity: 20,
+			scrollSpeed: 20
+		}
+	};
+	$scope.sparseGridsterOpts = angular.copy($scope.noSparseGridsterOpts);
+	$scope.sparseGridsterOpts.sparse = true;
+
+	$scope.noSparseItems = [{
+		sizeX: 6,
+		sizeY: 7,
+		row: 0,
+		col: 0
+	}, {
+		sizeX: 6,
+		sizeY: 7,
+		row: 0,
+		col: 6
+	}, {
+		sizeX: 6,
+		sizeY: 7,
+		row: 0,
+		col: 12
+	}, {
+		sizeX: 6,
+		sizeY: 7,
+		row: 0,
+		col: 18
+	}, {
+		sizeX: 12,
+		sizeY: 12,
+		row: 7,
+		col: 0
+	}, {
+		sizeX: 12,
+		sizeY: 12,
+		row: 7,
+		col: 12
+	}, {
+		sizeX: 4,
+		sizeY: 7,
+		row: 19,
+		col: 0
+	}, {
+		sizeX: 4,
+		sizeY: 7,
+		row: 19,
+		col: 4
+	}, {
+		sizeX: 4,
+		sizeY: 7,
+		row: 19,
+		col: 8
+	}, {
+		sizeX: 4,
+		sizeY: 7,
+		row: 19,
+		col: 12
+	}, {
+		sizeX: 4,
+		sizeY: 7,
+		row: 19,
+		col: 16
+	}, {
+		sizeX: 4,
+		sizeY: 7,
+		row: 19,
+		col: 20
+	}, {
+		sizeX: 24,
+		sizeY: 14,
+		row: 26,
+		col: 0
+	}, {
+		sizeX: 4,
+		sizeY: 7,
+		row: 40,
+		col: 0
+	}, {
+		sizeX: 4,
+		sizeY: 7,
+		row: 40,
+		col: 4
+	}, {
+		sizeX: 4,
+		sizeY: 7,
+		row: 40,
+		col: 8
+	}, {
+		sizeX: 4,
+		sizeY: 7,
+		row: 40,
+		col: 12
+	}, {
+		sizeX: 4,
+		sizeY: 7,
+		row: 40,
+		col: 16
+	}, {
+		sizeX: 4,
+		sizeY: 7,
+		row: 40,
+		col: 20
+	}];
+	$scope.sparseItems = angular.copy($scope.noSparseItems);
+
 });
