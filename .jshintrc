@@ -1,5 +1,6 @@
 {
   "eqnull": true,
+  "jasmine": true,
   "immed": true,
   "white": false,
   "unused": true,

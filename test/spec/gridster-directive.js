@@ -10,6 +10,7 @@ describe('gridster directive', function() {
 	var startCount;
 	var resizeCount;
 	var stopCount;
+	var broadcastOnRootScope;
 
 	var dragHelper = function(el, dx, dy) {
 		el.simulate('mouseover').simulate('drag', {
@@ -20,6 +21,8 @@ describe('gridster directive', function() {
 	};
 
 	beforeEach(inject(function($rootScope, $compile) {
+		broadcastOnRootScope = spyOn($rootScope, '$broadcast').and.callThrough();
+
 		$scope = $rootScope.$new();
 		startCount = resizeCount = stopCount = 0;
 
@@ -89,31 +92,55 @@ describe('gridster directive', function() {
 
 	it('should initialize resizable', function() {
 		var $widget = $el.find('li:first-child');
-		setTimeout(function() {
-			expect($widget.find('.handle-n').length).toBe(1);
-		});
+
+		expect($widget.find('.handle-s').length).toBe(1);
 	});
 
 	it('should update widget dimensions on resize & trigger custom resize events', function() {
+		var $widget = $el.find('li:first-child');
+		var handle = $widget.find('.handle-e');
 
-		setTimeout(function() {
-			var $widget = $el.find('li:first-child');
-			var handle = $widget.find('.handle-e');
+		expect($widget.width()).toBe(155);
+		expect($scope.dashboard.widgets[0].sizeX).toBe(1);
+		expect(startCount).toBe(0);
+		expect(resizeCount).toBe(0);
+		expect(stopCount).toBe(0);
 
-			expect($widget.width()).toBe(155);
-			expect($scope.dashboard.widgets[0].sizeX).toBe(1);
-			expect(startCount).toBe(0);
-			expect(resizeCount).toBe(0);
-			expect(stopCount).toBe(0);
+		dragHelper(handle, 50); // should resize to next width step
 
-			dragHelper(handle, 50); // should resize to next width step
+		expect($widget.width()).toBe(320);
+		expect($scope.dashboard.widgets[0].sizeX).toBe(2);
+		expect(startCount).toBe(1);
+		expect(resizeCount).toBe(1);
+		expect(stopCount).toBe(1);
+	});
 
-			expect($widget.width()).toBe(320);
-			expect($scope.dashboard.widgets[0].sizeX).toBe(2);
-			expect(startCount).toBe(1);
-			expect(resizeCount).toBe(1);
-			expect(stopCount).toBe(1);
-		});
+	it('should broadcast "gridster-item-resized" event on resize', function() {
+		// arrange
+		var eHandle = $el.find('li:first-child').find('.handle-e');
+		var sHandle = $el.find('li:first-child').find('.handle-s');
+		broadcastOnRootScope.calls.reset();
+
+		// act
+		dragHelper(eHandle, 50);
+
+		// assert
+		expect(broadcastOnRootScope).toHaveBeenCalledWith('gridster-item-resized', jasmine.objectContaining({
+			sizeX: 2,
+			sizeY: 1
+		}));
+
+		// arrange
+		broadcastOnRootScope.calls.reset();
+
+		// act
+		dragHelper(sHandle, 0, 50);
+
+		// assert
+		expect(broadcastOnRootScope).toHaveBeenCalledWith('gridster-item-resized', jasmine.objectContaining({
+			sizeX: 2,
+			sizeY: 2
+		}));
 	});
 
 });
