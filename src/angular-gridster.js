@@ -1389,15 +1389,12 @@
 
 					dragStart(e);
 
-<<<<<<< HEAD
 					$document.on('mousemove', mouseMove);
 					$document.on('mouseup', mouseUp);
 
 					//e.preventDefault();
 					//e.stopPropagation();
-=======
 					return true;
->>>>>>> 281de99fa8faf744ddf78ebb517ae1f265a4fe7a
 				}
 
 				function mouseMove(e) {
