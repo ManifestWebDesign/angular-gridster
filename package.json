@@ -3,8 +3,8 @@
 	"version": "0.13.5",
 	"description": "This directive gives you gridster behavior",
 	"license": "MIT",
-	"homepage": "http://manifestwebdesign.github.io/angular-gridster",
-	"authors": "https://github.com/ManifestWebDesign/angular-gridster/graphs/contributors",
+	"homepage": "http://jocluz.github.io/proteus-angular-gridster",
+	"authors": "https://github.com/jocluz/proteus-angular-gridster/graphs/contributors",
 	"devDependencies": {
 		"karma-chrome-launcher": "^0.1.3",
 		"karma-script-launcher": "^0.1.0",
@@ -38,7 +38,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git@github.com:ManifestWebDesign/angular-gridster.git"
+		"url": "git@github.com:jocluz/proteus-angular-gridster.git"
 	},
 	"main": "dist/angular-gridster.min.js"
 }
