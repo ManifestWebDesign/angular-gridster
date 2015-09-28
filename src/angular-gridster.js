@@ -1987,6 +1987,11 @@
 				controller: 'GridsterItemCtrl',
 				controllerAs: 'gridsterItem',
 				require: ['^gridster', 'gridsterItem'],
+				bindToController:{
+					 gridsterItemInitialized:'&',
+					 gridsterItemResized:'&'
+				},
+
 				link: function(scope, $el, attrs, controllers) {
 					var optionsKey = attrs.gridsterItem,
 						options;
@@ -2100,6 +2105,7 @@
 						if (changedX || changedY) {
 							item.gridster.moveOverlappingItems(item);
 							gridster.layoutChanged();
+							scope.gridsterItem.gridsterItemResized({item});
 							scope.$broadcast('gridster-item-resized', item);
 						}
 					}
@@ -2152,6 +2158,7 @@
 
 					$el.on(whichTransitionEvent(), debouncedTransitionEndPublisher);
 
+					scope.gridsterItem.gridsterItemInitialized({item});
 					scope.$broadcast('gridster-item-initialized', item);
 
 					return scope.$on('$destroy', function() {
