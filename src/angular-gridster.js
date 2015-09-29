@@ -1338,8 +1338,7 @@
 
 					minTop = 0,
 					maxTop = 9999,
-					minLeft = 0,
-					realdocument = $document[0];
+					minLeft = 0;
 
 				var originalCol, originalRow;
 				var inputTags = ['select', 'input', 'textarea', 'button'];
@@ -1467,12 +1466,53 @@
 					});
 				}
 
+				function findScrollContainer($el) {
+					var $scrollContainer = $el.parent();
+					while ($scrollContainer) {
+						if ($scrollContainer[0].clientHeight !== $scrollContainer.height()) {
+							break;
+						}
+						$scrollContainer = $scrollContainer.parent();
+					}
+					return $scrollContainer.length > 0 ? $scrollContainer : $(document);
+				}
+
+				function correctScrollPosition() {
+					var scrollSensitivity = gridster.draggable.scrollSensitivity,
+						scrollSpeed = gridster.draggable.scrollSpeed,
+						$scrollContainer = findScrollContainer($el),
+						viewport = {
+							top: $scrollContainer.offset().top,
+							scrollTop: $scrollContainer.scrollTop(),
+							height: $scrollContainer.height(),
+							left: $scrollContainer.offset().left,
+							scrollLeft: $scrollContainer.scrollLeft(),
+							width: $scrollContainer.width()
+						};
+
+					if (event.pageY - viewport.top < scrollSensitivity) {
+						$scrollContainer.scrollTop(viewport.scrollTop - scrollSpeed);
+						mOffY -= scrollSpeed;
+					} else if (viewport.height - (event.pageY - viewport.top) < scrollSensitivity) {
+						$scrollContainer.scrollTop(viewport.scrollTop + scrollSpeed);
+						mOffY += scrollSpeed;
+					}
+
+					if (event.pageX - viewport.left < scrollSensitivity) {
+						$scrollContainer.scrollLeft(viewport.scrollLeft - scrollSpeed);
+						mOffX -= scrollSpeed;
+					} else if (viewport.width - (event.pageX - viewport.left) < scrollSensitivity) {
+						$scrollContainer.scrollLeft(viewport.scrollLeft + scrollSpeed);
+						mOffX += scrollSpeed;
+					}
+				}
+
 				function drag(event) {
+					correctScrollPosition();
+
 					var oldRow = item.row,
 						oldCol = item.col,
-						hasCallback = gridster.draggable && gridster.draggable.drag,
-						scrollSensitivity = gridster.draggable.scrollSensitivity,
-						scrollSpeed = gridster.draggable.scrollSpeed;
+						hasCallback = gridster.draggable && gridster.draggable.drag;
 
 					var row = gridster.pixelsToRows(elmY);
 					var col = gridster.pixelsToColumns(elmX);
@@ -1521,18 +1561,6 @@
 					if (gridster.pushing !== false || !hasItemsInTheWay) {
 						item.row = row;
 						item.col = col;
-					}
-
-					if (event.pageY - realdocument.body.scrollTop < scrollSensitivity) {
-						realdocument.body.scrollTop = realdocument.body.scrollTop - scrollSpeed;
-					} else if ($window.innerHeight - (event.pageY - realdocument.body.scrollTop) < scrollSensitivity) {
-						realdocument.body.scrollTop = realdocument.body.scrollTop + scrollSpeed;
-					}
-
-					if (event.pageX - realdocument.body.scrollLeft < scrollSensitivity) {
-						realdocument.body.scrollLeft = realdocument.body.scrollLeft - scrollSpeed;
-					} else if ($window.innerWidth - (event.pageX - realdocument.body.scrollLeft) < scrollSensitivity) {
-						realdocument.body.scrollLeft = realdocument.body.scrollLeft + scrollSpeed;
 					}
 
 					if (hasCallback || oldRow !== item.row || oldCol !== item.col) {
