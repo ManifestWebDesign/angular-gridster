@@ -1469,40 +1469,40 @@
 				function findScrollContainer($el) {
 					var $scrollContainer = $el.parent();
 					while ($scrollContainer) {
-						if ($scrollContainer[0].clientHeight !== $scrollContainer.height()) {
+						if ($scrollContainer[0].clientHeight < $scrollContainer[0].scrollHeight) {
 							break;
 						}
 						$scrollContainer = $scrollContainer.parent();
 					}
-					return $scrollContainer.length > 0 ? $scrollContainer : $(document);
+					return $scrollContainer.length > 0 ? $scrollContainer[0] : $(document)[0];
 				}
 
 				function correctScrollPosition() {
 					var scrollSensitivity = gridster.draggable.scrollSensitivity,
 						scrollSpeed = gridster.draggable.scrollSpeed,
-						$scrollContainer = findScrollContainer($el),
+						scrollContainer = findScrollContainer($el),
 						viewport = {
-							top: $scrollContainer.offset().top,
-							scrollTop: $scrollContainer.scrollTop(),
-							height: $scrollContainer.height(),
-							left: $scrollContainer.offset().left,
-							scrollLeft: $scrollContainer.scrollLeft(),
-							width: $scrollContainer.width()
+							top: scrollContainer.offsetTop,
+							scrollTop: scrollContainer.scrollTop,
+							height: scrollContainer.clientHeight,
+							left: scrollContainer.offsetLeft,
+							scrollLeft: scrollContainer.scrollLeft,
+							width: scrollContainer.clientWidth
 						};
 
 					if (event.pageY - viewport.top < scrollSensitivity) {
-						$scrollContainer.scrollTop(viewport.scrollTop - scrollSpeed);
+						scrollContainer.scrollTop = viewport.scrollTop - scrollSpeed;
 						mOffY -= scrollSpeed;
 					} else if (viewport.height - (event.pageY - viewport.top) < scrollSensitivity) {
-						$scrollContainer.scrollTop(viewport.scrollTop + scrollSpeed);
+						scrollContainer.scrollTop = viewport.scrollTop + scrollSpeed;
 						mOffY += scrollSpeed;
 					}
 
 					if (event.pageX - viewport.left < scrollSensitivity) {
-						$scrollContainer.scrollLeft(viewport.scrollLeft - scrollSpeed);
+						scrollContainer.scrollLeft = viewport.scrollLeft - scrollSpeed;
 						mOffX -= scrollSpeed;
 					} else if (viewport.width - (event.pageX - viewport.left) < scrollSensitivity) {
-						$scrollContainer.scrollLeft(viewport.scrollLeft + scrollSpeed);
+						scrollContainer.scrollLeft = viewport.scrollLeft + scrollSpeed;
 						mOffX += scrollSpeed;
 					}
 				}
