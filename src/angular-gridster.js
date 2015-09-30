@@ -1455,13 +1455,17 @@
 				}
 
 				function dragStart(event) {
-					$el.addClass('gridster-item-moving');
-					gridster.movingItem = item;
-
-					gridster.updateHeight(item.sizeY);
 					scope.$apply(function() {
+						var cancel = null;
 						if (gridster.draggable && gridster.draggable.start) {
-							gridster.draggable.start(event, $el, itemOptions);
+							cancel = gridster.draggable.start(event, $el, itemOptions);
+						}
+
+						if (cancel !== 'cancel') {
+							$el.addClass('gridster-item-moving');
+							gridster.movingItem = item;
+
+							gridster.updateHeight(item.sizeY);
 						}
 					});
 				}
