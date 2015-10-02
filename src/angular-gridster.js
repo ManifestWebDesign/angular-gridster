@@ -455,6 +455,7 @@
 					this.moveOverlappingItems(item, ignoreItems);
 				}
 				this.putItem(item, item.row, item.col, ignoreItems);
+				item.gridsterItemMovedDown({item});
 			};
 
 			/**
@@ -506,6 +507,8 @@
 				if (bestRow !== null) {
 					this.putItem(item, bestRow, bestColumn);
 				}
+
+				item.gridsterItemFloatUp({item});
 			};
 
 			/**
@@ -618,6 +621,7 @@
 				restrict: 'EAC',
 				controller: 'GridsterCtrl',
 				controllerAs: 'gridster',
+
 				compile: function($tplElem) {
 
 					$tplElem.prepend('<div ng-if="gridster.movingItem" gridster-preview></div>');
@@ -1560,6 +1564,8 @@
 							gridster.draggable.stop(event, $el, itemOptions);
 						}
 					});
+
+					item.gridsterItemDragStop({item})
 				}
 
 				var enabled = null;
@@ -1848,6 +1854,10 @@
 					}
 					var isChanged = item.row !== oldRow || item.col !== oldCol || item.sizeX !== oldSizeX || item.sizeY !== oldSizeY;
 
+					if (isChanged){
+						item.gridsterItemResizedStop({item});
+					}
+
 					if (hasCallback || isChanged) {
 						scope.$apply(function() {
 							if (hasCallback) {
@@ -1989,7 +1999,11 @@
 				require: ['^gridster', 'gridsterItem'],
 				bindToController:{
 					 gridsterItemInitialized:'&',
-					 gridsterItemResized:'&'
+					 gridsterItemResized:'&',
+					 gridsterItemDragStop : '&',
+					 gridsterItemResizedStop: '&',
+					 gridsterItemMovedDown: '&',
+					 gridsterItemFloatUp: '&'
 				},
 
 				link: function(scope, $el, attrs, controllers) {
