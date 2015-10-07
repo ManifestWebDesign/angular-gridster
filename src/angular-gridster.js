@@ -455,7 +455,7 @@
 				this.moveOverlappingItems(item, ignoreItems);
 			}
 			this.putItem(item, item.row, item.col, ignoreItems);
-			item.gridsterItemMovedDown({item});
+			item.gridsterItemMovedDown({item: item});
 		};
 
 		/**
@@ -508,7 +508,7 @@
 				this.putItem(item, bestRow, bestColumn);
 			}
 
-			item.gridsterItemFloatUp({item});
+			item.gridsterItemFloatUp({item: item});
 		};
 
 		/**
@@ -1565,7 +1565,7 @@ function($timeout, $window, $rootScope, gridsterDebounce) {
 					}
 				});
 
-				item.gridsterItemDragStop({item})
+				item.gridsterItemDragStop({item: item})
 			}
 
 			var enabled = null;
@@ -1855,7 +1855,7 @@ function($timeout, $window, $rootScope, gridsterDebounce) {
 				var isChanged = item.row !== oldRow || item.col !== oldCol || item.sizeX !== oldSizeX || item.sizeY !== oldSizeY;
 
 				if (isChanged){
-					item.gridsterItemResizing({item});
+					item.gridsterItemResizing({item: item});
 				}
 
 				if (hasCallback || isChanged) {
@@ -1878,7 +1878,7 @@ function($timeout, $window, $rootScope, gridsterDebounce) {
 				item.setSizeX(item.sizeX);
 
 				if (gridster.resizable) {
-					item.gridsterItemResizedStop({item});
+					item.gridsterItemResizedStop({item: item});
 				}
 
 				scope.$apply(function() {
@@ -2124,7 +2124,7 @@ function($parse, GridsterDraggable, GridsterResizable, gridsterDebounce) {
 				if (changedX || changedY) {
 					item.gridster.moveOverlappingItems(item);
 					gridster.layoutChanged();
-					scope.gridsterItem.gridsterItemResized({item});
+					scope.gridsterItem.gridsterItemResized({item: item});
 					scope.$broadcast('gridster-item-resized', item);
 				}
 			}
@@ -2177,7 +2177,7 @@ function($parse, GridsterDraggable, GridsterResizable, gridsterDebounce) {
 
 			$el.on(whichTransitionEvent(), debouncedTransitionEndPublisher);
 
-			scope.gridsterItem.gridsterItemInitialized({item});
+			scope.gridsterItem.gridsterItemInitialized({item: item});
 			scope.$broadcast('gridster-item-initialized', item);
 
 			return scope.$on('$destroy', function() {
