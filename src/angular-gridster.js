@@ -666,7 +666,11 @@
 								}
 							}
 
-							gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
+							if (config.isMobile) {
+								gridster.isMobile = config.isMobile;
+							} else {
+								gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
+							}
 
 							// loop through all items and reset their CSS
 							for (var rowIndex = 0, l = gridster.grid.length; rowIndex < l; ++rowIndex) {
