@@ -667,7 +667,11 @@
 								}
 							}
 
-							gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
+							if (config.isMobile) {
+								gridster.isMobile = config.isMobile;
+							} else {
+								gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
+							}
 
 							if (config.getScrollContainer) {
 								gridster.getScrollContainer = config.getScrollContainer;
