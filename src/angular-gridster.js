@@ -42,6 +42,7 @@
 		maxSizeX: null, // maximum column width of an item
 		minSizeY: 1, // minumum row height of an item
 		maxSizeY: null, // maximum row height of an item
+		getScrollContainer: null, // the element containing gridster which has scroll bars
 		saveGridItemCalculatedHeightInMobile: false, // grid item height in mobile display. true- to use the calculated height by sizeY given
 		resizable: { // options to pass to resizable handler
 			enabled: true,
@@ -667,6 +668,14 @@
 							}
 
 							gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
+
+							if (config.getScrollContainer) {
+								gridster.getScrollContainer = config.getScrollContainer;
+							} else {
+								gridster.getScrollContainer = function() {
+									return $(document)[0];
+								};
+							}
 
 							// loop through all items and reset their CSS
 							for (var rowIndex = 0, l = gridster.grid.length; rowIndex < l; ++rowIndex) {
@@ -1397,6 +1406,7 @@
 					}
 
 					var maxLeft = gridster.curWidth - 1;
+					maxTop = gridster.getScrollContainer().offsetHeight;
 
 					// Get the current mouse position.
 					mouseX = e.pageX;
@@ -1470,21 +1480,12 @@
 					});
 				}
 
-				function findScrollContainer($el) {
-					var $scrollContainer = $el.parent();
-					while ($scrollContainer) {
-						if ($scrollContainer[0].clientHeight < $scrollContainer[0].scrollHeight) {
-							break;
-						}
-						$scrollContainer = $scrollContainer.parent();
-					}
-					return $scrollContainer.length > 0 ? $scrollContainer[0] : $(document)[0];
-				}
-
 				function correctScrollPosition() {
-					var scrollSensitivity = gridster.draggable.scrollSensitivity,
+					var delta = null,
+						maxScrollTop = null,
+						scrollSensitivity = gridster.draggable.scrollSensitivity,
 						scrollSpeed = gridster.draggable.scrollSpeed,
-						scrollContainer = findScrollContainer($el),
+						scrollContainer = gridster.getScrollContainer(),
 						viewport = {
 							top: scrollContainer.offsetTop,
 							scrollTop: scrollContainer.scrollTop,
@@ -1495,11 +1496,14 @@
 						};
 
 					if (event.pageY - viewport.top < scrollSensitivity) {
-						scrollContainer.scrollTop = viewport.scrollTop - scrollSpeed;
-						mOffY -= scrollSpeed;
+						delta = scrollContainer.scrollTop - Math.max(viewport.scrollTop - scrollSpeed, 0);
+						scrollContainer.scrollTop += delta;
+						mOffY += delta;
 					} else if (viewport.height - (event.pageY - viewport.top) < scrollSensitivity) {
-						scrollContainer.scrollTop = viewport.scrollTop + scrollSpeed;
-						mOffY += scrollSpeed;
+						maxScrollTop = scrollContainer.scrollHeight - (viewport.height - viewport.top);
+						delta = Math.min(maxScrollTop, viewport.scrollTop + scrollSpeed) - scrollContainer.scrollTop;
+						scrollContainer.scrollTop += delta;
+						mOffY += delta;
 					}
 
 					if (event.pageX - viewport.left < scrollSensitivity) {
