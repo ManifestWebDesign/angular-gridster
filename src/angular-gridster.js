@@ -637,6 +637,9 @@
 						};
 
 						function refresh(config) {
+							if (!config) {
+								config = {};
+							}
 							gridster.setOptions(config);
 
 							if (!isVisible($elem[0])) {
