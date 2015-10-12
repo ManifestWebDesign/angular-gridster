@@ -42,6 +42,7 @@
 		maxSizeX: null, // maximum column width of an item
 		minSizeY: 1, // minumum row height of an item
 		maxSizeY: null, // maximum row height of an item
+		getScrollContainer: null, // the element containing gridster which has scroll bars
 		saveGridItemCalculatedHeightInMobile: false, // grid item height in mobile display. true- to use the calculated height by sizeY given
 		resizable: { // options to pass to resizable handler
 			enabled: true,
@@ -636,6 +637,9 @@
 						};
 
 						function refresh(config) {
+							if (!config) {
+								config = {};
+							}
 							gridster.setOptions(config);
 
 							if (!isVisible($elem[0])) {
@@ -666,7 +670,22 @@
 								}
 							}
 
-							gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
+							if (config.isMobile) {
+								gridster.isMobile = config.isMobile;
+							}
+							if (!gridster.isMobile) {
+								gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
+							}
+
+							if (config.getScrollContainer) {
+								gridster.getScrollContainer = config.getScrollContainer;
+							}
+
+							if (!gridster.getScrollContainer) {
+								gridster.getScrollContainer = function() {
+									return $(document)[0];
+								};
+							}
 
 							// loop through all items and reset their CSS
 							for (var rowIndex = 0, l = gridster.grid.length; rowIndex < l; ++rowIndex) {
@@ -1338,8 +1357,7 @@
 
 					minTop = 0,
 					maxTop = 9999,
-					minLeft = 0,
-					realdocument = $document[0];
+					minLeft = 0;
 
 				var originalCol, originalRow;
 				var inputTags = ['select', 'input', 'textarea', 'button'];
@@ -1398,6 +1416,7 @@
 					}
 
 					var maxLeft = gridster.curWidth - 1;
+					maxTop = gridster.getScrollContainer().scrollHeight;
 
 					// Get the current mouse position.
 					mouseX = e.pageX;
@@ -1456,23 +1475,60 @@
 				}
 
 				function dragStart(event) {
-					$el.addClass('gridster-item-moving');
-					gridster.movingItem = item;
-
-					gridster.updateHeight(item.sizeY);
 					scope.$apply(function() {
+						var cancel = null;
 						if (gridster.draggable && gridster.draggable.start) {
-							gridster.draggable.start(event, $el, itemOptions);
+							cancel = gridster.draggable.start(event, $el, itemOptions);
+						}
+
+						if (cancel !== 'cancel') {
+							$el.addClass('gridster-item-moving');
+							gridster.movingItem = item;
+
+							gridster.updateHeight(item.sizeY);
 						}
 					});
 				}
 
+				function correctScrollPosition() {
+					var delta = null,
+						maxScrollTop = null,
+						scrollSensitivity = gridster.draggable.scrollSensitivity,
+						scrollSpeed = gridster.draggable.scrollSpeed,
+						scrollContainer = gridster.getScrollContainer(),
+						viewport = {
+							top: scrollContainer.getClientRects()[0].top,
+							height: scrollContainer.getClientRects()[0].height,
+							left: scrollContainer.getClientRects()[0].left,
+							width: scrollContainer.getClientRects()[0].width
+						};
+
+					if (event.pageY - viewport.top < scrollSensitivity) {
+						delta = Math.max(scrollContainer.scrollTop - scrollSpeed, 0) - scrollContainer.scrollTop;
+						scrollContainer.scrollTop += delta;
+						mOffY += delta;
+					} else if (viewport.height - (event.pageY - viewport.top) < scrollSensitivity) {
+						maxScrollTop = scrollContainer.scrollHeight - (viewport.height - viewport.top) + scrollSensitivity;
+						delta = Math.min(maxScrollTop, scrollContainer.scrollTop + scrollSpeed) - scrollContainer.scrollTop;
+						scrollContainer.scrollTop += delta;
+						mOffY += delta;
+					}
+
+					if (event.pageX - viewport.left < scrollSensitivity) {
+						scrollContainer.scrollLeft = scrollContainer.scrollLeft - scrollSpeed;
+						mOffX -= scrollSpeed;
+					} else if (viewport.width - (event.pageX - viewport.left) < scrollSensitivity) {
+						scrollContainer.scrollLeft = scrollContainer.scrollLeft + scrollSpeed;
+						mOffX += scrollSpeed;
+					}
+				}
+
 				function drag(event) {
+					correctScrollPosition();
+
 					var oldRow = item.row,
 						oldCol = item.col,
-						hasCallback = gridster.draggable && gridster.draggable.drag,
-						scrollSensitivity = gridster.draggable.scrollSensitivity,
-						scrollSpeed = gridster.draggable.scrollSpeed;
+						hasCallback = gridster.draggable && gridster.draggable.drag;
 
 					var row = gridster.pixelsToRows(elmY);
 					var col = gridster.pixelsToColumns(elmX);
@@ -1521,18 +1577,6 @@
 					if (gridster.pushing !== false || !hasItemsInTheWay) {
 						item.row = row;
 						item.col = col;
-					}
-
-					if (event.pageY - realdocument.body.scrollTop < scrollSensitivity) {
-						realdocument.body.scrollTop = realdocument.body.scrollTop - scrollSpeed;
-					} else if ($window.innerHeight - (event.pageY - realdocument.body.scrollTop) < scrollSensitivity) {
-						realdocument.body.scrollTop = realdocument.body.scrollTop + scrollSpeed;
-					}
-
-					if (event.pageX - realdocument.body.scrollLeft < scrollSensitivity) {
-						realdocument.body.scrollLeft = realdocument.body.scrollLeft - scrollSpeed;
-					} else if ($window.innerWidth - (event.pageX - realdocument.body.scrollLeft) < scrollSensitivity) {
-						realdocument.body.scrollLeft = realdocument.body.scrollLeft + scrollSpeed;
 					}
 
 					if (hasCallback || oldRow !== item.row || oldCol !== item.col) {
