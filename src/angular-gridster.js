@@ -672,13 +672,16 @@
 
 							if (config.isMobile) {
 								gridster.isMobile = config.isMobile;
-							} else {
+							}
+							if (!gridster.isMobile) {
 								gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
 							}
 
 							if (config.getScrollContainer) {
 								gridster.getScrollContainer = config.getScrollContainer;
-							} else {
+							}
+
+							if (!gridster.getScrollContainer) {
 								gridster.getScrollContainer = function() {
 									return $(document)[0];
 								};
@@ -1413,7 +1416,7 @@
 					}
 
 					var maxLeft = gridster.curWidth - 1;
-					maxTop = gridster.getScrollContainer().offsetHeight;
+					maxTop = gridster.getScrollContainer().scrollHeight;
 
 					// Get the current mouse position.
 					mouseX = e.pageX;
@@ -1494,30 +1497,28 @@
 						scrollSpeed = gridster.draggable.scrollSpeed,
 						scrollContainer = gridster.getScrollContainer(),
 						viewport = {
-							top: scrollContainer.offsetTop,
-							scrollTop: scrollContainer.scrollTop,
-							height: scrollContainer.clientHeight,
-							left: scrollContainer.offsetLeft,
-							scrollLeft: scrollContainer.scrollLeft,
-							width: scrollContainer.clientWidth
+							top: scrollContainer.getClientRects()[0].top,
+							height: scrollContainer.getClientRects()[0].height,
+							left: scrollContainer.getClientRects()[0].left,
+							width: scrollContainer.getClientRects()[0].width
 						};
 
 					if (event.pageY - viewport.top < scrollSensitivity) {
-						delta = scrollContainer.scrollTop - Math.max(viewport.scrollTop - scrollSpeed, 0);
+						delta = Math.max(scrollContainer.scrollTop - scrollSpeed, 0) - scrollContainer.scrollTop;
 						scrollContainer.scrollTop += delta;
 						mOffY += delta;
 					} else if (viewport.height - (event.pageY - viewport.top) < scrollSensitivity) {
-						maxScrollTop = scrollContainer.scrollHeight - (viewport.height - viewport.top);
-						delta = Math.min(maxScrollTop, viewport.scrollTop + scrollSpeed) - scrollContainer.scrollTop;
+						maxScrollTop = scrollContainer.scrollHeight - (viewport.height - viewport.top) + scrollSensitivity;
+						delta = Math.min(maxScrollTop, scrollContainer.scrollTop + scrollSpeed) - scrollContainer.scrollTop;
 						scrollContainer.scrollTop += delta;
 						mOffY += delta;
 					}
 
 					if (event.pageX - viewport.left < scrollSensitivity) {
-						scrollContainer.scrollLeft = viewport.scrollLeft - scrollSpeed;
+						scrollContainer.scrollLeft = scrollContainer.scrollLeft - scrollSpeed;
 						mOffX -= scrollSpeed;
 					} else if (viewport.width - (event.pageX - viewport.left) < scrollSensitivity) {
-						scrollContainer.scrollLeft = viewport.scrollLeft + scrollSpeed;
+						scrollContainer.scrollLeft = scrollContainer.scrollLeft + scrollSpeed;
 						mOffX += scrollSpeed;
 					}
 				}
