@@ -168,7 +168,18 @@
 					}
 				}
 
-				$rootScope.$broadcast('gridster-item-not-added', item);
+				// if item couldn't be added, shrink it until it can fit somewhere
+				if (item.sizeX > gridster.minSizeX || gridster.sizeY > gridster.minSizeY) {
+					if (item.sizeX > item.sizeY || item.sizeY === gridster.minSizeY) {
+						item.sizeX--;
+					} else {
+						item.sizeY--;
+					}
+					this.autoSetItemPosition(item);
+				} else {
+					// no space left at all
+					$rootScope.$broadcast('gridster-item-not-added', item);
+				}
 			};
 
 			/**
@@ -365,6 +376,8 @@
 				}
 				this.grid[item.row][item.col] = item;
 
+				$rootScope.$broadcast('gridster-item-added', item);
+
 				if (this.movingItem === item) {
 					this.floatItemUp(item);
 				}
@@ -443,6 +456,9 @@
 				if (!items || items.length === 0) {
 					return;
 				}
+
+				var that = this;
+
 				items.sort(function(a, b) {
 					return a.row - b.row;
 				});
@@ -463,42 +479,63 @@
 				//calculate next free position to place item
 				if (this.locking === true) {
 
-					var overlap = this.getItems(item.row, item.col, item.sizeX, item.sizeY);
-					var maxRow = this.maxRows - 1,
-						maxCol = this.columns - 1,
-						startRow = item.row,
-						startCol = item.col,
-						restarted = false;
+					var noSpace = false;
 
-					while (overlap.length > 0) {
+					var fitItem = function() {
+						var overlap = that.getItems(item.row, item.col, item.sizeX, item.sizeY);
+						var maxRow = that.maxRows - 1,
+							maxCol = that.columns - 1,
+							startRow = item.row,
+							startCol = item.col,
+							restarted = false;
 
-						if (item.row === maxRow && item.col === maxCol) {
-							// if checked all space after item, now check space before it
-							if (!restarted) {
-								restarted = true;
-								item.col = 0;
-								item.row = 0;
-								maxRow = startRow;
-								maxCol = startCol;
+						while (overlap.length > 0) {
+							if (item.row === maxRow && item.col === maxCol) {
+								// if checked all space after item, now check space before it
+								if (!restarted) {
+									restarted = true;
+									item.col = 0;
+									item.row = 0;
+									maxRow = startRow;
+									maxCol = startCol;
+								} else {
+									// if item couldn't be added, shrink it until it can fit somewhere
+									if (item.sizeX > gridster.minSizeX || item.sizeY > gridster.minSizeY) {
+										if (item.sizeX > item.sizeY || item.sizeY === gridster.minSizeY) {
+											item.sizeX--;
+										} else {
+											item.sizeY--;
+										}
+										item.row = startRow;
+										item.col = startCol;
+										fitItem();
+										break;
+									} else {
+										// no space left at all
+										$rootScope.$broadcast('gridster-item-not-added', item);
+										item.col = that.columns - 1;
+										item.row = that.maxRows - 1;
+										noSpace = true;
+										return;
+									}
+								}
 							} else {
-								$rootScope.$broadcast('gridster-item-not-added', item);
-								item.col = this.columns - 1;
-								item.row = this.maxRows - 1;
-								return;
+								if (item.row < maxRow) {
+									++item.row;
+								} else {
+									item.row = 0;
+									++item.col;
+								}
 							}
-						} else {
-							if (item.row < maxRow) {
-								++item.row;
-							} else {
-								item.row = 0;
-								++item.col;
+
+							if (item.row + item.sizeY < that.maxRows && item.col + item.sizeX < that.columns) {
+								overlap = that.getItems(item.row, item.col, item.sizeX, item.sizeY);
 							}
 						}
+					};
+					fitItem();
 
-						if (item.row + item.sizeY < this.maxRows && item.col + item.sizeX < this.columns) {
-							overlap = this.getItems(item.row, item.col, item.sizeX, item.sizeY);
-						}
-					}
+					if (noSpace === true) return;
 
 					this.putItem(item, item.row, item.col, ignoreItems, true);
 
