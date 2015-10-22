@@ -2199,10 +2199,12 @@
 						}
 					}
 
-					var debouncedTransitionEndPublisher = gridsterDebounce(function() {
-						scope.$apply(function() {
-							scope.$broadcast('gridster-item-transition-end', item);
-						});
+					var debouncedTransitionEndPublisher = gridsterDebounce(function(e) {
+						if (!!angular.element(e.srcElement).attr('gridster-item')) {
+							scope.$apply(function() {
+								scope.$broadcast('gridster-item-transition-end', item);
+							});
+						}
 					}, 50);
 
 					$el.on(whichTransitionEvent(), debouncedTransitionEndPublisher);
