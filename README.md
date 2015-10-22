@@ -138,6 +138,7 @@ $scope.gridsterOpts = {
 	rowHeight: 'match', // can be an integer or 'match'.  Match uses the colWidth, giving you square widgets.
 	margins: [10, 10], // the pixel distance between each widget
 	outerMargin: true, // whether margins apply to outer edges of the grid
+	sparse: false, // "true" can increase performance of dragging and resizing for big grid (e.g. 20x50)
 	isMobile: false, // stacks the grid items if true
 	mobileBreakPoint: 600, // if the screen is not wider that this, remove the grid layout and stack the items
 	mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint

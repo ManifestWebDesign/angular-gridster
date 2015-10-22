@@ -17,6 +17,7 @@
     <div gridster="gridsterOpts">
         <ul>
             <li gridster-item="item" ng-repeat="item in standardItems">
+				<a href="#" >Nested CSS Transition</a>
                 <input type="text" integer ng-model="item.row" size="1" />,
                 <input type="text" integer ng-model="item.col" size="1" />
                 <br />
@@ -74,7 +75,28 @@
         </ul>
     </div>
 
-    <h2>No Configuration or Binding</h2>
+	<h2>Large Grid</h2>
+	<p>
+		A large grid with the Sparse option set to FALSE
+	</p>
+	<div gridster="noSparseGridsterOpts">
+		<ul>
+			<li gridster-item="item" ng-repeat="item in noSparseItems"></li>
+		</ul>
+	</div>
+
+	<h2>Large Grid with Sparse</h2>
+	<p>
+		A large grid with the Sparse option set to TRUE
+	</p>
+	<div gridster="sparseGridsterOpts">
+		<ul>
+			<li gridster-item="item" ng-repeat="item in sparseItems"></li>
+		</ul>
+	</div>
+
+
+	<h2>No Configuration or Binding</h2>
     <p>
         No data binding or configuration provided.
     </p>

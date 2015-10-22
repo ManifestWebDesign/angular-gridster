@@ -3,6 +3,13 @@ body {
     background: #004756;
     color: #fff;
 }
+a {
+	transition: color 0.2s ease;
+}
+a:hover,
+a:focus {
+	color:deeppink;
+}
 .gridster .gridster-item {
     -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
