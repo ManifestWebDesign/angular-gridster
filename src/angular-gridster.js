@@ -746,11 +746,13 @@
 
 						var prevWidth = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
 
-						var resize = function() {
+						var resize = function(force) {
 							var width = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
 
-							if (!width || width === prevWidth || gridster.movingItem) {
-								return;
+							if (!force) {
+								if (!width || width === prevWidth || gridster.movingItem) {
+									return;
+								}
 							}
 							prevWidth = width;
 
@@ -778,6 +780,10 @@
 						scope.$watch(function() {
 							return isVisible($elem[0]);
 						}, onResize);
+
+						$rootScope.$on('gridster-invalidate-layout', function() {
+							resize(true);
+						});
 
 						// see https://github.com/sdecima/javascript-detect-element-resize
 						if (typeof window.addResizeListener === 'function') {
