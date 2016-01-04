@@ -535,7 +535,9 @@
 					};
 					fitItem();
 
-					if (noSpace === true) return;
+					if (noSpace === true) {
+						return;
+					}
 
 					this.putItem(item, item.row, item.col, ignoreItems, true);
 
@@ -1862,6 +1864,7 @@
 				function resizeStart(e) {
 					$el.addClass('gridster-item-moving');
 					$el.addClass('gridster-item-resizing');
+					document.addEventListener('mouseup', mouseUp);
 
 					gridster.movingItem = item;
 
@@ -1970,6 +1973,8 @@
 						gridster.draggable.enabled = savedDraggable;
 						scope.$broadcast('gridster-draggable-changed', gridster);
 					}
+
+					document.removeEventListener('mouseup', mouseUp);
 
 					mOffX = mOffY = 0;
 
