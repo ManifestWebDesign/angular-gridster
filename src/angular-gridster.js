@@ -819,7 +819,9 @@
 
 						var optionsKey = attrs.gridster;
 						if (optionsKey) {
-							scope.$parent.$watch(optionsKey, function(newConfig) {
+							scope.$parent.$watch(function() {
+								return scope.$eval(optionsKey);
+							}, function(newConfig) {
 								refresh(newConfig);
 							}, true);
 						} else {
@@ -1475,7 +1477,6 @@
 					mOffY = 0,
 
 					minTop = 0,
-					maxTop = gridster.calcGridsterHeight(),
 					minLeft = 0,
 					realdocument = $document[0];
 
@@ -1524,10 +1525,10 @@
 					lastMouseX = e.pageX;
 					lastMouseY = e.pageY;
 
-					elmX = parseInt($el.css('left'), 10);
-					elmY = parseInt($el.css('top'), 10);
-					elmW = $el[0].offsetWidth;
-					elmH = $el[0].offsetHeight;
+					elmX = item.col * gridster.curColWidth;
+					elmY = item.row * gridster.curRowHeight;
+					elmW = item.sizeX * gridster.curColWidth;
+					elmH = item.sizeY * gridster.curRowHeight;
 
 					originalCol = item.col;
 					originalRow = item.row;
@@ -1542,8 +1543,6 @@
 						return false;
 					}
 
-					var maxLeft = gridster.curWidth - 1;
-
 					// Get the current mouse position.
 					mouseX = e.pageX;
 					mouseY = e.pageY;
@@ -1556,6 +1555,9 @@
 					// Update last processed mouse positions.
 					lastMouseX = mouseX;
 					lastMouseY = mouseY;
+
+					var maxLeft = gridster.curWidth - 1,
+						maxTop = gridster.calcGridsterHeight();
 
 					var dX = diffX,
 						dY = diffY;
@@ -1570,8 +1572,8 @@
 					if (elmY + dY < minTop) {
 						diffY = minTop - elmY;
 						mOffY = dY - diffY;
-					} else if (elmY + elmH + dY > maxTop) {
-						diffY = maxTop - elmY - elmH;
+					} else if (elmY + dY >= maxTop) {
+						diffY = maxTop - elmY;
 						mOffY = dY - diffY;
 					}
 					elmX += diffX;
@@ -1805,7 +1807,6 @@
 					mOffY = 0,
 
 					minTop = 0,
-					maxTop = 9999,
 					minLeft = 0;
 
 				var getMinHeight = function() {
@@ -1848,10 +1849,10 @@
 					lastMouseY = e.pageY;
 
 					// Record current widget dimensions
-					elmX = parseInt($el.css('left'), 10);
-					elmY = parseInt($el.css('top'), 10);
-					elmW = $el[0].offsetWidth;
-					elmH = $el[0].offsetHeight;
+					elmX = item.col * gridster.curColWidth;
+					elmY = item.row * gridster.curRowHeight;
+					elmW = item.sizeX * gridster.curColWidth;
+					elmH = item.sizeY * gridster.curRowHeight;
 
 					originalWidth = item.sizeX;
 					originalHeight = item.sizeY;
@@ -1887,8 +1888,6 @@
 						return false;
 					}
 
-					var maxLeft = gridster.curWidth - 1;
-
 					// Get the current mouse position.
 					mouseX = e.pageX;
 					mouseY = e.pageY;
@@ -1904,6 +1903,9 @@
 
 					var dY = diffY,
 						dX = diffX;
+
+					var maxLeft = gridster.curWidth - 1,
+						maxTop = gridster.calcGridsterHeight();
 
 					if (hClass.indexOf('n') >= 0) {
 						if (elmH - dY < getMinHeight()) {
