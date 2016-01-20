@@ -14,6 +14,7 @@
 		rowHeight: 'match', // height of grid rows. 'match' will make it the same as the column width, a numeric value will be interpreted as pixels, '/2' is half the column width, '*5' is five times the column width, etc.
 		margins: [10, 10], // margins in between grid items
 		outerMargin: true,
+    sparse: false,
 		isMobile: false, // toggle mobile view
 		mobileBreakPoint: 600, // width threshold to toggle mobile mode
 		mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
@@ -70,6 +71,7 @@
 		* A positional array of the items in the grid
 		*/
 		this.grid = [];
+    this.allItems = [];
 
 		/**
 		* Clean up after yourself
@@ -80,7 +82,13 @@
 			if (this.grid) {
 				this.grid = [];
 			}
+      
 			this.$element = null;
+      
+      if (this.allItems) {
+ 					this.allItems.length = 0;
+ 					this.allItems = null;
+ 				}
 		};
 
 		/**
@@ -169,14 +177,29 @@
 			if (excludeItems && !(excludeItems instanceof Array)) {
 				excludeItems = [excludeItems];
 			}
-			for (var h = 0; h < sizeY; ++h) {
-				for (var w = 0; w < sizeX; ++w) {
-					var item = this.getItem(row + h, column + w, excludeItems);
-					if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && items.indexOf(item) === -1) {
-						items.push(item);
-					}
-				}
-			}
+      
+      var item;
+      if (this.sparse === false){ // check all cells
+        for (var h = 0; h < sizeY; ++h) {
+          for (var w = 0; w < sizeX; ++w) {
+            var item = this.getItem(row + h, column + w, excludeItems);
+            if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && items.indexOf(item) === -1) {
+              items.push(item);
+            }
+          }
+        }
+      } else {    // check intersection with all items
+ 					var bottom = row + sizeY - 1;
+ 					var right = column + sizeX - 1;
+ 					for (var i = 0; i < this.allItems.length; ++i) {
+ 						item = this.allItems[i];
+ 						if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && items.indexOf(item) === -1 && this.intersect(item, column, right, row, bottom)) {
+  							items.push(item);
+  						}
+  				}
+      }
+      
+      
 			return items;
 		};
 
@@ -218,7 +241,23 @@
 				sizeX: maxCol - minCol
 			};
 		};
+    
+   /**
+     * Checks if item intersects specified box
+      *
+      * @param {object} item
+      * @param {number} left
+      * @param {number} right
+      * @param {number} top
+      * @param {number} bottom
+      */
 
+    this.intersect = function(item, left, right, top, bottom) {
+      return (left <= item.col + item.sizeX - 1 &&
+              right >= item.col &&
+              top <= item.row + item.sizeY - 1 &&
+              bottom >= item.row);
+ 		};
 
 		/**
 		* Removes an item from the grid
@@ -226,17 +265,27 @@
 		* @param {Object} item
 		*/
 		this.removeItem = function(item) {
+      var index;
 			for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 				var columns = this.grid[rowIndex];
 				if (!columns) {
 					continue;
 				}
-				var index = columns.indexOf(item);
+        
+				index = columns.indexOf(item);
 				if (index !== -1) {
 					columns[index] = null;
 					break;
 				}
 			}
+      
+      if (this.sparse) {
+ 					index = this.allItems.indexOf(item);
+ 					if (index !== -1) {
+ 						this.allItems.splice(index, 1);
+ 					}
+ 				}
+      
 			this.layoutChanged();
 		};
 
@@ -335,7 +384,9 @@
 				this.grid[row] = [];
 			}
 			this.grid[row][column] = item;
-
+      if (this.sparse && this.allItems.indexOf(item) === -1) {
+ 					this.allItems.push(item);
+ 			}
 			if (this.movingItem === item) {
 				this.floatItemUp(item);
 			}
@@ -1450,7 +1501,7 @@ function($timeout, $window, $rootScope, gridsterDebounce) {
 				gridster.updateHeight(item.sizeY);
 				scope.$apply(function() {
 					if (gridster.draggable && gridster.draggable.start) {
-						gridster.draggable.start(event, $el, itemOptions);
+						gridster.draggable.start(event, $el, itemOptions, item);
 					}
 				});
 			}
@@ -1526,7 +1577,7 @@ function($timeout, $window, $rootScope, gridsterDebounce) {
 				if (hasCallback || oldRow !== item.row || oldCol !== item.col) {
 					scope.$apply(function() {
 						if (hasCallback) {
-							gridster.draggable.drag(event, $el, itemOptions);
+							gridster.draggable.drag(event, $el, itemOptions, item);
 						}
 					});
 				}
@@ -1545,7 +1596,7 @@ function($timeout, $window, $rootScope, gridsterDebounce) {
 
 				scope.$apply(function() {
 					if (gridster.draggable && gridster.draggable.stop) {
-						gridster.draggable.stop(event, $el, itemOptions);
+						gridster.draggable.stop(event, $el, itemOptions, item);
 					}
 				});
 
@@ -1703,7 +1754,7 @@ function($timeout, $window, $rootScope, gridsterDebounce) {
 				scope.$apply(function() {
 					// callback
 					if (gridster.resizable && gridster.resizable.start) {
-						gridster.resizable.start(e, $el, itemOptions); // options is the item model
+						gridster.resizable.start(e, $el, itemOptions, item); // options is the item model
 					}
 				});
 			}
@@ -1845,7 +1896,7 @@ function($timeout, $window, $rootScope, gridsterDebounce) {
 				if (hasCallback || isChanged) {
 					scope.$apply(function() {
 						if (hasCallback) {
-							gridster.resizable.resize(e, $el, itemOptions); // options is the item model
+							gridster.resizable.resize(e, $el, itemOptions, item); // options is the item model
 						}
 					});
 				}
@@ -1867,7 +1918,7 @@ function($timeout, $window, $rootScope, gridsterDebounce) {
 
 				scope.$apply(function() {
 					if (gridster.resizable && gridster.resizable.stop) {
-						gridster.resizable.stop(e, $el, itemOptions); // options is the item model
+						gridster.resizable.stop(e, $el, itemOptions, item); // options is the item model
 					}
 				});
 			}
