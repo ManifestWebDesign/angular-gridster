@@ -34,6 +34,7 @@
 		margins: [10, 10], // margins in between grid items
 		outerMargin: true,
 		isMobile: false, // toggle mobile view
+		layout: 'vertical', // "vertical" add new items top -> bottom "horizontal" left -> right
 		mobileBreakPoint: 600, // width threshold to toggle mobile mode
 		mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
 		minColumns: 1, // minimum amount of columns the grid can scale down to
@@ -422,7 +423,13 @@
 
 					// move this item down if it overlaps any
 					if (overlappingItems.length > 0) {
-						this.moveItemsDown([item], item.row + item.sizeY, ignoreItems);
+						if (this.layout === 'vertical') {
+							this.moveItemsDown([item], item.row + item.sizeY, ignoreItems);
+						} else if (this.layout === 'horizontal') {
+							this.moveItemsRight([item], item.col + item.sizeX, ignoreItems);
+						} else {
+							console.warn('Invalid value for layout ' + this.layout);
+						}
 					}
 				} else {
 					// don't move item, so ignore it
@@ -441,7 +448,13 @@
 						item.sizeY,
 						ignoreItems
 					);
-					this.moveItemsDown(overlappingItems, item.row + item.sizeY, ignoreItems);
+					if (this.layout === 'vertical') {
+						this.moveItemsDown(overlappingItems, item.row + item.sizeY, ignoreItems);
+					} else if (this.layout === 'horizontal') {
+						this.moveItemsRight(overlappingItems, item.col + item.sizeX, ignoreItems);
+					} else {
+						console.warn('Invalid value for layout ' + this.layout);
+					}
 				}
 			};
 
@@ -565,6 +578,133 @@
 				}
 				while (item.row < newRow) {
 					++item.row;
+					if (!this.locking) {
+						this.moveOverlappingItems(item, ignoreItems);
+					}
+				}
+				this.putItem(item, item.row, item.col, ignoreItems, this.locking);
+			};
+
+			/**
+			 * Moves an array of items to a specified col
+			 *
+			 * @param {Array} items The items to move
+			 * @param {Number} newCol The target col
+			 * @param {Array} ignoreItems
+			 */
+			this.moveItemsRight = function(items, newCol, ignoreItems) {
+				if (!items || items.length === 0) {
+					return;
+				}
+
+				var that = this;
+
+				items.sort(function(a, b) {
+					return a.col - b.col;
+				});
+
+				ignoreItems = ignoreItems ? ignoreItems.slice(0) : [];
+				var topCols = {},
+					item, i, l;
+
+				// calculate the top cols in each row
+				for (i = 0, l = items.length; i < l; ++i) {
+					item = items[i];
+					var topCol = topCols[item.col];
+					if (typeof topCol === 'undefined' || item.col < topCol) {
+						topCols[item.row] = item.col;
+					}
+				}
+
+				//calculate next free position to place item
+				if (this.locking === true) {
+
+					var noSpace = false;
+
+					var fitItem = function() {
+						var overlap = that.getItems(item.row, item.col, item.sizeX, item.sizeY);
+						var maxRow = that.maxRows - 1,
+							maxCol = that.columns - 1,
+							startRow = item.row,
+							startCol = item.col,
+							restarted = false;
+
+						while (overlap.length > 0) {
+							if (item.row === maxRow && item.col === maxCol) {
+								// if checked all space after item, now check space before it
+								if (!restarted) {
+									restarted = true;
+									item.col = 0;
+									item.row = 0;
+									maxRow = startRow;
+									maxCol = startCol;
+								} else {
+									// if item couldn't be added, shrink it until it can fit somewhere
+									if (item.sizeX > gridster.minSizeX || item.sizeY > gridster.minSizeY) {
+										if (item.sizeX > item.sizeY || item.sizeY === gridster.minSizeY) {
+											item.sizeX--;
+										} else {
+											item.sizeY--;
+										}
+										item.row = startRow;
+										item.col = startCol;
+										fitItem();
+										break;
+									} else {
+										// no space left at all
+										$rootScope.$broadcast('gridster-item-not-added', item);
+										item.col = that.columns - 1;
+										item.row = that.maxRows - 1;
+										noSpace = true;
+										return;
+									}
+								}
+							} else {
+								if (item.col < maxCol) {
+									++item.col;
+								} else {
+									item.col = 0;
+									++item.row;
+								}
+							}
+
+							if (item.row + item.sizeY < that.maxRows && item.col + item.sizeX < that.columns) {
+								overlap = that.getItems(item.row, item.col, item.sizeX, item.sizeY);
+							}
+						}
+					};
+					fitItem();
+
+					if (noSpace === true) {
+						return;
+					}
+
+					this.putItem(item, item.row, item.col, ignoreItems, true);
+
+				} else {
+					// move each item down from the top row in its column to the row
+					for (i = 0, l = items.length; i < l; ++i) {
+						item = items[i];
+						var colsToMove = newCol - topCols[item.row];
+						this.moveItemRight(item, item.col + colsToMove, ignoreItems);
+						ignoreItems.push(item);
+					}
+				}
+			};
+
+			/**
+			 * Moves an item right to a specified col
+			 *
+			 * @param {Object} item The item to move
+			 * @param {Number} newCol The target col
+			 * @param {Array} ignoreItems
+			 */
+			this.moveItemRight = function(item, newCol, ignoreItems) {
+				if (item.col >= newCol) {
+					return;
+				}
+				while (item.col < newCol) {
+					++item.col;
 					if (!this.locking) {
 						this.moveOverlappingItems(item, ignoreItems);
 					}
