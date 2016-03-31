@@ -39,7 +39,7 @@
 		}
 	})
 
-	.controller('GridsterCtrl', ['gridsterConfig', '$timeout', '$rootScope'
+	.controller('GridsterCtrl', ['gridsterConfig', '$timeout', '$rootScope',
 	function(gridsterConfig, $timeout, $rootScope) {
 
 		var gridster = this;
