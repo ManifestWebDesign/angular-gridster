@@ -39,8 +39,8 @@
 		}
 	})
 
-	.controller('GridsterCtrl', ['gridsterConfig', '$timeout',
-	function(gridsterConfig, $timeout) {
+	.controller('GridsterCtrl', ['gridsterConfig', '$timeout', '$rootScope'
+	function(gridsterConfig, $timeout, $rootScope) {
 
 		var gridster = this;
 
@@ -64,6 +64,8 @@
 					gridster.floatItemsUp();
 				}
 				gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
+				// layout changed event to save the boxes layout
+				$rootScope.$broadcast('gridster-layout-changed');
 			}, 30);
 		};
 
