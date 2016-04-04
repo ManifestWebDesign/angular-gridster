@@ -1366,7 +1366,11 @@
 						return false;
 					}
 
-					switch (e.which) {
+           // restrict to targets having a specific class (if requested)
+           if (gridster.draggable && gridster.draggable.restrictToClass && !$target.hasClass(gridster.draggable.restrictToClass))
+             return;
+					
+           switch (e.which) {
 						case 1:
 							// left mouse button
 							break;
