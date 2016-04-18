@@ -1342,7 +1342,7 @@
 					realdocument = $document[0];
 
 				var originalCol, originalRow;
-				var inputTags = ['select', 'input', 'textarea', 'button'];
+				var inputTags = ['select', 'option', 'input', 'textarea', 'button'];
 
 				function mouseDown(e) {
 					if (inputTags.indexOf(e.target.nodeName.toLowerCase()) !== -1) {
