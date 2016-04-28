@@ -77,6 +77,7 @@
 					flag = false;
 					if (gridster.loaded) {
 						gridster.floatItemsUp();
+						gridster.floatItemsLeft();
 					}
 					gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
 				}, 30);
@@ -354,6 +355,7 @@
 
 				if (this.movingItem === item) {
 					this.floatItemUp(item);
+					this.floatItemLeft(item);
 				}
 				this.layoutChanged();
 			};
@@ -479,6 +481,27 @@
 			};
 
 			/**
+			 * Moves all items left as much as possible
+			 */
+			this.floatItemsLeft = function() {
+				if (this.floating === false) {
+					return;
+				}
+				for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
+					var columns = this.grid[rowIndex];
+					if (!columns) {
+						continue;
+					}
+					for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
+						var item = columns[colIndex];
+						if (item) {
+							this.floatItemLeft(item);
+						}
+					}
+				}
+			};
+
+			/**
 			 * Float an item up to the most suitable row
 			 *
 			 * @param {Object} item The item to move
@@ -504,6 +527,36 @@
 					--rowIndex;
 				}
 				if (bestRow !== null) {
+					this.putItem(item, bestRow, bestColumn);
+				}
+			};
+
+			/**
+			 * Float an item left to the most suitable column
+			 *
+			 * @param {Object} item The item to move
+			 */
+			this.floatItemLeft = function(item) {
+				if (this.floating === false) {
+					return;
+				}
+				var colIndex = item.col - 1,
+					sizeY = item.sizeY,
+					sizeX = item.sizeX,
+					bestRow = null,
+					bestColumn = null,
+					rowIndex = item.row;
+
+				while (colIndex > -1) {
+					var items = this.getItems(rowIndex, colIndex, sizeX, sizeY, item);
+					if (items.length !== 0) {
+						break;
+					}
+					bestRow = rowIndex;
+					bestColumn = colIndex;
+					--colIndex;
+				}
+				if (bestColumn !== null) {
 					this.putItem(item, bestRow, bestColumn);
 				}
 			};
@@ -803,6 +856,7 @@
 						$timeout(function() {
 							scope.$watch('gridster.floating', function() {
 								gridster.floatItemsUp();
+								gridster.floatItemsLeft();
 							});
 							gridster.loaded = true;
 						}, 100);
