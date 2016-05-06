@@ -2,9 +2,10 @@ angular.module('app')
 
 .controller('DashboardCtrl', ['$scope', '$timeout',
 	function($scope, $timeout) {
+		$scope.count = 1;
 		$scope.gridsterOptions = {
 			margins: [20, 20],
-			columns: 4,
+			columns: 6,
 			draggable: {
 				handle: 'h3'
 			}
@@ -49,14 +50,16 @@ angular.module('app')
 
 		$scope.clear = function() {
 			$scope.dashboard.widgets = [];
+			$scope.count = 1;
 		};
 
 		$scope.addWidget = function() {
 			$scope.dashboard.widgets.push({
-				name: "New Widget",
+				name: "New Widget" + $scope.count,
 				sizeX: 1,
 				sizeY: 1
 			});
+			$scope.count++;
 		};
 
 		$scope.$watch('selectedDashboardId', function(newVal, oldVal) {

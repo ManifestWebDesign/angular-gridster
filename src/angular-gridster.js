@@ -34,7 +34,7 @@
 		mobileBreakPoint: 600, // width threshold to toggle mobile mode
 		mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
 		minColumns: 1, // minimum amount of columns the grid can scale down to
-		minRows: 1, // minimum amount of rows to show if the grid is empty
+		minRows: 8, // minimum amount of rows to show if the grid is empty
 		maxRows: 100, // maximum amount of rows in the grid
 		defaultSizeX: 2, // default width of an item in columns
 		defaultSizeY: 1, // default height of an item in rows
@@ -401,7 +401,18 @@
 					item.sizeY,
 					ignoreItems
 				);
-				this.moveItemsDown(overlappingItems, item.row + item.sizeY, ignoreItems);
+				// this.moveItemsDown(overlappingItems, item.row + item.sizeY, ignoreItems);				
+				if(overlappingItems.length>0) {
+					console.log(overlappingItems[0].row+ " " + overlappingItems[0].col);								
+					if (overlappingItems[0].row > this.maxRow || overlappingItems[0].isMoving()) 
+						return;
+					if((overlappingItems[0].col+overlappingItems[0].sizeX) >= this.columns) {
+						overlappingItems[0].col = 0;
+						this.moveItemDown(overlappingItems[0], overlappingItems[0].row+overlappingItems[0].sizeY);
+					}
+					else
+						this.moveItemsRight(overlappingItems, item.col + item.sizeX, ignoreItems);				
+				}
 			};
 
 			/**
@@ -454,6 +465,60 @@
 				}
 				while (item.row < newRow) {
 					++item.row;
+					this.moveOverlappingItems(item, ignoreItems);
+				}
+				this.putItem(item, item.row, item.col, ignoreItems);
+			};
+
+			/**
+			 * Moves an array of items to a specified row
+			 *
+			 * @param {Array} items The items to move
+			 * @param {Number} newRow The target row
+			 * @param {Array} ignoreItems
+			 */
+			this.moveItemsRight = function(items, newCol, ignoreItems) {
+				if (!items || items.length === 0) {
+					return;
+				}
+				items.sort(function(a, b) {
+					return a.col - b.col;
+				});
+
+				ignoreItems = ignoreItems ? ignoreItems.slice(0) : [];
+				var item, i, l;
+
+				// calculate the top columns in each row
+				for (i = 0, l = items.length; i < l; ++i) {
+					item = items[i];
+					var topColumn = item.col;
+					if (typeof topColumn === 'undefined' || item.col > topColumn) {
+						topColumn = item.col;
+					}
+				}
+
+				// move each item right from the the current topColumn
+				for (i = 0, l = items.length; i < l; ++i) {
+					item = items[i];
+					var columnsToMove = newCol - topColumn;       
+					this.moveItemRight(item, item.col + columnsToMove, ignoreItems);
+					ignoreItems.push(item);
+				}
+			};
+
+			/**
+			 * Moves an item down to a specified row
+			 *
+			 * @param {Object} item The item to move
+			 * @param {Number} newRow The target row
+			 * @param {Array} ignoreItems
+			 */
+			this.moveItemRight = function(item, newColumn, ignoreItems) {
+				if (item.col >= newColumn) {
+					return;
+				}
+				while (item.col < newColumn) {
+					++item.col;
 					this.moveOverlappingItems(item, ignoreItems);
 				}
 				this.putItem(item, item.row, item.col, ignoreItems);
@@ -2234,8 +2299,6 @@
 				$element.addClass('gridster-no-drag');
 			}
 		};
-	})
-
-	;
+	});
 
 }));
