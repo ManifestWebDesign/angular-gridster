@@ -1323,8 +1323,8 @@
 		};
 	}])
 
-	.factory('GridsterDraggable', ['$document', '$window', 'GridsterTouch',
-		function($document, $window, GridsterTouch) {
+	.factory('GridsterDraggable', ['$document', '$window', 'GridsterTouch', '$timeout',
+		function($document, $window, GridsterTouch, $timeout) {
 			function GridsterDraggable($el, scope, gridster, item, itemOptions) {
 
 				var elmX, elmY, elmW, elmH,
@@ -1575,30 +1575,32 @@
 
 					// timeout required for some template rendering
 					$el.ready(function() {
-						if (enabled !== true) {
-							return;
-						}
+						$timeout(function() {
+							if (enabled !== true) {
+								return;
+							}
 
-						// disable any existing draghandles
-						for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
-							unifiedInputs[u].disable();
-						}
-						unifiedInputs = [];
+							// disable any existing draghandles
+							for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
+								unifiedInputs[u].disable();
+							}
+							unifiedInputs = [];
 
-						if (gridster.draggable && gridster.draggable.handle) {
-							$dragHandles = angular.element($el[0].querySelectorAll(gridster.draggable.handle));
-							if ($dragHandles.length === 0) {
-								// fall back to element if handle not found...
+							if (gridster.draggable && gridster.draggable.handle) {
+								$dragHandles = angular.element($el[0].querySelectorAll(gridster.draggable.handle));
+								if ($dragHandles.length === 0) {
+									// fall back to element if handle not found...
+									$dragHandles = $el;
+								}
+							} else {
 								$dragHandles = $el;
 							}
-						} else {
-							$dragHandles = $el;
-						}
 
-						for (var h = 0, hl = $dragHandles.length; h < hl; ++h) {
-							unifiedInputs[h] = new GridsterTouch($dragHandles[h], mouseDown, mouseMove, mouseUp);
-							unifiedInputs[h].enable();
-						}
+							for (var h = 0, hl = $dragHandles.length; h < hl; ++h) {
+								unifiedInputs[h] = new GridsterTouch($dragHandles[h], mouseDown, mouseMove, mouseUp);
+								unifiedInputs[h].enable();
+							}
+						});
 					});
 				};
 
