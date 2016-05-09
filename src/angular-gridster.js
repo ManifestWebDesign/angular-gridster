@@ -2148,6 +2148,7 @@
 							if ($getters.col && $getters.col.assign) {
 								$getters.col.assign(scope, item.col);
 							}
+							scope.gridsterItem.gridsterItemSizeChanged({ item: item });
 						}
 						scope.$watch(function () {
 							return item.row + ',' + item.col;
