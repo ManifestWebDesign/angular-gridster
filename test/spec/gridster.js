@@ -13,25 +13,33 @@ describe('GridsterCtrl', function() {
 
 	// Initialize the controller
 	beforeEach(inject(function($controller) {
-		item1x1 = {
+			item1x1 = {
 			sizeX: 1,
 			sizeY: 1,
-			id: '1x1'
+			id: '1x1',
+			gridsterItemFloatUp: function(i){},
+			gridsterItemMovedDown: function(i){}
 		};
 		item2x1 = {
 			sizeX: 2,
 			sizeY: 1,
-			id: '2x1'
+			id: '2x1',
+			gridsterItemFloatUp: function(i){},
+			gridsterItemMovedDown: function(i){}
 		};
 		item2x2 = {
 			sizeX: 2,
 			sizeY: 2,
-			id: '2x2'
+			id: '2x2',
+			gridsterItemFloatUp: function(i){},
+			gridsterItemMovedDown: function(i){}
 		};
 		item1x2 = {
 			sizeX: 1,
 			sizeY: 2,
-			id: '1x2'
+			id: '1x2',
+			gridsterItemFloatUp: function(i){},
+			gridsterItemMovedDown: function(i){}
 		};
 
 		var config = [item1x1, item2x1, item2x2, item1x2];
