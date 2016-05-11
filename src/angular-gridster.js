@@ -34,7 +34,7 @@
 		mobileBreakPoint: 600, // width threshold to toggle mobile mode
 		mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
 		minColumns: 1, // minimum amount of columns the grid can scale down to
-		minRows: 1, // minimum amount of rows to show if the grid is empty
+		minRows: 8, // minimum amount of rows to show if the grid is empty
 		maxRows: 100, // maximum amount of rows in the grid
 		defaultSizeX: 2, // default width of an item in columns
 		defaultSizeY: 1, // default height of an item in rows
@@ -77,6 +77,7 @@
 					flag = false;
 					if (gridster.loaded) {
 						gridster.floatItemsUp();
+						gridster.floatItemsLeft();
 					}
 					gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
 				}, 30);
@@ -354,6 +355,7 @@
 
 				if (this.movingItem === item) {
 					this.floatItemUp(item);
+					this.floatItemLeft(item);
 				}
 				this.layoutChanged();
 			};
@@ -399,7 +401,18 @@
 					item.sizeY,
 					ignoreItems
 				);
-				this.moveItemsDown(overlappingItems, item.row + item.sizeY, ignoreItems);
+				// this.moveItemsDown(overlappingItems, item.row + item.sizeY, ignoreItems);				
+				if(overlappingItems.length>0) {
+					console.log(overlappingItems[0].row+ " " + overlappingItems[0].col);								
+					if (overlappingItems[0].row > this.maxRow || overlappingItems[0].isMoving()) 
+						return;
+					if((overlappingItems[0].col+overlappingItems[0].sizeX) >= this.columns) {
+						overlappingItems[0].col = 0;
+						this.moveItemDown(overlappingItems[0], overlappingItems[0].row+overlappingItems[0].sizeY);
+					}
+					else
+						this.moveItemsRight(overlappingItems, item.col + item.sizeX, ignoreItems);				
+				}
 			};
 
 			/**
@@ -458,6 +471,60 @@
 			};
 
 			/**
+			 * Moves an array of items to a specified row
+			 *
+			 * @param {Array} items The items to move
+			 * @param {Number} newRow The target row
+			 * @param {Array} ignoreItems
+			 */
+			this.moveItemsRight = function(items, newCol, ignoreItems) {
+				if (!items || items.length === 0) {
+					return;
+				}
+				items.sort(function(a, b) {
+					return a.col - b.col;
+				});
+
+				ignoreItems = ignoreItems ? ignoreItems.slice(0) : [];
+				var item, i, l;
+
+				// calculate the top columns in each row
+				for (i = 0, l = items.length; i < l; ++i) {
+					item = items[i];
+					var topColumn = item.col;
+					if (typeof topColumn === 'undefined' || item.col > topColumn) {
+						topColumn = item.col;
+					}
+				}
+
+				// move each item right from the the current topColumn
+				for (i = 0, l = items.length; i < l; ++i) {
+					item = items[i];
+					var columnsToMove = newCol - topColumn;       
+					this.moveItemRight(item, item.col + columnsToMove, ignoreItems);
+					ignoreItems.push(item);
+				}
+			};
+
+			/**
+			 * Moves an item down to a specified row
+			 *
+			 * @param {Object} item The item to move
+			 * @param {Number} newRow The target row
+			 * @param {Array} ignoreItems
+			 */
+			this.moveItemRight = function(item, newColumn, ignoreItems) {
+				if (item.col >= newColumn) {
+					return;
+				}
+				while (item.col < newColumn) {
+					++item.col;
+					this.moveOverlappingItems(item, ignoreItems);
+				}
+				this.putItem(item, item.row, item.col, ignoreItems);
+			};
+
+			/**
 			 * Moves all items up as much as possible
 			 */
 			this.floatItemsUp = function() {
@@ -473,6 +540,27 @@
 						var item = columns[colIndex];
 						if (item) {
 							this.floatItemUp(item);
+						}
+					}
+				}
+			};
+
+			/**
+			 * Moves all items left as much as possible
+			 */
+			this.floatItemsLeft = function() {
+				if (this.floating === false) {
+					return;
+				}
+				for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
+					var columns = this.grid[rowIndex];
+					if (!columns) {
+						continue;
+					}
+					for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
+						var item = columns[colIndex];
+						if (item) {
+							this.floatItemLeft(item);
 						}
 					}
 				}
@@ -504,6 +592,36 @@
 					--rowIndex;
 				}
 				if (bestRow !== null) {
+					this.putItem(item, bestRow, bestColumn);
+				}
+			};
+
+			/**
+			 * Float an item left to the most suitable column
+			 *
+			 * @param {Object} item The item to move
+			 */
+			this.floatItemLeft = function(item) {
+				if (this.floating === false) {
+					return;
+				}
+				var colIndex = item.col - 1,
+					sizeY = item.sizeY,
+					sizeX = item.sizeX,
+					bestRow = null,
+					bestColumn = null,
+					rowIndex = item.row;
+
+				while (colIndex > -1) {
+					var items = this.getItems(rowIndex, colIndex, sizeX, sizeY, item);
+					if (items.length !== 0) {
+						break;
+					}
+					bestRow = rowIndex;
+					bestColumn = colIndex;
+					--colIndex;
+				}
+				if (bestColumn !== null) {
 					this.putItem(item, bestRow, bestColumn);
 				}
 			};
@@ -803,6 +921,7 @@
 						$timeout(function() {
 							scope.$watch('gridster.floating', function() {
 								gridster.floatItemsUp();
+								gridster.floatItemsLeft();
 							});
 							gridster.loaded = true;
 						}, 100);
@@ -2171,8 +2290,6 @@
 				$element.addClass('gridster-no-drag');
 			}
 		};
-	})
-
-	;
+	});
 
 }));
