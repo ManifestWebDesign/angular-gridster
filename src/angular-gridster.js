@@ -1366,6 +1366,22 @@
 						return false;
 					}
 
+					// apply drag handle filter
+					if (gridster.draggable && gridster.draggable.handle) {
+						var $dragHandles = angular.element($el[0].querySelectorAll(gridster.draggable.handle));
+						var match = false;
+						for (var h = 0, hl = $dragHandles.length; h < hl; ++h) {
+							var handle = $dragHandles[h];
+							if (handle === e.target) {
+								match = true;
+								break;
+							}
+						}
+						if (!match) {
+							return false;
+						}
+					}
+
 					switch (e.which) {
 						case 1:
 							// left mouse button
@@ -1563,43 +1579,21 @@
 				}
 
 				var enabled = null;
-				var $dragHandles = null;
-				var unifiedInputs = [];
+				var gridsterTouch = null;
 
 				this.enable = function() {
 					if (enabled === true) {
 						return;
 					}
-
 					enabled = true;
 
-					// timeout required for some template rendering
-					$el.ready(function() {
-						if (enabled !== true) {
-							return;
-						}
+					if (gridsterTouch) {
+						gridsterTouch.enable();
+						return;
+					}
 
-						// disable any existing draghandles
-						for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
-							unifiedInputs[u].disable();
-						}
-						unifiedInputs = [];
-
-						if (gridster.draggable && gridster.draggable.handle) {
-							$dragHandles = angular.element($el[0].querySelectorAll(gridster.draggable.handle));
-							if ($dragHandles.length === 0) {
-								// fall back to element if handle not found...
-								$dragHandles = $el;
-							}
-						} else {
-							$dragHandles = $el;
-						}
-
-						for (var h = 0, hl = $dragHandles.length; h < hl; ++h) {
-							unifiedInputs[h] = new GridsterTouch($dragHandles[h], mouseDown, mouseMove, mouseUp);
-							unifiedInputs[h].enable();
-						}
-					});
+					gridsterTouch = new GridsterTouch($el[0], mouseDown, mouseMove, mouseUp);
+					gridsterTouch.enable();
 				};
 
 				this.disable = function() {
@@ -1608,12 +1602,9 @@
 					}
 
 					enabled = false;
-
-					for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
-						unifiedInputs[u].disable();
+					if (gridsterTouch) {
+						gridsterTouch.disable();
 					}
-
-					unifiedInputs = [];
 				};
 
 				this.toggle = function(enabled) {
