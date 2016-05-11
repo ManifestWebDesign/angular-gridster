@@ -159,7 +159,7 @@ $scope.gridsterOpts = {
 	},
 	draggable: {
 	   enabled: true, // whether dragging items is supported
-	   handle: '.my-class', // optional selector for resize handle
+	   handle: '.my-class', // optional selector for drag handle
 	   start: function(event, $element, widget) {}, // optional callback fired when drag is started,
 	   drag: function(event, $element, widget) {}, // optional callback fired when item is moved,
 	   stop: function(event, $element, widget) {} // optional callback fired when item is finished dragging
