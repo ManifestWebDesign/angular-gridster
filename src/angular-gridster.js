@@ -1370,13 +1370,24 @@
 					if (gridster.draggable && gridster.draggable.handle) {
 						var $dragHandles = angular.element($el[0].querySelectorAll(gridster.draggable.handle));
 						var match = false;
-						for (var h = 0, hl = $dragHandles.length; h < hl; ++h) {
-							var handle = $dragHandles[h];
-							if (handle === e.target) {
-								match = true;
-								break;
+						outerloop:
+							for (var h = 0, hl = $dragHandles.length; h < hl; ++h) {
+								var handle = $dragHandles[h];
+								if (handle === e.target) {
+									match = true;
+									break;
+								}
+								for (var p = 0; p < 20; ++p) {
+									var parent = e.target.parentNode;
+									if (parent === $el[0]) {
+										break;
+									}
+									if (parent === handle) {
+										match = true;
+										break outerloop;
+									}
+								}
 							}
-						}
 						if (!match) {
 							return false;
 						}
