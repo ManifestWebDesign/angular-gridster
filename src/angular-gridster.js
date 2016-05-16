@@ -1501,8 +1501,8 @@
 						scrollSensitivity = gridster.draggable.scrollSensitivity,
 						scrollSpeed = gridster.draggable.scrollSpeed;
 
-					var row = gridster.pixelsToRows(elmY);
-					var col = gridster.pixelsToColumns(elmX);
+					var row = Math.min(gridster.pixelsToRows(elmY), gridster.maxRows - 1);
+					var col = Math.min(gridster.pixelsToColumns(elmX), gridster.columns - 1);
 
 					var itemsInTheWay = gridster.getItems(row, col, item.sizeX, item.sizeY, item);
 					var hasItemsInTheWay = itemsInTheWay.length !== 0;
@@ -1573,8 +1573,8 @@
 
 				function dragStop(event) {
 					$el.removeClass('gridster-item-moving');
-					var row = gridster.pixelsToRows(elmY);
-					var col = gridster.pixelsToColumns(elmX);
+					var row = Math.min(gridster.pixelsToRows(elmY), gridster.maxRows - 1);
+					var col = Math.min(gridster.pixelsToColumns(elmX), gridster.columns - 1);
 					if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
 						item.row = row;
 						item.col = col;
