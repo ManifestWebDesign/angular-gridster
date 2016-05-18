@@ -1337,7 +1337,6 @@
 					mOffY = 0,
 
 					minTop = 0,
-					maxTop = 9999,
 					minLeft = 0,
 					realdocument = $document[0];
 
@@ -1425,7 +1424,8 @@
 					}
 
 					var maxLeft = gridster.curWidth - 1;
-
+					var maxTop = gridster.curRowHeight * gridster.maxRows - 1;
+					
 					// Get the current mouse position.
 					mouseX = e.pageX;
 					mouseY = e.pageY;
