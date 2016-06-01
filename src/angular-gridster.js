@@ -1376,16 +1376,16 @@
 									match = true;
 									break;
 								}
-								for (var p = 0; p < 20; ++p) {
-									var parent = e.target.parentNode;
-									if (parent === $el[0]) {
-										break;
-									}
-									if (parent === handle) {
-										match = true;
-										break outerloop;
-									}
+							
+								var parent = e.target.parentNode;
+								if (parent === $el[0]) {
+									break;
 								}
+								if (parent === handle) {
+									match = true;
+									break outerloop;
+								}
+							
 							}
 						if (!match) {
 							return false;
