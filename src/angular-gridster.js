@@ -1134,7 +1134,7 @@
 						};
 
 						// IE pointer model
-						if (target.msSetPointerCapture) {
+						if (target.msSetPointerCapture && prevent) {
 							target.msSetPointerCapture(pointerId);
 						} else if (theEvtObj.type === 'mousedown' && numberOfKeys(lastXYById) === 1) {
 							if (useSetReleaseCapture) {
@@ -1425,7 +1425,7 @@
 
 					var maxLeft = gridster.curWidth - 1;
 					var maxTop = gridster.curRowHeight * gridster.maxRows - 1;
-					
+
 					// Get the current mouse position.
 					mouseX = e.pageX;
 					mouseY = e.pageY;
