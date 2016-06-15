@@ -701,6 +701,7 @@
 							return gridster.loaded;
 						}, function() {
 							if (gridster.loaded) {
+								$rootScope.$broadcast('gridster-loaded');
 								$elem.addClass('gridster-loaded');
 							} else {
 								$elem.removeClass('gridster-loaded');
@@ -1425,7 +1426,7 @@
 
 					var maxLeft = gridster.curWidth - 1;
 					var maxTop = gridster.curRowHeight * gridster.maxRows - 1;
-					
+
 					// Get the current mouse position.
 					mouseX = e.pageX;
 					mouseY = e.pageY;
