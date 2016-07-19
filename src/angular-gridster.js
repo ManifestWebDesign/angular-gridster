@@ -1487,7 +1487,7 @@
 								var target = e.target;
 								for (var p = 0; p < 20; ++p) {
 									var parent = target.parentNode;
-									if (parent === $el[0]) {
+									if (parent === $el[0] || !parent) {
 										break;
 									}
 									if (parent === handle) {
