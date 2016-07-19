@@ -716,6 +716,7 @@
 						}, function() {
 							if (gridster.loaded) {
 								$elem.addClass('gridster-loaded');
+								$rootScope.$broadcast('gridster-loaded', gridster);
 							} else {
 								$elem.removeClass('gridster-loaded');
 							}
