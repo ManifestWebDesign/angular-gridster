@@ -1136,7 +1136,7 @@
 						};
 
 						// IE pointer model
-						if (target.msSetPointerCapture) {
+						if (target.msSetPointerCapture && prevent) {
 							target.msSetPointerCapture(pointerId);
 						} else if (theEvtObj.type === 'mousedown' && numberOfKeys(lastXYById) === 1) {
 							if (useSetReleaseCapture) {
