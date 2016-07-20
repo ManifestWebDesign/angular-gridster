@@ -72,6 +72,11 @@ module.exports = function(grunt) {
 				files: {
 					"dist/angular-gridster.min.css": "src/angular-gridster.less"
 				}
+			},
+			min: {
+				files: {
+					"dist/angular-gridster.css": "src/angular-gridster.less"
+				}
 			}
 		},
 		protractor: {
