@@ -54,8 +54,34 @@
 		}
 	})
 
-	.controller('GridsterCtrl', ['gridsterConfig', '$timeout',
-		function(gridsterConfig, $timeout) {
+	.factory('GridsterDelegate', function() {
+		var instances = {};
+		return {
+			getInstances: function(handle) {
+				return instances;
+			},
+			getByHandle: function(handle) {
+				if (!handle) {
+					return instances['current'] || null;
+				}
+				return instances[handle] || null;
+			},
+			_register: function(handle, instance) {
+				instances[handle] = instance;
+			},
+			_unregister: function(handle) {
+				delete instances[handle];
+			}
+		}
+	})
+
+	.controller('GridsterCtrl', ['$scope', '$attrs', 'gridsterConfig', '$timeout', 'GridsterDelegate',
+		function($scope, $attrs, gridsterConfig, $timeout, GridsterDelegate) {
+
+			GridsterDelegate._register($scope.delegateHandle || 'current', this);
+			$scope.$on('$destroy', function() {
+				GridsterDelegate._unregister($scope.delegateHandle || 'current');
+			});
 
 			var gridster = this;
 
@@ -63,7 +89,7 @@
 			 * Create options from gridsterConfig constant
 			 */
 			angular.extend(this, gridsterConfig);
-
+			this.itemInstances = [];
 			this.resizable = angular.extend({}, gridsterConfig.resizable || {});
 			this.draggable = angular.extend({}, gridsterConfig.draggable || {});
 
@@ -80,6 +106,10 @@
 					}
 					gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
 				}, 30);
+			};
+
+			this.getItemInstances = function() {
+				return this.itemInstances;
 			};
 
 			/**
@@ -242,6 +272,10 @@
 			 * @param {Object} item
 			 */
 			this.removeItem = function(item) {
+				var index = this.itemInstances.indexOf(item);
+				if (index >= 0) {
+					this.itemInstances.splice(index, 1);
+				}
 				for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 					var columns = this.grid[rowIndex];
 					if (!columns) {
@@ -309,6 +343,10 @@
 			 * @param {Array} ignoreItems
 			 */
 			this.putItem = function(item, row, column, ignoreItems) {
+				// register instance for programmatically calls
+				if (this.itemInstances.indexOf(item) === -1) {
+					this.itemInstances.push(item);
+				}
 				// auto place item if no row specified
 				if (typeof row === 'undefined' || row === null) {
 					row = item.row;
@@ -614,7 +652,9 @@
 	.directive('gridster', ['$timeout', '$window', '$rootScope', 'gridsterDebounce',
 		function($timeout, $window, $rootScope, gridsterDebounce) {
 			return {
-				scope: true,
+				scope: {
+					delegateHandle: "@",
+				},
 				restrict: 'EAC',
 				controller: 'GridsterCtrl',
 				controllerAs: 'gridster',
