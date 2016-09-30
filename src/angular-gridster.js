@@ -1398,7 +1398,7 @@
 					gridster.updateHeight(item.sizeY);
 					scope.$apply(function() {
 						if (gridster.draggable && gridster.draggable.start) {
-							gridster.draggable.start(event, $el, itemOptions);
+							gridster.draggable.start(event, $el, itemOptions, item);
 						}
 					});
 				}
@@ -1778,7 +1778,7 @@
 					if (hasCallback || isChanged) {
 						scope.$apply(function() {
 							if (hasCallback) {
-								gridster.resizable.resize(e, $el, itemOptions); // options is the item model
+								gridster.resizable.resize(e, $el, itemOptions, item); // options is the item model
 							}
 						});
 					}
