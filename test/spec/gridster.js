@@ -60,6 +60,7 @@ describe('GridsterCtrl', function() {
 			expect(GridsterCtrl.mobileBreakPoint).toBe(600);
 			expect(GridsterCtrl.resizable.enabled).toBe(true);
 			expect(GridsterCtrl.draggable.enabled).toBe(true);
+			expect(GridsterCtrl.dynamicColumns).toBe(false);
 		});
 
 		// todo: move these to e2e test
