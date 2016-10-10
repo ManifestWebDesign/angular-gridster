@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 		},
 		connect: {
 			options: {
-				port: 9000,
+				port: 9001,
 				hostname: 'localhost'
 			},
 			dev: {
@@ -100,7 +100,7 @@ module.exports = function(grunt) {
 					].join('\n')
 				},
 				files: {
-					'dist/angular-gridster.min.js': ['src/angular-gridster.js']
+					'dist/angular-gridster.min.js': ['src/angular-gridster.module.js', 'src/**/*.js']
 				}
 			}
 		},
