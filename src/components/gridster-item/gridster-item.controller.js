@@ -1,7 +1,7 @@
-(function(angular) {
+(function(angular, _) {
 	'use strict';
 
-	angular.module('gridster').controller('GridsterItemCtrl', function() {
+	angular.module('gridster').controller('GridsterItemCtrl', ['GridsterViewport', function(GridsterViewport) {
 		this.$element = null;
 		this.gridster = null;
 		this.row = null;
@@ -18,12 +18,40 @@
 			this.gridster = gridster;
 			this.sizeX = gridster.defaultSizeX;
 			this.sizeY = gridster.defaultSizeY;
+			this.gridsterViewport = new GridsterViewport($element);
 		};
 
 		this.destroy = function() {
 			// set these to null to avoid the possibility of circular references
 			this.gridster = null;
 			this.$element = null;
+			this.gridsterViewport.destroy();
+			this.gridsterViewport = null;
+		};
+
+		/**
+		 * Will update the viewport status of the instance and notify
+		 * the $elements' scope.
+		 */
+		this.viewportNotify = function() {
+			this.gridsterViewport.identify().notify(this);
+		};
+
+		/**
+		 * Will determine if $element is visible in viewport
+		 * @returns {boolean}
+		 */
+		this.isVisible = function() {
+			return this.gridsterViewport.isVisible();
+		};
+
+		/**
+		 * Will determine if $element is visible in the viewport
+		 * for the first time.
+		 * @returns {boolean}
+		 */
+		this.isFirstTimeVisible = function() {
+			return this.gridsterViewport.isFirstTimeVisible();
 		};
 
 		/**
@@ -189,5 +217,5 @@
 			return (this.sizeY * this.gridster.curRowHeight - this.gridster.margins[0]);
 		};
 
-	});
-})(window.angular);
+	}]);
+})(window.angular, window._);

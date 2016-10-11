@@ -2,8 +2,8 @@
 	'use strict';
 
 	angular.module('gridster')
-		.controller('GridsterCtrl', ['gridsterConfig', '$timeout',
-			function(gridsterConfig, $timeout) {
+		.controller('GridsterCtrl', ['gridsterConfig', '$injector',
+			function(gridsterConfig, $injector) {
 
 				var gridster = this;
 
@@ -21,7 +21,7 @@
 						return;
 					}
 					flag = true;
-					$timeout(function() {
+					$injector.get('$timeout')(function() {
 						flag = false;
 						if (gridster.loaded) {
 							gridster.floatItemsUp();
@@ -563,6 +563,21 @@
 					}
 
 					return Math.round(pixels / this.curColWidth);
+				};
+
+				/**
+				 * Callback for scroll event. Will call viewportNotify on all elements
+				 * placed inside the grid
+				 */
+				this.onScroll_ = function() {
+					_.chain(gridster)
+						.get('grid')
+						.flattenDeep()
+						.compact()
+						.forEach(function(item) {
+							item.viewportNotify();
+						})
+						.valueOf();
 				};
 			}
 		]);

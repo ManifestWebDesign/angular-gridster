@@ -1,4 +1,4 @@
-(function(angular) {
+(function(angular, _) {
 	'use strict';
 	/**
 	 * The gridster directive
@@ -189,10 +189,18 @@
 							var $win = angular.element($window);
 							$win.on('resize', onResize);
 
+							var onScroll = _.throttle(gridster.onScroll_, 1000, {
+								leading: true,
+								trailing: true
+							});
+
+							$win.on('scroll', onScroll);
+
 							// be sure to cleanup
 							scope.$on('$destroy', function() {
 								gridster.destroy();
 								$win.off('resize', onResize);
+								$win.off('scroll', onScroll);
 								if (typeof window.removeResizeListener === 'function') {
 									window.removeResizeListener($elem[0], onResize);
 								}
@@ -202,6 +210,7 @@
 							$timeout(function() {
 								scope.$watch('gridster.floating', function() {
 									gridster.floatItemsUp();
+									onScroll();
 								});
 								gridster.loaded = true;
 							}, 100);
@@ -210,4 +219,4 @@
 				};
 			}
 		]);
-})(window.angular);
+})(window.angular, window._);
