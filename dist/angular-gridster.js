@@ -2107,6 +2107,7 @@
 							}
 						}
 					}
+					this.onScroll();
 				};
 
 				/**
@@ -2205,6 +2206,7 @@
 				/**
 				 * Callback for scroll event. Will call viewportNotify on all elements
 				 * placed inside the grid
+				 * @private
 				 */
 				this.onScroll_ = function() {
 					_.chain(gridster)
@@ -2216,6 +2218,11 @@
 						})
 						.valueOf();
 				};
+
+				this.onScroll = _.throttle(gridster.onScroll_, 1000, {
+					leading: true,
+					trailing: true
+				});
 			}
 		]);
 })(window.angular);
@@ -2411,18 +2418,13 @@
 							var $win = angular.element($window);
 							$win.on('resize', onResize);
 
-							var onScroll = _.throttle(gridster.onScroll_, 1000, {
-								leading: true,
-								trailing: true
-							});
-
-							$win.on('scroll', onScroll);
+							$win.on('scroll', gridster.onScroll);
 
 							// be sure to cleanup
 							scope.$on('$destroy', function() {
 								gridster.destroy();
 								$win.off('resize', onResize);
-								$win.off('scroll', onScroll);
+								$win.off('scroll', gridster.onScroll);
 								if (typeof window.removeResizeListener === 'function') {
 									window.removeResizeListener($elem[0], onResize);
 								}
@@ -2432,7 +2434,6 @@
 							$timeout(function() {
 								scope.$watch('gridster.floating', function() {
 									gridster.floatItemsUp();
-									onScroll();
 								});
 								gridster.loaded = true;
 							}, 100);
