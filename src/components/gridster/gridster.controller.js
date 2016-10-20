@@ -470,6 +470,7 @@
 							}
 						}
 					}
+					this.onScroll();
 				};
 
 				/**
@@ -568,6 +569,7 @@
 				/**
 				 * Callback for scroll event. Will call viewportNotify on all elements
 				 * placed inside the grid
+				 * @private
 				 */
 				this.onScroll_ = function() {
 					_.chain(gridster)
@@ -579,6 +581,11 @@
 						})
 						.valueOf();
 				};
+
+				this.onScroll = _.throttle(gridster.onScroll_, 1000, {
+					leading: true,
+					trailing: true
+				});
 			}
 		]);
 })(window.angular);
