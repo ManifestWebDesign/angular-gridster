@@ -1509,6 +1509,11 @@
 
 		        function dragStart(event) {
 		            $el.addClass('gridster-item-moving');
+		            if (gridster.resizeOnMove) {
+		                $el.css({
+		                    'opacity': '0.5'
+		                });
+		            }
 		            gridster.movingItem = item;
 
 		            dragStartSizeX = item.sizeX;
@@ -1715,6 +1720,11 @@
 
 		        function dragStop(event) {
 		            $el.removeClass('gridster-item-moving');
+		            if (gridster.resizeOnMove) {
+		                $el.css({
+		                    'opacity': '1.0'
+		                });
+		            }
 		            var row = gridster.pixelsToRows(elmY);
 		            var col = gridster.pixelsToColumns(elmX);
 		            if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
