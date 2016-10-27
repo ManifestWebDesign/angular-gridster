@@ -1183,14 +1183,16 @@
 						};
 
 						// IE pointer model
-						if (target.msSetPointerCapture && prevent) {
-							target.msSetPointerCapture(pointerId);
-						} else if (theEvtObj.type === 'mousedown' && numberOfKeys(lastXYById) === 1) {
-							if (useSetReleaseCapture) {
-								target.setCapture(true);
-							} else {
-								document.addEventListener('mousemove', doEvent, false);
-								document.addEventListener('mouseup', doEvent, false);
+						if(prevent){
+							if (target.msSetPointerCapture) {
+								target.msSetPointerCapture(pointerId);
+							} else if (theEvtObj.type === 'mousedown' && numberOfKeys(lastXYById) === 1) {
+								if (useSetReleaseCapture) {
+									target.setCapture(true);
+								} else {
+									document.addEventListener('mousemove', doEvent, false);
+									document.addEventListener('mouseup', doEvent, false);
+								}
 							}
 						}
 					} else if (theEvtObj.type.match(/move$/i)) {
