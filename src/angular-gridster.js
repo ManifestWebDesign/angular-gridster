@@ -1376,7 +1376,7 @@
 		function ($document, $window, GridsterTouch) {
 		    function GridsterDraggable($el, scope, gridster, item, itemOptions) {
 
-		        var elmX, elmY, elmW, elmH,
+		        var elmX, elmStartX, elmY, elmStartY, elmW, elmH,
 					mouseX = 0,
 					mouseY = 0,
 					lastMouseX = 0,
@@ -1429,7 +1429,9 @@
 		            lastMouseY = e.pageY;
 
 		            elmX = parseInt($el.css('left'), 10);
+		            elmStartX = parseInt($el.css('left'), 10);
 		            elmY = parseInt($el.css('top'), 10);
+		            elmStartY = parseInt($el.css('top'), 10);
 		            elmW = $el[0].offsetWidth;
 		            elmH = $el[0].offsetHeight;
 
@@ -1484,6 +1486,13 @@
 		            elmX += diffX;
 		            elmY += diffY;
 
+
+		            if (gridster.resizeOnMove && (elmX !== elmStartX || elmY !== elmStartY)) {
+		                $el.css({
+		                    'opacity': '0.5'
+		                });
+		            }
+
 		            // set new position
 		            $el.css({
 		                'top': elmY + 'px',
@@ -1509,11 +1518,6 @@
 
 		        function dragStart(event) {
 		            $el.addClass('gridster-item-moving');
-		            if (gridster.resizeOnMove) {
-		                $el.css({
-		                    'opacity': '0.5'
-		                });
-		            }
 		            gridster.movingItem = item;
 
 		            dragStartSizeX = item.sizeX;
