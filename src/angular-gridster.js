@@ -1638,9 +1638,12 @@
 		                var yChanged = false;
 		                var xChanged = false;
 
+		                var minSizeX = item.minSizeX ? (item.minSizeX < gridster.minSizeX ? gridster.minSizeX : item.minSizeX) : gridster.minSizeX;
+		                var minSizeY = item.minSizeY ? (item.minSizeY < gridster.minSizeY ? gridster.minSizeY : item.minSizeY) : gridster.minSizeY;
+
 		                if (itemInTheWay.row <= row + item.sizeY && itemInTheWay.row + itemInTheWay.sizeY >= row) {
-		                    if (row < itemInTheWay.row && row + gridster.minSizeY - 1 < itemInTheWay.row) {
-		                        while (itemInTheWay.row < row + item.sizeY && item.sizeY > gridster.minSizeY) {
+		                    if (row < itemInTheWay.row && row + minSizeY - 1 < itemInTheWay.row) {
+		                        while (itemInTheWay.row < row + item.sizeY && item.sizeY > minSizeY) {
 		                            item.sizeY--;
 		                            yChanged = true;
 		                        }
@@ -1649,8 +1652,8 @@
 
 		                if (!yChanged) {
 		                    if (itemInTheWay.row <= row + item.sizeY && itemInTheWay.row + itemInTheWay.sizeY >= row) {
-		                        if (col < itemInTheWay.col && col + gridster.minSizeX - 1 < itemInTheWay.col) {
-		                            while (itemInTheWay.col < col + item.sizeX && item.sizeX > gridster.minSizeX) {
+		                        if (col < itemInTheWay.col && col + minSizeX - 1 < itemInTheWay.col) {
+		                            while (itemInTheWay.col < col + item.sizeX && item.sizeX > minSizeX) {
 		                                item.sizeX--;
 		                                xChanged = true;
 		                            }
@@ -1660,7 +1663,7 @@
 
 		                if (!yChanged && !xChanged) {
 		                    if (itemInTheWay.row <= row + item.sizeY && itemInTheWay.row + itemInTheWay.sizeY >= row) {
-		                        if (row >= itemInTheWay.row && itemInTheWay.row + itemInTheWay.sizeY - 2 + gridster.minSizeY <= gridster.rows) {
+		                        if (row >= itemInTheWay.row && itemInTheWay.row + itemInTheWay.sizeY - 2 + minSizeY <= gridster.rows) {
 		                            while (itemInTheWay.row + itemInTheWay.sizeY - 1 >= row) {
 		                                row++;
 		                                yChanged = true;
@@ -1674,7 +1677,7 @@
 
 		                if (!yChanged && !xChanged) {
 		                    if (itemInTheWay.row <= row + item.sizeY && itemInTheWay.row + itemInTheWay.sizeY >= row) {
-		                        if (col >= itemInTheWay.col && itemInTheWay.col + itemInTheWay.sizeX + gridster.minSizeX <= gridster.columns) {
+		                        if (col >= itemInTheWay.col && itemInTheWay.col + itemInTheWay.sizeX + minSizeX <= gridster.columns) {
 		                            while (itemInTheWay.col + itemInTheWay.sizeX - 1 >= col) {
 		                                col++;
 		                            }
@@ -1685,7 +1688,7 @@
 		                    }
 		                }
 		            }
-		            if (item.sizeX < gridster.minSizeX || item.sizeY < gridster.minSizeY || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length > 0) {
+		            if (item.sizeX < minSizeX || item.sizeY < minSizeY || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length > 0) {
 		                row = item.oldRow;
 		                col = item.oldColumn;
 		                item.sizeY = item.oldSizeY;
@@ -1693,13 +1696,13 @@
 		                gridster.putItem(item, row, col);
 		            } else {
 		                while (col + item.sizeX > gridster.columns) {
-		                    if (col + gridster.minSizeX > gridster.columns) {
+		                    if (col + minSizeX > gridster.columns) {
 		                        col--;
 		                    }
 		                    item.sizeX--;
 		                }
 		                while (row + item.sizeY > gridster.rows) {
-		                    if (row + gridster.minSizeX > gridster.rows) {
+		                    if (row + minSizeY > gridster.rows) {
 		                        row--;
 		                    }
 		                    item.sizeY--;
