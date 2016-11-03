@@ -1635,7 +1635,7 @@
 		            var itemsInTheWay = gridster.getItems(row, col, item.sizeX, item.sizeY, item);
 		            for (var i = 0, l = itemsInTheWay.length; i < l; ++i) {
 		                var itemInTheWay = itemsInTheWay[i];
-		                var yChanged = false;
+		                var yChanged = false; 
 		                var xChanged = false;
 
 		                var minSizeX = item.minSizeX ? (item.minSizeX < gridster.minSizeX ? gridster.minSizeX : item.minSizeX) : gridster.minSizeX;
