@@ -1720,12 +1720,15 @@
 		        }
 
 		        function tryResizeAtEdge(row, col) {
+		            var minSizeX = item.minSizeX ? (item.minSizeX < gridster.minSizeX ? gridster.minSizeX : item.minSizeX) : gridster.minSizeX;
+		            var minSizeY = item.minSizeY ? (item.minSizeY < gridster.minSizeY ? gridster.minSizeY : item.minSizeY) : gridster.minSizeY;
+
 		            if (gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
-		                while (row + item.sizeY > gridster.rows) {
+		                while (row + item.sizeY > gridster.rows && item.sizeY > minSizeY) {
 		                    item.row++;
 		                    item.sizeY--;
 		                }
-		                while (col + item.sizeX > gridster.columns) {
+		                while (col + item.sizeX > gridster.columns && item.sizeX > minSizeX) {
 		                    item.col++;
 		                    item.sizeX--;
 		                }
