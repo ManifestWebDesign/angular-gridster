@@ -1376,7 +1376,7 @@
 		function ($document, $window, GridsterTouch) {
 		    function GridsterDraggable($el, scope, gridster, item, itemOptions) {
 
-		        var elmX, elmStartX, elmY, elmStartY, elmW, elmH,
+		        var elmX, elmY, elmW, elmH, mouseStartOffsetX, mouseStartOffsetY,
 					mouseX = 0,
 					mouseY = 0,
 					lastMouseX = 0,
@@ -1429,12 +1429,11 @@
 		            lastMouseY = e.pageY;
 
 		            elmX = parseInt($el.css('left'), 10);
-		            elmStartX = parseInt($el.css('left'), 10);
 		            elmY = parseInt($el.css('top'), 10);
-		            elmStartY = parseInt($el.css('top'), 10);
 		            elmW = $el[0].offsetWidth;
 		            elmH = $el[0].offsetHeight;
-
+		            mouseStartOffsetX = lastMouseX - elmX;
+		            mouseStartOffsetY = lastMouseY - elmY;
 		            originalCol = item.col;
 		            originalRow = item.row;
 
@@ -1471,23 +1470,23 @@
 		            if (elmX + dX < minLeft) {
 		                diffX = minLeft - elmX;
 		                mOffX = dX - diffX;
-		            } else if (elmX + (gridster.resizeOnMove ? gridster.minSizeX * gridster.curColWidth : elmW) + dX > maxLeft) {
-		                diffX = maxLeft - elmX - (gridster.resizeOnMove ? gridster.minSizeX * gridster.curColWidth : elmW);
+		            } else if (elmX + elmW + dX > maxLeft) {
+		                diffX = maxLeft - elmX - elmW;
 		                mOffX = dX - diffX;
 		            }
 
 		            if (elmY + dY < minTop) {
 		                diffY = minTop - elmY;
 		                mOffY = dY - diffY;
-		            } else if (elmY + (gridster.resizeOnMove ? gridster.minSizeY * gridster.curRowHeight : elmH) + dY > maxTop) {
-		                diffY = maxTop - elmY - (gridster.resizeOnMove ? gridster.minSizeX * gridster.curRowHeight : elmH);
+		            } else if (elmY + elmH + dY > maxTop) {
+		                diffY = maxTop - elmY - elmH;
 		                mOffY = dY - diffY;
 		            }
 		            elmX += diffX;
 		            elmY += diffY;
 
 
-		            if (gridster.resizeOnMove && (elmX !== elmStartX || elmY !== elmStartY)) {
+		            if (gridster.resizeOnMove) {
 		                $el.css({
 		                    'opacity': '0.5'
 		                });
@@ -1541,6 +1540,24 @@
 
 		            var row = gridster.pixelsToRows(elmY);
 		            var col = gridster.pixelsToColumns(elmX);
+		            if (gridster.resizeOnMove) {
+		                col = gridster.pixelsToColumns(event.pageX - mouseStartOffsetX);
+		                row = gridster.pixelsToRows(event.pageY - mouseStartOffsetY);
+
+		                if (col < 0) {
+		                    col = 0;
+		                } else if (col + gridster.minSizeX > gridster.columns) {
+		                    col = gridster.columns - gridster.minSizeX;
+		                }
+		                if (row < 0) {
+		                    row = 0;
+		                } else if (row + gridster.minSizeY > gridster.rows) {
+		                    row = gridster.rows - gridster.minSizeY;
+		                }
+		            } else {
+		                var row = gridster.pixelsToRows(elmY);
+		                var col = gridster.pixelsToColumns(elmX);
+		            }
 
 		            var itemsInTheWay = gridster.getItems(row, col, item.sizeX, item.sizeY, item);
 		            var hasItemsInTheWay = itemsInTheWay.length !== 0;
@@ -1729,17 +1746,41 @@
 		                    'opacity': '1.0'
 		                });
 		            }
-		            var row = gridster.pixelsToRows(elmY);
-		            var col = gridster.pixelsToColumns(elmX);
+		            var row = 0;
+		            var col = 0;
+		            if (gridster.resizeOnMove) {
+		                col = gridster.pixelsToColumns(event.pageX - mouseStartOffsetX);
+		                row = gridster.pixelsToRows(event.pageY - mouseStartOffsetY);
+
+		                if (col < 0) {
+		                    col = 0;
+		                } else if (col + gridster.minSizeX > gridster.columns) {
+		                    col = gridster.columns - gridster.minSizeX;
+		                }
+		                if (row < 0) {
+		                    row = 0;
+		                } else if (row + gridster.minSizeY > gridster.rows) {
+		                    row = gridster.rows - gridster.minSizeY;
+		                }
+		            } else {
+		                row = gridster.pixelsToRows(elmY);
+		                col = gridster.pixelsToColumns(elmX);
+		            }
 		            if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
 		                item.row = row;
 		                item.col = col;
 		            }
 		            var elementResized = dragStartSizeX !== item.sizeX || dragStartSizeY !== item.sizeY;
 		            gridster.movingItem = null;
-		            item.setPosition(item.row, item.col);
-		            item.setSizeY(item.sizeY);
-		            item.setSizeX(item.sizeX);
+		            if (gridster.resizeOnMove) {
+		                item.setSizeY(item.sizeY);
+		                item.setSizeX(item.sizeX);
+		                item.setPosition(item.row, item.col);
+		            } else {
+		                item.setPosition(item.row, item.col);
+		                item.setSizeY(item.sizeY);
+		                item.setSizeX(item.sizeX);
+		            }
 
 		            scope.$apply(function () {
 		                if (gridster.draggable && gridster.draggable.stop) {
