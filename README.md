@@ -288,11 +288,11 @@ scope.$on('gridster-item-drag-start', function(item) {
 })
 ```
 
-#### gridster-item-drag-stop
-Once a user stops dragging an item Gridster broadcasts the event 'gridster-item-drag-stop'. This is broadcasted before any transitions have completed. You can listen for it like this from within the gridster-item directive:
+#### gridster-item-drag-end
+Once a user stops dragging an item Gridster broadcasts the event 'gridster-item-drag-end'. This is broadcasted before any transitions have completed. You can listen for it like this from within the gridster-item directive:
 
 ```js
-scope.$on('gridster-item-drag-stop', function(item) {
+scope.$on('gridster-item-drag-end', function(item) {
     // item.$element
     // item.gridster
     // item.row
