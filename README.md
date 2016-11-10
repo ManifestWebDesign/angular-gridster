@@ -234,6 +234,78 @@ scope.$on('gridster-resized', function(sizes, gridster) {
 
 ## Gridster Item Events
 
+#### gridster-item-resize-start
+Once a user begins to resize an item Gridster broadcasts the event 'gridster-item-resize-start'.  You can listen for it like this from within the gridster-item directive:
+
+```js
+scope.$on('gridster-item-resize-start', function(item) {
+    // item.$element
+    // item.gridster
+    // item.row
+    // item.col
+    // item.sizeX
+    // item.sizeY
+    // item.minSizeX
+    // item.minSizeY
+    // item.maxSizeX
+    // item.maxSizeY
+})
+```
+
+#### gridster-item-resize-end
+Once a user stops resizing an item Gridster broadcasts the event 'gridster-item-resize-end'. This is broadcasted before any transitions have completed. You can listen for it like this from within the gridster-item directive:
+
+```js
+scope.$on('gridster-item-resize-end', function(item) {
+    // item.$element
+    // item.gridster
+    // item.row
+    // item.col
+    // item.sizeX
+    // item.sizeY
+    // item.minSizeX
+    // item.minSizeY
+    // item.maxSizeX
+    // item.maxSizeY
+})
+```
+
+#### gridster-item-drag-start
+Once a user begins to drag an item Gridster broadcasts the event 'gridster-item-drag-start'. You can listen for it like this from within the gridster-item directive:
+
+```js
+scope.$on('gridster-item-drag-start', function(item) {
+    // item.$element
+    // item.gridster
+    // item.row
+    // item.col
+    // item.sizeX
+    // item.sizeY
+    // item.minSizeX
+    // item.minSizeY
+    // item.maxSizeX
+    // item.maxSizeY
+})
+```
+
+#### gridster-item-drag-stop
+Once a user stops dragging an item Gridster broadcasts the event 'gridster-item-drag-stop'. This is broadcasted before any transitions have completed. You can listen for it like this from within the gridster-item directive:
+
+```js
+scope.$on('gridster-item-drag-stop', function(item) {
+    // item.$element
+    // item.gridster
+    // item.row
+    // item.col
+    // item.sizeX
+    // item.sizeY
+    // item.minSizeX
+    // item.minSizeY
+    // item.maxSizeX
+    // item.maxSizeY
+})
+```
+
 #### gridster-item-transition-end
 Gridster items have CSS transitions by default.  Gridster items listen for css transition-end across different browsers and broadcast the event 'gridster-item-transition-end'.  You can listen for it like this from within the gridster-item directive:
 
