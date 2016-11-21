@@ -184,11 +184,9 @@
 						realdocument.body.scrollLeft = realdocument.body.scrollLeft + scrollSpeed;
 					}
 
-					if (hasCallback || oldRow !== item.row || oldCol !== item.col) {
+					if (hasCallback && (oldRow !== item.row || oldCol !== item.col)) {
 						scope.$apply(function() {
-							if (hasCallback) {
-								gridster.draggable.drag(event, $el, itemOptions, item);
-							}
+							gridster.draggable.drag(event, $el, itemOptions, item);
 						});
 					}
 				}
@@ -204,11 +202,11 @@
 					gridster.movingItem = null;
 					item.setPosition(item.row, item.col);
 
-					scope.$apply(function() {
-						if (gridster.draggable && gridster.draggable.stop) {
+					if (_.chain(gridster).get('draggable.stop').isFunction().valueOf()) {
+						scope.$apply(function() {
 							gridster.draggable.stop(event, $el, itemOptions, item);
-						}
-					});
+						});
+					}
 				}
 
 				function mouseDown(e) {
@@ -288,7 +286,7 @@
 					return true;
 				}
 
-				function mouseMove(e) {
+				var mouseMove = _.throttle(function(e) {
 					if (!$el.hasClass('gridster-item-moving') || $el.hasClass('gridster-item-resizing')) {
 						return false;
 					}
@@ -338,7 +336,10 @@
 					drag(e);
 
 					return true;
-				}
+				}, 100, {
+					leading: true,
+					trailing: true
+				});
 
 				function mouseUp(e) {
 					if (!$el.hasClass('gridster-item-moving') || $el.hasClass('gridster-item-resizing')) {
@@ -869,12 +870,11 @@
 					item.setElementPosition();
 					gridster.updateHeight(1);
 
-					scope.$apply(function() {
-						// callback
-						if (gridster.resizable && gridster.resizable.start) {
+					if (_.chain(gridster).get('resizable.start').isFunction().valueOf()) {
+						scope.$apply(function() {
 							gridster.resizable.start(e, $el, itemOptions, item); // options is the item model
-						}
-					});
+						});
+					}
 				}
 
 				function resize(e) {
@@ -918,11 +918,9 @@
 					}
 					var isChanged = item.row !== oldRow || item.col !== oldCol || item.sizeX !== oldSizeX || item.sizeY !== oldSizeY;
 
-					if (hasCallback || isChanged) {
+					if (hasCallback && isChanged) {
 						scope.$apply(function() {
-							if (hasCallback) {
-								gridster.resizable.resize(e, $el, itemOptions, item); // options is the item model
-							}
+							gridster.resizable.resize(e, $el, itemOptions, item); // options is the item model
 						});
 					}
 				}
@@ -937,11 +935,11 @@
 					item.setSizeY(item.sizeY);
 					item.setSizeX(item.sizeX);
 
-					scope.$apply(function() {
-						if (gridster.resizable && gridster.resizable.stop) {
+					if (_.chain(gridster).get('resizable.stop').isFunction().valueOf()) {
+						scope.$apply(function() {
 							gridster.resizable.stop(e, $el, itemOptions, item); // options is the item model
-						}
-					});
+						});
+					}
 				}
 
 				function mouseDown(e) {
