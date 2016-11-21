@@ -120,12 +120,12 @@
 					}
 					gridster.movingItem = null;
 					item.setPosition(item.row, item.col);
-
-					scope.$apply(function() {
-						if (gridster.draggable && gridster.draggable.stop) {
+					// Call scope.$apply only if there's a callback
+					if (_.chain(gridster).get('draggable.stop').isFunction().valueOf()) {
+						scope.$apply(function() {
 							gridster.draggable.stop(event, $el, itemOptions, item);
-						}
-					});
+						});
+					}
 				}
 
 				function mouseDown(e) {
