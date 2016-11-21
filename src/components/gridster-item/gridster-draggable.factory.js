@@ -203,7 +203,7 @@
 					return true;
 				}
 
-				function mouseMove(e) {
+				var mouseMove = _.throttle(function(e) {
 					if (!$el.hasClass('gridster-item-moving') || $el.hasClass('gridster-item-resizing')) {
 						return false;
 					}
@@ -253,7 +253,10 @@
 					drag(e);
 
 					return true;
-				}
+				}, 100, {
+					leading: true,
+					trailing: true
+				});
 
 				function mouseUp(e) {
 					if (!$el.hasClass('gridster-item-moving') || $el.hasClass('gridster-item-resizing')) {
