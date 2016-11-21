@@ -101,11 +101,9 @@
 						realdocument.body.scrollLeft = realdocument.body.scrollLeft + scrollSpeed;
 					}
 
-					if (hasCallback || oldRow !== item.row || oldCol !== item.col) {
+					if (hasCallback && (oldRow !== item.row || oldCol !== item.col)) {
 						scope.$apply(function() {
-							if (hasCallback) {
-								gridster.draggable.drag(event, $el, itemOptions, item);
-							}
+							gridster.draggable.drag(event, $el, itemOptions, item);
 						});
 					}
 				}
@@ -120,7 +118,7 @@
 					}
 					gridster.movingItem = null;
 					item.setPosition(item.row, item.col);
-					// Call scope.$apply only if there's a callback
+
 					if (_.chain(gridster).get('draggable.stop').isFunction().valueOf()) {
 						scope.$apply(function() {
 							gridster.draggable.stop(event, $el, itemOptions, item);
