@@ -42,12 +42,11 @@
 					item.setElementPosition();
 					gridster.updateHeight(1);
 
-					scope.$apply(function() {
-						// callback
-						if (gridster.resizable && gridster.resizable.start) {
+					if (_.chain(gridster).get('resizable.start').isFunction().valueOf()) {
+						scope.$apply(function() {
 							gridster.resizable.start(e, $el, itemOptions, item); // options is the item model
-						}
-					});
+						});
+					}
 				}
 
 				function resize(e) {
@@ -91,11 +90,9 @@
 					}
 					var isChanged = item.row !== oldRow || item.col !== oldCol || item.sizeX !== oldSizeX || item.sizeY !== oldSizeY;
 
-					if (hasCallback || isChanged) {
+					if (hasCallback && isChanged) {
 						scope.$apply(function() {
-							if (hasCallback) {
-								gridster.resizable.resize(e, $el, itemOptions, item); // options is the item model
-							}
+							gridster.resizable.resize(e, $el, itemOptions, item); // options is the item model
 						});
 					}
 				}
@@ -110,11 +107,11 @@
 					item.setSizeY(item.sizeY);
 					item.setSizeX(item.sizeX);
 
-					scope.$apply(function() {
-						if (gridster.resizable && gridster.resizable.stop) {
+					if (_.chain(gridster).get('resizable.stop').isFunction().valueOf()) {
+						scope.$apply(function() {
 							gridster.resizable.stop(e, $el, itemOptions, item); // options is the item model
-						}
-					});
+						});
+					}
 				}
 
 				function mouseDown(e) {
