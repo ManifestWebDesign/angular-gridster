@@ -57,33 +57,6 @@
 (function(angular) {
 	'use strict';
 
-	angular.module('gridster').factory('gridsterDebounce', function() {
-		return function gridsterDebounce(func, wait, immediate) {
-			var timeout;
-			return function() {
-				var context = this,
-					args = arguments;
-				var later = function() {
-					timeout = null;
-					if (!immediate) {
-						func.apply(context, args);
-					}
-				};
-				var callNow = immediate && !timeout;
-				clearTimeout(timeout);
-				timeout = setTimeout(later, wait);
-				if (callNow) {
-					func.apply(context, args);
-				}
-			};
-		};
-	});
-
-})(window.angular);
-
-(function(angular) {
-	'use strict';
-
 	angular.module('gridster').factory('GridsterDraggable', ['$document', '$window', 'GridsterTouch',
 		function($document, $window, GridsterTouch) {
 			function GridsterDraggable($el, scope, gridster, item, itemOptions) {
@@ -629,10 +602,9 @@
 	 * @param $parse
 	 * @param GridsterDraggable
 	 * @param GridsterResizable
-	 * @param gridsterDebounce
 	 */
-	angular.module('gridster').directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable', 'gridsterDebounce',
-		function($parse, GridsterDraggable, GridsterResizable, gridsterDebounce) {
+	angular.module('gridster').directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable',
+		function($parse, GridsterDraggable, GridsterResizable) {
 			return {
 				scope: true,
 				restrict: 'EA',
@@ -796,11 +768,12 @@
 						}
 					}
 
-					var debouncedTransitionEndPublisher = gridsterDebounce(function() {
-						scope.$apply(function() {
-							scope.$broadcast('gridster-item-transition-end', item);
-						});
-					}, 50);
+					var debouncedTransitionEndPublisher = _.debounce(function() {
+						scope.$broadcast('gridster-item-transition-end', item);
+					}, 50, {
+						leading: false,
+						trailing: true
+					});
 
 					$el.on(whichTransitionEvent(), debouncedTransitionEndPublisher);
 
@@ -846,7 +819,7 @@
 					mOffY = 0,
 
 					minTop = 0,
-					maxTop = 9999,
+					maxTop = 999999,
 					minLeft = 0;
 
 				var getMinHeight = function() {
