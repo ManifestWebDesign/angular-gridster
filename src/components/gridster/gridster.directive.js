@@ -6,11 +6,10 @@
 	 * @param {Function} $timeout
 	 * @param {Object} $window
 	 * @param {Object} $rootScope
-	 * @param {Function} gridsterDebounce
 	 */
 	angular.module('gridster')
-		.directive('gridster', ['$timeout', '$window', '$rootScope', 'gridsterDebounce',
-			function($timeout, $window, $rootScope, gridsterDebounce) {
+		.directive('gridster', ['$timeout', '$window', '$rootScope',
+			function($timeout, $window, $rootScope) {
 				return {
 					scope: true,
 					restrict: 'EAC',
@@ -167,12 +166,12 @@
 							};
 
 							// track element width changes any way we can
-							var onResize = gridsterDebounce(function onResize() {
+							var onResize = _.debounce(function onResize() {
 								resize();
-								$timeout(function() {
-									scope.$apply();
-								});
-							}, 100);
+							}, 100, {
+								leading: false,
+								trailing: true
+							});
 
 							scope.$watch(function() {
 								return isVisible($elem[0]);
