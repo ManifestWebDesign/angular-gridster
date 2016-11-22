@@ -26,11 +26,11 @@
 					gridster.movingItem = item;
 
 					gridster.updateHeight(item.sizeY);
-					scope.$apply(function() {
-						if (gridster.draggable && gridster.draggable.start) {
+					if (_.chain(gridster).get('draggable.start').isFunction().valueOf()) {
+						scope.$apply(function() {
 							gridster.draggable.start(event, $el, itemOptions, item);
-						}
-					});
+						});
+					}
 				}
 
 				function drag(event) {
