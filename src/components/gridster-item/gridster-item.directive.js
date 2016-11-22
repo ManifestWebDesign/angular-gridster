@@ -174,7 +174,7 @@
 					var debouncedTransitionEndPublisher = _.debounce(function() {
 						scope.$broadcast('gridster-item-transition-end', item);
 					}, 50, {
-						leading: false,
+						leading: true,
 						trailing: true
 					});
 
