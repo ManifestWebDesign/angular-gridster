@@ -5,10 +5,9 @@
 	 * @param $parse
 	 * @param GridsterDraggable
 	 * @param GridsterResizable
-	 * @param gridsterDebounce
 	 */
-	angular.module('gridster').directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable', 'gridsterDebounce',
-		function($parse, GridsterDraggable, GridsterResizable, gridsterDebounce) {
+	angular.module('gridster').directive('gridsterItem', ['$parse', 'GridsterDraggable', 'GridsterResizable',
+		function($parse, GridsterDraggable, GridsterResizable) {
 			return {
 				scope: true,
 				restrict: 'EA',
@@ -172,11 +171,12 @@
 						}
 					}
 
-					var debouncedTransitionEndPublisher = gridsterDebounce(function() {
-						scope.$apply(function() {
-							scope.$broadcast('gridster-item-transition-end', item);
-						});
-					}, 50);
+					var debouncedTransitionEndPublisher = _.debounce(function() {
+						scope.$broadcast('gridster-item-transition-end', item);
+					}, 50, {
+						leading: false,
+						trailing: true
+					});
 
 					$el.on(whichTransitionEvent(), debouncedTransitionEndPublisher);
 
