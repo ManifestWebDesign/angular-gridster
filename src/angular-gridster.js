@@ -51,7 +51,8 @@
 		draggable: { // options to pass to draggable handler
 			enabled: true,
 			scrollSensitivity: 20, // Distance in pixels from the edge of the viewport after which the viewport should scroll, relative to pointer
-			scrollSpeed: 15 // Speed at which the window should scroll once the mouse pointer gets within scrollSensitivity distance
+			scrollSpeed: 15, // Speed at which the window should scroll once the mouse pointer gets within scrollSensitivity distance
+			element: 'widget-draggable' // Class that draggable part of widget must have
 		}
 	})
 
@@ -1509,6 +1510,11 @@
 					if ($target.hasClass('gridster-item-resizable-handler')) {
 						return false;
 					}
+					
+					//checking if user clciked on widgets dragged area
+					if (gridster.draggable.element && (!(e.target.classList.contains(gridster.draggable.element) || $(e.target).parents('.' + gridster.draggable.element).length))) {
+						return false;
+					}
 
 					// exit, if the target has it's own click event
 					if ($target.attr('onclick') || $target.attr('ng-click')) {
@@ -1944,7 +1950,7 @@
 						$dragHandle.remove();
 						$dragHandle = null;
 					}
-
+					
 					unifiedInput.disable();
 					unifiedInput = undefined;
 				};
