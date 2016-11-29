@@ -594,6 +594,8 @@
 					return Math.floor(pixels / this.curRowHeight);
 				}
 
+				pixels -= this.margins[0];
+
 				return Math.round(pixels / this.curRowHeight);
 			};
 
@@ -614,6 +616,8 @@
 				} else if (ceilOrFloor === false) {
 					return Math.floor(pixels / this.curColWidth);
 				}
+
+				pixels -= this.margins[1];
 
 				return Math.round(pixels / this.curColWidth);
 			};
