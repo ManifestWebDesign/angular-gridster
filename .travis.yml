@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-  - 0.10
+  - 4.2.1
 
 before_script:
   - export DISPLAY=:99.0
@@ -9,6 +9,7 @@ before_script:
   - npm install --quiet -g grunt-cli karma bower protractor
   - npm install
   - bower install
+  - node ./node_modules/grunt-protractor-runner/node_modules/protractor/bin/webdriver-manager update --standalone
   - node ./node_modules/grunt-protractor-runner/node_modules/protractor/bin/webdriver-manager start > /dev/null &
   - sleep 5
 

@@ -30,6 +30,7 @@
 		rowHeight: 'match', // height of grid rows. 'match' will make it the same as the column width, a numeric value will be interpreted as pixels, '/2' is half the column width, '*5' is five times the column width, etc.
 		margins: [10, 10], // margins in between grid items
 		outerMargin: true,
+		sparse: false, // "true" can increase performance of dragging and resizing for big grid (e.g. 20x50)
 		isMobile: false, // toggle mobile view
 		mobileBreakPoint: 600, // width threshold to toggle mobile mode
 		mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
@@ -77,7 +78,6 @@
 					flag = false;
 					if (gridster.loaded) {
 						gridster.floatItemsUp();
-						gridster.floatItemsLeft();
 					}
 					gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
 				}, 30);
@@ -87,6 +87,7 @@
 			 * A positional array of the items in the grid
 			 */
 			this.grid = [];
+			this.allItems = [];
 
 			/**
 			 * Clean up after yourself
@@ -98,6 +99,11 @@
 					this.grid = [];
 				}
 				this.$element = null;
+
+				if (this.allItems) {
+					this.allItems.length = 0;
+					this.allItems = null;
+				}
 			};
 
 			/**
@@ -186,10 +192,22 @@
 				if (excludeItems && !(excludeItems instanceof Array)) {
 					excludeItems = [excludeItems];
 				}
-				for (var h = 0; h < sizeY; ++h) {
-					for (var w = 0; w < sizeX; ++w) {
-						var item = this.getItem(row + h, column + w, excludeItems);
-						if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && items.indexOf(item) === -1) {
+				var item;
+				if (this.sparse === false) { // check all cells
+					for (var h = 0; h < sizeY; ++h) {
+						for (var w = 0; w < sizeX; ++w) {
+							item = this.getItem(row + h, column + w, excludeItems);
+							if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && items.indexOf(item) === -1) {
+								items.push(item);
+							}
+						}
+					}
+				} else { // check intersection with all items
+					var bottom = row + sizeY - 1;
+					var right = column + sizeX - 1;
+					for (var i = 0; i < this.allItems.length; ++i) {
+						item = this.allItems[i];
+						if (item && (!excludeItems || excludeItems.indexOf(item) === -1) && items.indexOf(item) === -1 && this.intersect(item, column, right, row, bottom)) {
 							items.push(item);
 						}
 					}
@@ -236,6 +254,23 @@
 				};
 			};
 
+			/**
+			 * Checks if item intersects specified box
+			 *
+			 * @param {object} item
+			 * @param {number} left
+			 * @param {number} right
+			 * @param {number} top
+			 * @param {number} bottom
+			 */
+
+			this.intersect = function(item, left, right, top, bottom) {
+				return (left <= item.col + item.sizeX - 1 &&
+					right >= item.col &&
+					top <= item.row + item.sizeY - 1 &&
+					bottom >= item.row);
+			};
+
 
 			/**
 			 * Removes an item from the grid
@@ -243,15 +278,22 @@
 			 * @param {Object} item
 			 */
 			this.removeItem = function(item) {
+				var index;
 				for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
 					var columns = this.grid[rowIndex];
 					if (!columns) {
 						continue;
 					}
-					var index = columns.indexOf(item);
+					index = columns.indexOf(item);
 					if (index !== -1) {
 						columns[index] = null;
 						break;
+					}
+				}
+				if (this.sparse) {
+					index = this.allItems.indexOf(item);
+					if (index !== -1) {
+						this.allItems.splice(index, 1);
 					}
 				}
 				this.layoutChanged();
@@ -353,9 +395,12 @@
 				}
 				this.grid[row][column] = item;
 
+				if (this.sparse && this.allItems.indexOf(item) === -1) {
+					this.allItems.push(item);
+				}
+
 				if (this.movingItem === item) {
 					this.floatItemUp(item);
-					this.floatItemLeft(item);
 				}
 				this.layoutChanged();
 			};
@@ -481,27 +526,6 @@
 			};
 
 			/**
-			 * Moves all items left as much as possible
-			 */
-			this.floatItemsLeft = function() {
-				if (this.floating === false) {
-					return;
-				}
-				for (var rowIndex = 0, l = this.grid.length; rowIndex < l; ++rowIndex) {
-					var columns = this.grid[rowIndex];
-					if (!columns) {
-						continue;
-					}
-					for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
-						var item = columns[colIndex];
-						if (item) {
-							this.floatItemLeft(item);
-						}
-					}
-				}
-			};
-
-			/**
 			 * Float an item up to the most suitable row
 			 *
 			 * @param {Object} item The item to move
@@ -527,36 +551,6 @@
 					--rowIndex;
 				}
 				if (bestRow !== null) {
-					this.putItem(item, bestRow, bestColumn);
-				}
-			};
-
-			/**
-			 * Float an item left to the most suitable column
-			 *
-			 * @param {Object} item The item to move
-			 */
-			this.floatItemLeft = function(item) {
-				if (this.floating === false) {
-					return;
-				}
-				var colIndex = item.col - 1,
-					sizeY = item.sizeY,
-					sizeX = item.sizeX,
-					bestRow = null,
-					bestColumn = null,
-					rowIndex = item.row;
-
-				while (colIndex > -1) {
-					var items = this.getItems(rowIndex, colIndex, sizeX, sizeY, item);
-					if (items.length !== 0) {
-						break;
-					}
-					bestRow = rowIndex;
-					bestColumn = colIndex;
-					--colIndex;
-				}
-				if (bestColumn !== null) {
 					this.putItem(item, bestRow, bestColumn);
 				}
 			};
@@ -688,6 +682,20 @@
 							return ele.style.visibility !== 'hidden' && ele.style.display !== 'none';
 						};
 
+						function updateHeight() {
+							$elem.css('height', (gridster.gridHeight * gridster.curRowHeight) + (gridster.outerMargin ? gridster.margins[0] : -gridster.margins[0]) + 'px');
+						}
+
+						scope.$watch(function() {
+							return gridster.gridHeight;
+						}, updateHeight);
+
+						scope.$watch(function() {
+							return gridster.movingItem;
+						}, function() {
+							gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
+						});
+
 						function refresh(config) {
 							gridster.setOptions(config);
 
@@ -755,6 +763,7 @@
 						}, function() {
 							if (gridster.loaded) {
 								$elem.addClass('gridster-loaded');
+								$rootScope.$broadcast('gridster-loaded', gridster);
 							} else {
 								$elem.removeClass('gridster-loaded');
 							}
@@ -782,20 +791,6 @@
 						}, function() {
 							$rootScope.$broadcast('gridster-resizable-changed', gridster);
 						}, true);
-
-						function updateHeight() {
-							$elem.css('height', (gridster.gridHeight * gridster.curRowHeight) + (gridster.outerMargin ? gridster.margins[0] : -gridster.margins[0]) + 'px');
-						}
-
-						scope.$watch(function() {
-							return gridster.gridHeight;
-						}, updateHeight);
-
-						scope.$watch(function() {
-							return gridster.movingItem;
-						}, function() {
-							gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
-						});
 
 						var prevWidth = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
 
@@ -856,7 +851,6 @@
 						$timeout(function() {
 							scope.$watch('gridster.floating', function() {
 								gridster.floatItemsUp();
-								gridster.floatItemsLeft();
 							});
 							gridster.loaded = true;
 						}, 100);
@@ -1103,6 +1097,7 @@
 
 			//  cache the delta from the document to our event target (reinitialized each mousedown/MSPointerDown/touchstart)
 			var documentToTargetDelta = computeDocumentToElementDelta(target);
+			var useSetReleaseCapture = false;
 
 			//  common event handler for the mouse/pointer/touch models and their down/start, move, up/end, and cancel events
 			var doEvent = function(theEvtObj) {
@@ -1188,7 +1183,7 @@
 						};
 
 						// IE pointer model
-						if (target.msSetPointerCapture) {
+						if (target.msSetPointerCapture && prevent) {
 							target.msSetPointerCapture(pointerId);
 						} else if (theEvtObj.type === 'mousedown' && numberOfKeys(lastXYById) === 1) {
 							if (useSetReleaseCapture) {
@@ -1265,7 +1260,6 @@
 				}
 			};
 
-			var useSetReleaseCapture = false;
 			// saving the settings for contentZooming and touchaction before activation
 			var contentZooming, msTouchAction;
 
@@ -1391,123 +1385,11 @@
 					mOffY = 0,
 
 					minTop = 0,
-					maxTop = 9999,
 					minLeft = 0,
 					realdocument = $document[0];
 
 				var originalCol, originalRow;
-				var inputTags = ['select', 'input', 'textarea', 'button'];
-
-				function mouseDown(e) {
-					if (inputTags.indexOf(e.target.nodeName.toLowerCase()) !== -1) {
-						return false;
-					}
-
-					var $target = angular.element(e.target);
-
-					// exit, if a resize handle was hit
-					if ($target.hasClass('gridster-item-resizable-handler')) {
-						return false;
-					}
-
-					// exit, if the target has it's own click event
-					if ($target.attr('onclick') || $target.attr('ng-click')) {
-						return false;
-					}
-
-					// only works if you have jQuery
-					if ($target.closest && $target.closest('.gridster-no-drag').length) {
-						return false;
-					}
-
-					switch (e.which) {
-						case 1:
-							// left mouse button
-							break;
-						case 2:
-						case 3:
-							// right or middle mouse button
-							return;
-					}
-
-					lastMouseX = e.pageX;
-					lastMouseY = e.pageY;
-
-					elmX = parseInt($el.css('left'), 10);
-					elmY = parseInt($el.css('top'), 10);
-					elmW = $el[0].offsetWidth;
-					elmH = $el[0].offsetHeight;
-
-					originalCol = item.col;
-					originalRow = item.row;
-
-					dragStart(e);
-
-					return true;
-				}
-
-				function mouseMove(e) {
-					if (!$el.hasClass('gridster-item-moving') || $el.hasClass('gridster-item-resizing')) {
-						return false;
-					}
-
-					var maxLeft = gridster.curWidth - 1;
-
-					// Get the current mouse position.
-					mouseX = e.pageX;
-					mouseY = e.pageY;
-
-					// Get the deltas
-					var diffX = mouseX - lastMouseX + mOffX;
-					var diffY = mouseY - lastMouseY + mOffY;
-					mOffX = mOffY = 0;
-
-					// Update last processed mouse positions.
-					lastMouseX = mouseX;
-					lastMouseY = mouseY;
-
-					var dX = diffX,
-						dY = diffY;
-					if (elmX + dX < minLeft) {
-						diffX = minLeft - elmX;
-						mOffX = dX - diffX;
-					} else if (elmX + elmW + dX > maxLeft) {
-						diffX = maxLeft - elmX - elmW;
-						mOffX = dX - diffX;
-					}
-
-					if (elmY + dY < minTop) {
-						diffY = minTop - elmY;
-						mOffY = dY - diffY;
-					} else if (elmY + elmH + dY > maxTop) {
-						diffY = maxTop - elmY - elmH;
-						mOffY = dY - diffY;
-					}
-					elmX += diffX;
-					elmY += diffY;
-
-					// set new position
-					$el.css({
-						'top': elmY + 'px',
-						'left': elmX + 'px'
-					});
-
-					drag(e);
-
-					return true;
-				}
-
-				function mouseUp(e) {
-					if (!$el.hasClass('gridster-item-moving') || $el.hasClass('gridster-item-resizing')) {
-						return false;
-					}
-
-					mOffX = mOffY = 0;
-
-					dragStop(e);
-
-					return true;
-				}
+				var inputTags = ['select', 'option', 'input', 'textarea', 'button'];
 
 				function dragStart(event) {
 					$el.addClass('gridster-item-moving');
@@ -1516,7 +1398,7 @@
 					gridster.updateHeight(item.sizeY);
 					scope.$apply(function() {
 						if (gridster.draggable && gridster.draggable.start) {
-							gridster.draggable.start(event, $el, itemOptions);
+							gridster.draggable.start(event, $el, itemOptions, item);
 						}
 					});
 				}
@@ -1528,8 +1410,8 @@
 						scrollSensitivity = gridster.draggable.scrollSensitivity,
 						scrollSpeed = gridster.draggable.scrollSpeed;
 
-					var row = gridster.pixelsToRows(elmY);
-					var col = gridster.pixelsToColumns(elmX);
+					var row = Math.min(gridster.pixelsToRows(elmY), gridster.maxRows - 1);
+					var col = Math.min(gridster.pixelsToColumns(elmX), gridster.columns - 1);
 
 					var itemsInTheWay = gridster.getItems(row, col, item.sizeX, item.sizeY, item);
 					var hasItemsInTheWay = itemsInTheWay.length !== 0;
@@ -1592,7 +1474,7 @@
 					if (hasCallback || oldRow !== item.row || oldCol !== item.col) {
 						scope.$apply(function() {
 							if (hasCallback) {
-								gridster.draggable.drag(event, $el, itemOptions);
+								gridster.draggable.drag(event, $el, itemOptions, item);
 							}
 						});
 					}
@@ -1600,8 +1482,8 @@
 
 				function dragStop(event) {
 					$el.removeClass('gridster-item-moving');
-					var row = gridster.pixelsToRows(elmY);
-					var col = gridster.pixelsToColumns(elmX);
+					var row = Math.min(gridster.pixelsToRows(elmY), gridster.maxRows - 1);
+					var col = Math.min(gridster.pixelsToColumns(elmX), gridster.columns - 1);
 					if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
 						item.row = row;
 						item.col = col;
@@ -1611,49 +1493,168 @@
 
 					scope.$apply(function() {
 						if (gridster.draggable && gridster.draggable.stop) {
-							gridster.draggable.stop(event, $el, itemOptions);
+							gridster.draggable.stop(event, $el, itemOptions, item);
 						}
 					});
 				}
 
+				function mouseDown(e) {
+					if (inputTags.indexOf(e.target.nodeName.toLowerCase()) !== -1) {
+						return false;
+					}
+
+					var $target = angular.element(e.target);
+
+					// exit, if a resize handle was hit
+					if ($target.hasClass('gridster-item-resizable-handler')) {
+						return false;
+					}
+
+					// exit, if the target has it's own click event
+					if ($target.attr('onclick') || $target.attr('ng-click')) {
+						return false;
+					}
+
+					// only works if you have jQuery
+					if ($target.closest && $target.closest('.gridster-no-drag').length) {
+						return false;
+					}
+
+					// apply drag handle filter
+					if (gridster.draggable && gridster.draggable.handle) {
+						var $dragHandles = angular.element($el[0].querySelectorAll(gridster.draggable.handle));
+						var match = false;
+						outerloop:
+							for (var h = 0, hl = $dragHandles.length; h < hl; ++h) {
+								var handle = $dragHandles[h];
+								if (handle === e.target) {
+									match = true;
+									break;
+								}
+								var target = e.target;
+								for (var p = 0; p < 20; ++p) {
+									var parent = target.parentNode;
+									if (parent === $el[0] || !parent) {
+										break;
+									}
+									if (parent === handle) {
+										match = true;
+										break outerloop;
+									}
+									target = parent;
+								}
+							}
+						if (!match) {
+							return false;
+						}
+					}
+
+					switch (e.which) {
+						case 1:
+							// left mouse button
+							break;
+						case 2:
+						case 3:
+							// right or middle mouse button
+							return;
+					}
+
+					lastMouseX = e.pageX;
+					lastMouseY = e.pageY;
+
+					elmX = parseInt($el.css('left'), 10);
+					elmY = parseInt($el.css('top'), 10);
+					elmW = $el[0].offsetWidth;
+					elmH = $el[0].offsetHeight;
+
+					originalCol = item.col;
+					originalRow = item.row;
+
+					dragStart(e);
+
+					return true;
+				}
+
+				function mouseMove(e) {
+					if (!$el.hasClass('gridster-item-moving') || $el.hasClass('gridster-item-resizing')) {
+						return false;
+					}
+
+					var maxLeft = gridster.curWidth - 1;
+					var maxTop = gridster.curRowHeight * gridster.maxRows - 1;
+
+					// Get the current mouse position.
+					mouseX = e.pageX;
+					mouseY = e.pageY;
+
+					// Get the deltas
+					var diffX = mouseX - lastMouseX + mOffX;
+					var diffY = mouseY - lastMouseY + mOffY;
+					mOffX = mOffY = 0;
+
+					// Update last processed mouse positions.
+					lastMouseX = mouseX;
+					lastMouseY = mouseY;
+
+					var dX = diffX,
+						dY = diffY;
+					if (elmX + dX < minLeft) {
+						diffX = minLeft - elmX;
+						mOffX = dX - diffX;
+					} else if (elmX + elmW + dX > maxLeft) {
+						diffX = maxLeft - elmX - elmW;
+						mOffX = dX - diffX;
+					}
+
+					if (elmY + dY < minTop) {
+						diffY = minTop - elmY;
+						mOffY = dY - diffY;
+					} else if (elmY + elmH + dY > maxTop) {
+						diffY = maxTop - elmY - elmH;
+						mOffY = dY - diffY;
+					}
+					elmX += diffX;
+					elmY += diffY;
+
+					// set new position
+					$el.css({
+						'top': elmY + 'px',
+						'left': elmX + 'px'
+					});
+
+					drag(e);
+
+					return true;
+				}
+
+				function mouseUp(e) {
+					if (!$el.hasClass('gridster-item-moving') || $el.hasClass('gridster-item-resizing')) {
+						return false;
+					}
+
+					mOffX = mOffY = 0;
+
+					dragStop(e);
+
+					return true;
+				}
+
 				var enabled = null;
-				var $dragHandles = null;
-				var unifiedInputs = [];
+				var gridsterTouch = null;
 
 				this.enable = function() {
 					if (enabled === true) {
 						return;
 					}
-
 					enabled = true;
 
-					// timeout required for some template rendering
-					$el.ready(function() {
-						if (enabled !== true) {
-							return;
-						}
+					if (gridsterTouch) {
+						gridsterTouch.enable();
+						return;
+					}
 
-						// disable any existing draghandles
-						for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
-							unifiedInputs[u].disable();
-						}
-						unifiedInputs = [];
-
-						if (gridster.draggable && gridster.draggable.handle) {
-							$dragHandles = angular.element($el[0].querySelectorAll(gridster.draggable.handle));
-							if ($dragHandles.length === 0) {
-								// fall back to element if handle not found...
-								$dragHandles = $el;
-							}
-						} else {
-							$dragHandles = $el;
-						}
-
-						for (var h = 0, hl = $dragHandles.length; h < hl; ++h) {
-							unifiedInputs[h] = new GridsterTouch($dragHandles[h], mouseDown, mouseMove, mouseUp);
-							unifiedInputs[h].enable();
-						}
-					});
+					gridsterTouch = new GridsterTouch($el[0], mouseDown, mouseMove, mouseUp);
+					gridsterTouch.enable();
 				};
 
 				this.disable = function() {
@@ -1662,12 +1663,9 @@
 					}
 
 					enabled = false;
-
-					for (var u = 0, ul = unifiedInputs.length; u < ul; ++u) {
-						unifiedInputs[u].disable();
+					if (gridsterTouch) {
+						gridsterTouch.disable();
 					}
-
-					unifiedInputs = [];
 				};
 
 				this.toggle = function(enabled) {
@@ -1717,6 +1715,92 @@
 				var originalWidth, originalHeight;
 				var savedDraggable;
 
+				function resizeStart(e) {
+					$el.addClass('gridster-item-moving');
+					$el.addClass('gridster-item-resizing');
+
+					gridster.movingItem = item;
+
+					item.setElementSizeX();
+					item.setElementSizeY();
+					item.setElementPosition();
+					gridster.updateHeight(1);
+
+					scope.$apply(function() {
+						// callback
+						if (gridster.resizable && gridster.resizable.start) {
+							gridster.resizable.start(e, $el, itemOptions, item); // options is the item model
+						}
+					});
+				}
+
+				function resize(e) {
+					var oldRow = item.row,
+						oldCol = item.col,
+						oldSizeX = item.sizeX,
+						oldSizeY = item.sizeY,
+						hasCallback = gridster.resizable && gridster.resizable.resize;
+
+					var col = item.col;
+					// only change column if grabbing left edge
+					if (['w', 'nw', 'sw'].indexOf(handleClass) !== -1) {
+						col = gridster.pixelsToColumns(elmX, false);
+					}
+
+					var row = item.row;
+					// only change row if grabbing top edge
+					if (['n', 'ne', 'nw'].indexOf(handleClass) !== -1) {
+						row = gridster.pixelsToRows(elmY, false);
+					}
+
+					var sizeX = item.sizeX;
+					// only change row if grabbing left or right edge
+					if (['n', 's'].indexOf(handleClass) === -1) {
+						sizeX = gridster.pixelsToColumns(elmW, true);
+					}
+
+					var sizeY = item.sizeY;
+					// only change row if grabbing top or bottom edge
+					if (['e', 'w'].indexOf(handleClass) === -1) {
+						sizeY = gridster.pixelsToRows(elmH, true);
+					}
+
+
+					var canOccupy = row > -1 && col > -1 && sizeX + col <= gridster.columns && sizeY + row <= gridster.maxRows;
+					if (canOccupy && (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0)) {
+						item.row = row;
+						item.col = col;
+						item.sizeX = sizeX;
+						item.sizeY = sizeY;
+					}
+					var isChanged = item.row !== oldRow || item.col !== oldCol || item.sizeX !== oldSizeX || item.sizeY !== oldSizeY;
+
+					if (hasCallback || isChanged) {
+						scope.$apply(function() {
+							if (hasCallback) {
+								gridster.resizable.resize(e, $el, itemOptions, item); // options is the item model
+							}
+						});
+					}
+				}
+
+				function resizeStop(e) {
+					$el.removeClass('gridster-item-moving');
+					$el.removeClass('gridster-item-resizing');
+
+					gridster.movingItem = null;
+
+					item.setPosition(item.row, item.col);
+					item.setSizeY(item.sizeY);
+					item.setSizeX(item.sizeX);
+
+					scope.$apply(function() {
+						if (gridster.resizable && gridster.resizable.stop) {
+							gridster.resizable.stop(e, $el, itemOptions, item); // options is the item model
+						}
+					});
+				}
+
 				function mouseDown(e) {
 					switch (e.which) {
 						case 1:
@@ -1751,25 +1835,6 @@
 					resizeStart(e);
 
 					return true;
-				}
-
-				function resizeStart(e) {
-					$el.addClass('gridster-item-moving');
-					$el.addClass('gridster-item-resizing');
-
-					gridster.movingItem = item;
-
-					item.setElementSizeX();
-					item.setElementSizeY();
-					item.setElementPosition();
-					gridster.updateHeight(1);
-
-					scope.$apply(function() {
-						// callback
-						if (gridster.resizable && gridster.resizable.start) {
-							gridster.resizable.start(e, $el, itemOptions); // options is the item model
-						}
-					});
 				}
 
 				function mouseMove(e) {
@@ -1859,73 +1924,6 @@
 					resizeStop(e);
 
 					return true;
-				}
-
-				function resize(e) {
-					var oldRow = item.row,
-						oldCol = item.col,
-						oldSizeX = item.sizeX,
-						oldSizeY = item.sizeY,
-						hasCallback = gridster.resizable && gridster.resizable.resize;
-
-					var col = item.col;
-					// only change column if grabbing left edge
-					if (['w', 'nw', 'sw'].indexOf(handleClass) !== -1) {
-						col = gridster.pixelsToColumns(elmX, false);
-					}
-
-					var row = item.row;
-					// only change row if grabbing top edge
-					if (['n', 'ne', 'nw'].indexOf(handleClass) !== -1) {
-						row = gridster.pixelsToRows(elmY, false);
-					}
-
-					var sizeX = item.sizeX;
-					// only change row if grabbing left or right edge
-					if (['n', 's'].indexOf(handleClass) === -1) {
-						sizeX = gridster.pixelsToColumns(elmW, true);
-					}
-
-					var sizeY = item.sizeY;
-					// only change row if grabbing top or bottom edge
-					if (['e', 'w'].indexOf(handleClass) === -1) {
-						sizeY = gridster.pixelsToRows(elmH, true);
-					}
-
-
-					var canOccupy = row > -1 && col > -1 && sizeX + col <= gridster.columns && sizeY + row <= gridster.maxRows;
-					if (canOccupy && (gridster.pushing !== false || gridster.getItems(row, col, sizeX, sizeY, item).length === 0)) {
-						item.row = row;
-						item.col = col;
-						item.sizeX = sizeX;
-						item.sizeY = sizeY;
-					}
-					var isChanged = item.row !== oldRow || item.col !== oldCol || item.sizeX !== oldSizeX || item.sizeY !== oldSizeY;
-
-					if (hasCallback || isChanged) {
-						scope.$apply(function() {
-							if (hasCallback) {
-								gridster.resizable.resize(e, $el, itemOptions); // options is the item model
-							}
-						});
-					}
-				}
-
-				function resizeStop(e) {
-					$el.removeClass('gridster-item-moving');
-					$el.removeClass('gridster-item-resizing');
-
-					gridster.movingItem = null;
-
-					item.setPosition(item.row, item.col);
-					item.setSizeY(item.sizeY);
-					item.setSizeX(item.sizeX);
-
-					scope.$apply(function() {
-						if (gridster.resizable && gridster.resizable.stop) {
-							gridster.resizable.stop(e, $el, itemOptions); // options is the item model
-						}
-					});
 				}
 
 				var $dragHandle = null;
