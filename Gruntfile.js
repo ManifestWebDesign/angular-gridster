@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 		},
 		connect: {
 			options: {
-				port: 9000,
+				port: 9001,
 				hostname: 'localhost'
 			},
 			dev: {
@@ -87,6 +87,24 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+		concat: {
+			default: {
+				src: ['src/angular-gridster.module.js', 'src/**/*.js'],
+				dest: 'dist/angular-gridster.js'
+			},
+		},
+		umd: {
+			default: {
+				options: {
+					src: 'dist/angular-gridster.js',
+					dest: 'dist/angular-gridster.js',
+					objectToExport: 'angular',
+					deps: {
+						cjs: ['angular']
+					}
+				}
+			}
+		},
 		uglify: {
 			dist: {
 				options: {
@@ -100,13 +118,13 @@ module.exports = function(grunt) {
 					].join('\n')
 				},
 				files: {
-					'dist/angular-gridster.min.js': ['src/angular-gridster.js']
+					'dist/angular-gridster.min.js': ['dist/angular-gridster.js']
 				}
 			}
 		},
 		watch: {
 			dev: {
-				files: ['Gruntfile.js', 'karma.conf.js', 'ptor.conf.js', 'src/*', 'test/**/*.js'],
+				files: ['Gruntfile.js', 'karma.conf.js', 'ptor.conf.js', 'src/**/*.js', 'test/**/*.js'],
 				tasks: ['jsbeautifier', 'jshint', 'uglify', 'less', 'karma:unit:run'],
 				options: {
 					reload: true,
@@ -121,7 +139,7 @@ module.exports = function(grunt) {
 		}
 	});
 
-	grunt.registerTask('default', ['jsbeautifier', 'jshint', 'uglify', 'less']);
+	grunt.registerTask('default', ['jsbeautifier', 'jshint', 'concat', 'umd', 'uglify', 'less']);
 
 	grunt.registerTask('dev', ['connect:dev', 'karma:unit:start', 'watch:dev']);
 	grunt.registerTask('e2e', ['connect:cli', 'protractor', 'watch:e2e']);

@@ -7,12 +7,14 @@
 	],
 	"dependencies": {
 		"angular": ">= 1.2.0",
-		"javascript-detect-element-resize": "~0.5.1"
+		"javascript-detect-element-resize": "~0.5.1",
+		"lodash": "4.17.4",
+		"jquery": "2.1.x"
 	},
 	"devDependencies": {
 		"angular-mocks": ">= 1.2.0",
 		"angular-animate": ">= 1.2.0",
-		"jquery": "*",
+		"jquery": "2.1.x",
 		"jquery-simulate": "*"
 	},
 	"ignore": [
