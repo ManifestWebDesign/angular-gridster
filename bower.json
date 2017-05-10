@@ -8,7 +8,7 @@
 	"dependencies": {
 		"angular": ">= 1.2.0",
 		"javascript-detect-element-resize": "~0.5.1",
-		"lodash": "3.10.1",
+		"lodash": "4.17.4",
 		"jquery": "2.1.x"
 	},
 	"devDependencies": {

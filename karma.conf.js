@@ -18,7 +18,7 @@ module.exports = function(config) {
 			'bower_components/javascript-detect-element-resize/jquery.resize.js',
 			'bower_components/angular/angular.js',
 			'bower_components/angular-mocks/angular-mocks.js',
-			'bower_components/lodash/lodash.js',
+			'bower_components/lodash/dist/lodash.min.js',
 			'src/angular-gridster.module.js',
 			'src/**/*.js',
 			'test/spec/*.js'
