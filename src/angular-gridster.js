@@ -52,7 +52,8 @@
 			enabled: true,
 			scrollSensitivity: 20, // Distance in pixels from the edge of the viewport after which the viewport should scroll, relative to pointer
 			scrollSpeed: 15 // Speed at which the window should scroll once the mouse pointer gets within scrollSensitivity distance
-		}
+		},
+		initializer: {} // options to pass to general gandler
 	})
 
 	.controller('GridsterCtrl', ['gridsterConfig', '$timeout',
@@ -67,6 +68,7 @@
 
 			this.resizable = angular.extend({}, gridsterConfig.resizable || {});
 			this.draggable = angular.extend({}, gridsterConfig.draggable || {});
+			this.initializer = angular.extend({}, gridsterConfig.initializer || {});
 
 			var flag = false;
 			this.layoutChanged = function() {
@@ -1048,6 +1050,28 @@
 			return (this.sizeY * this.gridster.curRowHeight - this.gridster.margins[0]);
 		};
 
+		this.enableDragMode = function(originalEvent) {
+			var self = this;
+			setTimeout(function() {
+				var itemRect = self.$element[0].getBoundingClientRect();
+				var gridsterRect = self.gridster.$element[0].getBoundingClientRect();
+				var originalTargetRect = originalEvent.target.getBoundingClientRect();
+
+				// Move item to the cursor
+				self.$element.css({
+					left: -gridsterRect.left + originalTargetRect.left,
+					top: -gridsterRect.top + originalTargetRect.top
+				});
+
+				// Start drag by simulation mousedown event
+				var mouseDownEvent = new MouseEvent('mousedown', {
+					clientX: itemRect.left + originalEvent.offsetX,
+					clientY: itemRect.top + originalEvent.offsetY
+				});
+				self.$element[0].dispatchEvent(mouseDownEvent);
+			}, 0);
+		}
+
 	})
 
 	.factory('GridsterTouch', [function() {
@@ -1599,8 +1623,9 @@
 					var dX = diffX,
 						dY = diffY;
 					if (elmX + dX < minLeft) {
-						diffX = minLeft - elmX;
-						mOffX = dX - diffX;
+						// Let items go outside the container
+						// diffX = minLeft - elmX;
+						// mOffX = dX - diffX;
 					} else if (elmX + elmW + dX > maxLeft) {
 						diffX = maxLeft - elmX - elmW;
 						mOffX = dX - diffX;
@@ -2205,6 +2230,11 @@
 					$el.on(whichTransitionEvent(), debouncedTransitionEndPublisher);
 
 					scope.$broadcast('gridster-item-initialized', item);
+
+					// Custom event when gridster-item has been created
+					if (gridster.initializer.handle) {
+						gridster.initializer.handle(item);
+					}
 
 					return scope.$on('$destroy', function() {
 						try {
