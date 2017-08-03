@@ -1091,12 +1091,6 @@
 				var gridsterRect = self.gridster.$element[0].getBoundingClientRect();
 				var originalTargetRect = originalEvent.currentTarget.getBoundingClientRect();
 
-				// Move item to the cursor
-				self.$element.css({
-					left: -gridsterRect.left + originalTargetRect.left,
-					top: -gridsterRect.top + originalTargetRect.top
-				});
-
 				// Start drag by simulation mousedown event
 				var mouseDownEvent = new MouseEvent('mousedown', {
 					clientX: itemRect.left + originalEvent.clientX - originalTargetRect.left,
