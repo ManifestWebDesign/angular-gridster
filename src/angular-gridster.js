@@ -1,3 +1,19 @@
+/*MouseEvent polyfill for Edge*/
+(function(window) {
+	var MouseEvent = function(eventType, params) {
+		params = params || {
+			bubbles: false,
+			cancelable: false
+		};
+		var mouseEvent = document.createEvent('MouseEvent');
+		mouseEvent.initMouseEvent(eventType, params.bubbles, params.cancelable, window, 0, 0, 0, params.clientX, params.clientY, false, false, false, false, 0, null);
+
+		return mouseEvent;
+	};
+	MouseEvent.prototype = Event.prototype;
+	window.MouseEvent = MouseEvent;
+})(window);
+
 /*global define:true*/
 (function(root, factory) {
 
@@ -53,7 +69,8 @@
 			scrollSensitivity: 20, // Distance in pixels from the edge of the viewport after which the viewport should scroll, relative to pointer
 			scrollSpeed: 15 // Speed at which the window should scroll once the mouse pointer gets within scrollSensitivity distance
 		},
-		initializer: {} // options to pass to general gandler
+		initializer: {}, // options to pass to general gandler
+		frozen: false // option to freeze gridster from pushing, floating and swapping
 	})
 
 	.controller('GridsterCtrl', ['gridsterConfig', '$timeout',
@@ -354,6 +371,10 @@
 			 * @param {Array} ignoreItems
 			 */
 			this.putItem = function(item, row, column, ignoreItems) {
+				if (this.frozen) {
+					return;
+				}
+
 				// auto place item if no row specified
 				if (typeof row === 'undefined' || row === null) {
 					row = item.row;
@@ -918,6 +939,19 @@
 		};
 
 		/**
+		 * Sets a size properties and updates its element
+		 * @param sizeX
+		 * @param sizeY
+		 */
+		this.setTileSize = function(sizeX, sizeY) {
+			this.setSizeX(sizeX);
+			this.setElementSizeX();
+			this.setSizeY(sizeY);
+			this.setElementSizeY();
+			this.gridster.autoSetItemPosition(this);
+		};
+
+		/**
 		 * Sets a specified size property
 		 *
 		 * @param {String} key Can be either "x" or "y"
@@ -1055,7 +1089,7 @@
 			setTimeout(function() {
 				var itemRect = self.$element[0].getBoundingClientRect();
 				var gridsterRect = self.gridster.$element[0].getBoundingClientRect();
-				var originalTargetRect = originalEvent.target.getBoundingClientRect();
+				var originalTargetRect = originalEvent.currentTarget.getBoundingClientRect();
 
 				// Move item to the cursor
 				self.$element.css({
@@ -1065,8 +1099,8 @@
 
 				// Start drag by simulation mousedown event
 				var mouseDownEvent = new MouseEvent('mousedown', {
-					clientX: itemRect.left + originalEvent.offsetX,
-					clientY: itemRect.top + originalEvent.offsetY
+					clientX: itemRect.left + originalEvent.clientX - originalTargetRect.left,
+					clientY: itemRect.top + originalEvent.clientY - originalTargetRect.top
 				});
 				self.$element[0].dispatchEvent(mouseDownEvent);
 			}, 0);
@@ -1627,8 +1661,8 @@
 						// diffX = minLeft - elmX;
 						// mOffX = dX - diffX;
 					} else if (elmX + elmW + dX > maxLeft) {
-						diffX = maxLeft - elmX - elmW;
-						mOffX = dX - diffX;
+						// diffX = maxLeft - elmX - elmW;
+						// mOffX = dX - diffX;
 					}
 
 					if (elmY + dY < minTop) {
