@@ -750,7 +750,7 @@
 								}
 							}
 
-							gridster.isMobile = gridster.mobileModeEnabled && gridster.curWidth <= gridster.mobileBreakPoint;
+							gridster.isMobile = gridster.mobileModeEnabled && window.innerWidth <= gridster.mobileBreakPoint;
 
 							// loop through all items and reset their CSS
 							for (var rowIndex = 0, l = gridster.grid.length; rowIndex < l; ++rowIndex) {
