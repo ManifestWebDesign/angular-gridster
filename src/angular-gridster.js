@@ -1402,6 +1402,8 @@
 						if (gridster.draggable && gridster.draggable.start) {
 							gridster.draggable.start(event, $el, itemOptions, item);
 						}
+
+						scope.$broadcast('gridster-item-drag-start', item);
 					});
 				}
 
@@ -1497,6 +1499,8 @@
 						if (gridster.draggable && gridster.draggable.stop) {
 							gridster.draggable.stop(event, $el, itemOptions, item);
 						}
+
+						scope.$broadcast('gridster-item-drag-end', item);
 					});
 				}
 
@@ -1733,6 +1737,8 @@
 						if (gridster.resizable && gridster.resizable.start) {
 							gridster.resizable.start(e, $el, itemOptions, item); // options is the item model
 						}
+
+						scope.$broadcast('gridster-item-resize-start', item);
 					});
 				}
 
@@ -1800,6 +1806,8 @@
 						if (gridster.resizable && gridster.resizable.stop) {
 							gridster.resizable.stop(e, $el, itemOptions, item); // options is the item model
 						}
+
+						scope.$broadcast('gridster-item-resize-end', item);
 					});
 				}
 
