@@ -1484,8 +1484,8 @@
 
 				function dragStop(event) {
 					$el.removeClass('gridster-item-moving');
-					var row = Math.min(gridster.pixelsToRows(elmY), gridster.maxRows - 1);
-					var col = Math.min(gridster.pixelsToColumns(elmX), gridster.columns - 1);
+					var row = Math.min(gridster.pixelsToRows(elmY, false), gridster.maxRows - 1);
+					var col = Math.min(gridster.pixelsToColumns(elmX, false), gridster.columns - 1);
 					if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
 						item.row = row;
 						item.col = col;
