@@ -22,6 +22,8 @@
 
 	.constant('gridsterConfig', {
 		columns: 6, // number of columns in the grid
+		dynamicColumns: false, // whether to place into the grid the maximum suitable columns
+		minWidthToAddANewColumn: 140, // minimum width within gridster to add a new column when dynamicColumns is true. The predefined margin in between columns and outerMargin (if true) are added to this number in the calculation.
 		pushing: true, // whether to push other items out of the way
 		floating: true, // whether to automatically float items up so they stack
 		swapping: false, // whether or not to have items switch places instead of push down if they are the same size
@@ -578,6 +580,54 @@
 			};
 
 			/**
+			 * Sets all the items in the first suitable position after a change in the number of columns available.
+			 *
+			 */
+			this.updateColumnLayout = function() {
+				var didntFitItems = [];
+
+				for (var rowIndex = 0, l = gridster.grid.length; rowIndex < l; ++rowIndex) {
+					var columns = gridster.grid[rowIndex];
+					if (!columns) {
+						continue;
+					}
+
+					for (var colIndex = 0, len = columns.length; colIndex < len; ++colIndex) {
+						if (columns[colIndex]) {
+							var item = columns[colIndex];
+
+							// If an item was resized it regains its original size to check if it fits now with its original size
+							if (item.preferredX !== undefined) {
+								item.sizeX = item.preferredX;
+								item.sizeY = item.preferredY;
+							}
+							if (item.sizeX > gridster.columns) {
+								// doesn't fit, we store its original size for a later reassignation if possible
+								item.preferredX = item.sizeX;
+								item.preferredY = item.sizeY;
+
+								item.sizeX = gridster.columns;
+								item.sizeY = Math.round((item.sizeX * item.sizeY) / item.preferredX); // to mantain original proportion
+								item.sizeY = item.sizeY > 0 ? item.sizeY : 1;
+
+								didntFitItems.push(item);
+							} else if (item.col + item.sizeX > gridster.columns) {
+								didntFitItems.push(item);
+							} else {
+								gridster.autoSetItemPosition(item);
+							}
+						}
+					}
+				}
+
+				for (var itemlIndex = 0, length = didntFitItems.length; itemlIndex < length; ++itemlIndex) {
+					gridster.autoSetItemPosition(didntFitItems[itemlIndex]);
+				}
+
+				didntFitItems.length = 0;
+			};
+
+			/**
 			 * Returns the number of rows that will fit in given amount of pixels
 			 *
 			 * @param {Number} pixels
@@ -696,6 +746,28 @@
 							gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
 						});
 
+						function calculateColumns() {
+							if (gridster.dynamicColumns) {
+								var width = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
+
+								if (!width) {
+									return;
+								}
+
+								var numberOfMargins = gridster.outerMargin ? 2 : 1;
+								var minColWidth = (numberOfMargins * gridster.margins[1]) + parseInt(gridster.minWidthToAddANewColumn, 10);
+								var columns = Math.floor(width / minColWidth);
+
+								if (columns < gridster.minColumns) {
+									columns = gridster.minColumns;
+								}
+
+								if (columns !== gridster.columns) {
+									gridster.columns = columns;
+								}
+							}
+						}
+
 						function refresh(config) {
 							gridster.setOptions(config);
 
@@ -792,6 +864,26 @@
 							$rootScope.$broadcast('gridster-resizable-changed', gridster);
 						}, true);
 
+						scope.$watch(function() {
+							return gridster.columns;
+						}, function() {
+							$rootScope.$broadcast('gridster-columns-changed', gridster);
+						});
+
+						scope.$watch(function() {
+							return gridster.dynamicColumns;
+						}, function() {
+							calculateColumns();
+							refresh();
+						});
+
+						scope.$watch(function() {
+							return gridster.minWidthToAddANewColumn;
+						}, function() {
+							calculateColumns();
+							refresh();
+						});
+
 						var prevWidth = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
 
 						var resize = function() {
@@ -801,6 +893,8 @@
 								return;
 							}
 							prevWidth = width;
+
+							calculateColumns();
 
 							if (gridster.loaded) {
 								$elem.removeClass('gridster-loaded');
@@ -2175,6 +2269,12 @@
 					};
 					updateDraggable();
 
+					var updateColumnLayout = function() {
+						if (gridster.dynamicColumns) {
+							gridster.updateColumnLayout();
+						}
+					};
+
 					scope.$on('gridster-draggable-changed', updateDraggable);
 					scope.$on('gridster-resizable-changed', updateResizable);
 					scope.$on('gridster-resized', updateResizable);
@@ -2182,6 +2282,7 @@
 						updateResizable();
 						updateDraggable();
 					});
+					scope.$on('gridster-columns-changed', updateColumnLayout);
 
 					function whichTransitionEvent() {
 						var el = document.createElement('div');

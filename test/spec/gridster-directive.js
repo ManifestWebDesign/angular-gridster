@@ -143,4 +143,33 @@ describe('gridster directive', function() {
 		}));
 	});
 
+	it('should broadcast "gridster-columns-changed" on columns change', function() {
+		// arrange
+		broadcastOnRootScope.calls.reset();
+
+		// act
+		GridsterCtrl.columns = 10;
+
+		$scope.$digest();
+
+		// assert
+		expect(broadcastOnRootScope).toHaveBeenCalledWith('gridster-columns-changed', jasmine.objectContaining({
+			columns: 10
+		}));
+	});
+
+	it('number of columns should be different when enabling dynamicColumns and setting minWidthToAddANewColumn to a lower value', function() {
+		//precondition
+		expect(GridsterCtrl.columns).toBe(6);
+
+		// act
+		GridsterCtrl.dynamicColumns = true;
+		GridsterCtrl.minWidthToAddANewColumn = 50;
+
+		$scope.$digest();
+
+		// assert
+		expect(GridsterCtrl.columns).not.toBe(6);
+	});
+
 });

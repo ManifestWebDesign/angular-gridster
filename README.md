@@ -130,6 +130,8 @@ Simply pass your desired options to the gridster directive
 ```JavaScript
 $scope.gridsterOpts = {
 	columns: 6, // the width of the grid, in columns
+	dynamicColumns: false, // whether to place into the grid the maximum suitable columns with a minimum width of minWidthToAddANewColumn
+	minWidthToAddANewColumn: 140, // minimum width within gridster to add a new column when dynamicColumns is true. The predefined margin in between columns and outerMargin (if true) are added to this number in the calculation.
 	pushing: true, // whether to push other items out of the way on move or resize
 	floating: true, // whether to automatically float items up so they stack (you can temporarily disable if you are adding unsorted items with ng-repeat)
 	swapping: false, // whether or not to have items of the same size switch places instead of pushing down if they are the same size
@@ -218,6 +220,14 @@ When the gridster resizable properties change, a 'gridster-resizable-changed' ev
 
 ```js
 scope.$on('gridster-resizable-changed', function(gridster) {
+})
+```
+
+#### gridster-columns-changed
+When the number of columns changes, a 'gridster-columns-changed' event is broadcast on rootScope:
+
+```js
+scope.$on('gridster-columns-changed', function(gridster) {
 })
 ```
 
