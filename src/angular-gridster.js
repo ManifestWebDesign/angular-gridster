@@ -55,8 +55,8 @@
 		}
 	})
 
-	.controller('GridsterCtrl', ['gridsterConfig', '$timeout',
-		function(gridsterConfig, $timeout) {
+	.controller('GridsterCtrl', ['gridsterConfig', '$timeout', '$rootScope',
+		function(gridsterConfig, $timeout, $rootScope) {
 
 			var gridster = this;
 
@@ -172,6 +172,7 @@
 					}
 				}
 				throw new Error('Unable to place item!');
+				$rootScope.$broadcast('gridster-item-unplaceable', item);
 			};
 
 			/**
