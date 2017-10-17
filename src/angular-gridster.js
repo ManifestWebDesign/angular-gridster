@@ -1191,6 +1191,7 @@
 							} else {
 								document.addEventListener('mousemove', doEvent, false);
 								document.addEventListener('mouseup', doEvent, false);
+								document.addEventListener('mouseleave', doEvent, false);
 							}
 						}
 					} else if (theEvtObj.type.match(/move$/i)) {
@@ -1213,7 +1214,7 @@
 							lastXYById[pointerId].x = pageX;
 							lastXYById[pointerId].y = pageY;
 						}
-					} else if (lastXYById[pointerId] && theEvtObj.type.match(/(up|end|cancel)$/i)) {
+					} else if (lastXYById[pointerId] && theEvtObj.type.match(/(up|end|cancel|leave)$/i)) {
 						//  clause handles up/end/cancel
 
 						if (endEvent && prevent) {
@@ -1240,6 +1241,7 @@
 							} else {
 								document.removeEventListener('mousemove', doEvent, false);
 								document.removeEventListener('mouseup', doEvent, false);
+								document.removeEventListener('mouseleave', doEvent, false);
 							}
 						}
 					}
