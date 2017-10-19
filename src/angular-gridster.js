@@ -1457,8 +1457,20 @@
 					}
 
 					if (gridster.pushing !== false || !hasItemsInTheWay) {
-						item.row = row;
-						item.col = col;
+						var canPushAway = true;
+
+						for(var $i = 0, $l = itemsInTheWay.length; $i < $l; ++$i) {
+							var $itemInTheWay = itemsInTheWay[$i].$element;
+
+							if ($itemInTheWay.hasClass && $itemInTheWay.hasClass('gridster-no-drag')) {
+								canPushAway = false;
+							}
+						}
+
+						if(canPushAway) {
+							item.row = row;
+							item.col = col;
+						}
 					}
 
 					if (event.pageY - realdocument.body.scrollTop < scrollSensitivity) {
@@ -1486,10 +1498,27 @@
 					$el.removeClass('gridster-item-moving');
 					var row = Math.min(gridster.pixelsToRows(elmY), gridster.maxRows - 1);
 					var col = Math.min(gridster.pixelsToColumns(elmX), gridster.columns - 1);
-					if (gridster.pushing !== false || gridster.getItems(row, col, item.sizeX, item.sizeY, item).length === 0) {
-						item.row = row;
-						item.col = col;
+
+					var itemsInTheWay = gridster.getItems(row, col, item.sizeX, item.sizeY, item);
+					var hasItemsInTheWay = itemsInTheWay.length !== 0;
+
+					if (gridster.pushing !== false || !hasItemsInTheWay) {
+						var canPushAway = true;
+
+						for(var $i = 0, $l = itemsInTheWay.length; $i < $l; ++$i) {
+							var $itemInTheWay = itemsInTheWay[$i].$element;
+
+							if ($itemInTheWay.hasClass && $itemInTheWay.hasClass('gridster-no-drag')) {
+								canPushAway = false;
+							}
+						}
+
+						if(canPushAway) {
+							item.row = row;
+							item.col = col;
+						}
 					}
+
 					gridster.movingItem = null;
 					item.setPosition(item.row, item.col);
 
