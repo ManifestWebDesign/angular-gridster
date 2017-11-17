@@ -1183,7 +1183,7 @@
 						};
 
 						// IE pointer model
-						if (target.msSetPointerCapture && prevent) {
+						if (target.msSetPointerCapture && prevent && window.navigator.msPointerEnabled) {
 							target.msSetPointerCapture(pointerId);
 						} else if (theEvtObj.type === 'mousedown' && numberOfKeys(lastXYById) === 1) {
 							if (useSetReleaseCapture) {
@@ -1233,7 +1233,7 @@
 						//  in the Microsoft pointer model, release the capture for this pointer
 						//  in the mouse model, release the capture or remove document-level event handlers if there are no down points
 						//  nothing is required for the iOS touch model because capture is implied on touchstart
-						if (target.msReleasePointerCapture) {
+						if (target.msReleasePointerCapture && window.navigator.msPointerEnabled) {
 							target.msReleasePointerCapture(pointerId);
 						} else if (theEvtObj.type === 'mouseup' && numberOfKeys(lastXYById) === 0) {
 							if (useSetReleaseCapture) {
