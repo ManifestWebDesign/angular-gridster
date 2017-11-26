@@ -4,7 +4,7 @@
     define([], function () {
       return (root['angular'] = factory());
     });
-  } else if (typeof exports === 'object') {
+  } else if (typeof module === 'object' && module.exports) {
     // Node. Does not work with strict CommonJS, but
     // only CommonJS-like environments that support module.exports,
     // like Node.
@@ -410,6 +410,14 @@
 		 */
 		this.viewportNotify = function() {
 			this.gridsterViewport.identify().notify(this);
+		};
+
+		/**
+		 * Will reset the viewport status of the instance and notify
+		 * the $elements' scope.
+		 */
+		this.viewportReset = function() {
+			this.gridsterViewport.reset(this);
 		};
 
 		/**
@@ -1518,7 +1526,7 @@
 
 		/**
 		 * Will fire a broadcast on the scope of $element passing item
-		 * @param  {GridsterItemCtrl} item
+		 * @param  	{GridsterItemCtrl} item
 		 * @returns {Object}
 		 */
 		GridsterViewport.prototype.notify = function notify(item) {
@@ -1527,6 +1535,27 @@
 			}
 
 			this.getScope_().$broadcast('gridster-item-viewport-status', item);
+
+			return this;
+		};
+
+		/**
+		 * Will reset the viewport hash and fire a broadcast on the scope of the $element passing the
+		 * grid item
+		 * @param  	{GridsterItemCtrl} item
+		 * @returns {Object}
+		 */
+		GridsterViewport.prototype.reset = function reset(item) {
+			this.viewport = {
+				count: 0,
+				isIn: false
+			};
+
+			if (!this.getScope_()) {
+				return this;
+			}
+
+			this.getScope_().$broadcast('gridster-item-viewport-reset', item);
 
 			return this;
 		};
@@ -2175,25 +2204,59 @@
 				};
 
 				/**
+				 * Returns all current grid items 
+				 * @returns {Array<Object>}
+				 */
+				this.getItemList = function() {
+					return _.chain(gridster)
+						.get('grid')
+						.flattenDeep()
+						.compact()
+						.valueOf();
+				};
+
+				/**
 				 * Callback for scroll event. Will call viewportNotify on all elements
 				 * placed inside the grid
 				 * @private
 				 */
 				this.onScroll_ = function() {
-					_.chain(gridster)
-						.get('grid')
-						.flattenDeep()
-						.compact()
-						.forEach(function(item) {
-							item.viewportNotify();
-						})
-						.valueOf();
+					gridster.notifyWidgets();
 				};
 
 				this.onScroll = _.throttle(gridster.onScroll_, 1000, {
 					leading: true,
 					trailing: true
 				});
+
+				/**
+				 * Will call viewportNotify on all gridster widgets broadcasting
+				 * 'gridster-item-viewport-status' events on each and every one of them
+				 * @returns {GridsterCtrl}
+				 * @chainable
+				 */
+				this.notifyWidgets = function() {
+					_.chain(gridster.getItemList())
+						.forEach(function(item) {
+							item.viewportNotify();
+						})
+						.valueOf();
+					return gridster;
+				};
+
+				/**
+				 * Will call viewportReset on all gridster widgets reseting their viewport 'status' hash
+				 * @returns {GridsterCtrl}
+				 * @chainable
+				 */
+				this.resetWidgets = function() {
+					_.chain(gridster.getItemList())
+						.forEach(function(item) {
+							item.viewportReset();
+						})
+						.valueOf();
+					return gridster;
+				};
 			}
 		]);
 })(window.angular);
