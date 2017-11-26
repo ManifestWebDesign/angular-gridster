@@ -74,7 +74,7 @@
 
 		/**
 		 * Will fire a broadcast on the scope of $element passing item
-		 * @param  {GridsterItemCtrl} item
+		 * @param  	{GridsterItemCtrl} item
 		 * @returns {Object}
 		 */
 		GridsterViewport.prototype.notify = function notify(item) {
@@ -83,6 +83,27 @@
 			}
 
 			this.getScope_().$broadcast('gridster-item-viewport-status', item);
+
+			return this;
+		};
+
+		/**
+		 * Will reset the viewport hash and fire a broadcast on the scope of the $element passing the
+		 * grid item
+		 * @param  	{GridsterItemCtrl} item
+		 * @returns {Object}
+		 */
+		GridsterViewport.prototype.reset = function reset(item) {
+			this.viewport = {
+				count: 0,
+				isIn: false
+			};
+
+			if (!this.getScope_()) {
+				return this;
+			}
+
+			this.getScope_().$broadcast('gridster-item-viewport-reset', item);
 
 			return this;
 		};

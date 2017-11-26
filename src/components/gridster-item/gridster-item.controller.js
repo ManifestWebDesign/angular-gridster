@@ -38,6 +38,14 @@
 		};
 
 		/**
+		 * Will reset the viewport status of the instance and notify
+		 * the $elements' scope.
+		 */
+		this.viewportReset = function() {
+			this.gridsterViewport.reset(this);
+		};
+
+		/**
 		 * Will determine if $element is visible in viewport
 		 * @returns {boolean}
 		 */
