@@ -17,6 +17,25 @@
 
 	'use strict';
 
+	var _utils = {
+		//region Test via a getter in the options object to see if the passive property is accessed
+		supportsPassive: (function() {
+			var result = false;
+			try {
+				var opts = Object.defineProperty({}, 'passive', {
+					get: function() {
+						result = {
+							passive: false
+						};
+					}
+				});
+				window.addEventListener('test', null, opts);
+			} catch (e) {
+			}
+			return result;
+		})()
+	};
+
 	// This returned angular module 'gridster' is what is exported.
 	return angular.module('gridster', [])
 
@@ -1288,21 +1307,21 @@
 					}
 				} else if (target.addEventListener) {
 					//  iOS touch model
-					target.addEventListener('touchstart', doEvent, false);
-					target.addEventListener('touchmove', doEvent, false);
-					target.addEventListener('touchend', doEvent, false);
-					target.addEventListener('touchcancel', doEvent, false);
+					target.addEventListener('touchstart', doEvent, _utils.supportsPassive);
+					target.addEventListener('touchmove', doEvent, _utils.supportsPassive);
+					target.addEventListener('touchend', doEvent, _utils.supportsPassive);
+					target.addEventListener('touchcancel', doEvent, _utils.supportsPassive);
 
 					//  mouse model
-					target.addEventListener('mousedown', doEvent, false);
+					target.addEventListener('mousedown', doEvent, _utils.supportsPassive);
 
 					//  mouse model with capture
 					//  rejecting gecko because, unlike ie, firefox does not send events to target when the mouse is outside target
 					if (target.setCapture && !window.navigator.userAgent.match(/\bGecko\b/)) {
 						useSetReleaseCapture = true;
 
-						target.addEventListener('mousemove', doEvent, false);
-						target.addEventListener('mouseup', doEvent, false);
+						target.addEventListener('mousemove', doEvent, _utils.supportsPassive);
+						target.addEventListener('mouseup', doEvent, _utils.supportsPassive);
 					}
 				} else if (target.attachEvent && target.setCapture) {
 					//  legacy IE mode - mouse with capture
@@ -1344,21 +1363,21 @@
 					}
 				} else if (target.removeEventListener) {
 					//  iOS touch model
-					target.removeEventListener('touchstart', doEvent, false);
-					target.removeEventListener('touchmove', doEvent, false);
-					target.removeEventListener('touchend', doEvent, false);
-					target.removeEventListener('touchcancel', doEvent, false);
+					target.removeEventListener('touchstart', doEvent, _utils.supportsPassive);
+					target.removeEventListener('touchmove', doEvent, _utils.supportsPassive);
+					target.removeEventListener('touchend', doEvent, _utils.supportsPassive);
+					target.removeEventListener('touchcancel', doEvent, _utils.supportsPassive);
 
 					//  mouse model
-					target.removeEventListener('mousedown', doEvent, false);
+					target.removeEventListener('mousedown', doEvent, _utils.supportsPassive);
 
 					//  mouse model with capture
 					//  rejecting gecko because, unlike ie, firefox does not send events to target when the mouse is outside target
 					if (target.setCapture && !window.navigator.userAgent.match(/\bGecko\b/)) {
 						useSetReleaseCapture = true;
 
-						target.removeEventListener('mousemove', doEvent, false);
-						target.removeEventListener('mouseup', doEvent, false);
+						target.removeEventListener('mousemove', doEvent, _utils.supportsPassive);
+						target.removeEventListener('mouseup', doEvent, _utils.supportsPassive);
 					}
 				} else if (target.detachEvent && target.setCapture) {
 					//  legacy IE mode - mouse with capture
