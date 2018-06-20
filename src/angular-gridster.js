@@ -697,7 +697,7 @@
 							$elem.addClass('gridster');
 
 							var isVisible = function(ele) {
-								return ele.style.visibility !== 'hidden' && ele.style.display !== 'none';
+								return ele.style.visibility !== 'hidden' && ele.offsetParent != null;
 							};
 
 							function updateHeight() {
