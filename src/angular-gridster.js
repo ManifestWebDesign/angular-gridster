@@ -14,8 +14,9 @@
 		factory(root.angular, window.ResizeObserver);
 	}
 }(this, function(angular, ResizeObserver) {
-
 	'use strict';
+
+	ResizeObserver = ResizeObserver.default || ResizeObserver;
 
 	var _utils = {
 		//region Test via a getter in the options object to see if the passive property is accessed
