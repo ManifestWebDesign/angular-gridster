@@ -10,6 +10,8 @@ angular.module('app')
 				}
 			};
 
+			$scope.visible = false;
+
 			$scope.dashboards = {
 				'1': {
 					id: '1',
@@ -73,7 +75,7 @@ angular.module('app')
 		}
 	])
 
-	.controller('CustomWidgetCtrl', ['$scope', '$modal',
+	.controller('CustomWidgetCtrl', ['$scope', '$uibModal',
 		function($scope, $modal) {
 
 			$scope.remove = function(widget) {
@@ -96,7 +98,7 @@ angular.module('app')
 		}
 	])
 
-	.controller('WidgetSettingsCtrl', ['$scope', '$timeout', '$rootScope', '$modalInstance', 'widget',
+	.controller('WidgetSettingsCtrl', ['$scope', '$timeout', '$rootScope', '$uibModalInstance', 'widget',
 		function($scope, $timeout, $rootScope, $modalInstance, widget) {
 			$scope.widget = widget;
 
