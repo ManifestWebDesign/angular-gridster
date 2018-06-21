@@ -5,7 +5,7 @@
 	<select class="form-control" style="width: 150px; margin-bottom: 20px; display:inline-block;" ng-change="changeDashboard()" ng-model="selectedDashboardId" ng-options="d.id as d.name for d in dashboards | object2Array | orderBy:'id'">
 	</select>
 </div>
-<div gridster="gridsterOptions" ng-show="visible">
+<div gridster="gridsterOptions" ng-show="dashboard.widgets.length">
 	<ul>
 		<li gridster-item="widget" ng-repeat="widget in dashboard.widgets">
 			<div class="box" ng-controller="CustomWidgetCtrl">
@@ -22,5 +22,3 @@
 		</li>
 	</ul>
 </div>
-<hr>
-<button ng-click="visible=!visible">toggle</button>

@@ -815,7 +815,7 @@
 							var resize = function() {
 								var width = $elem[0].offsetWidth || parseInt($elem.css('width'), 10);
 
-								if (!width || width === prevWidth || gridster.movingItem) {
+								if (width === prevWidth || gridster.movingItem) {
 									return;
 								}
 								prevWidth = width;
@@ -831,6 +831,7 @@
 								}
 
 								$rootScope.$broadcast('gridster-resized', [width, $elem[0].offsetHeight], gridster);
+								scope.$apply();
 							};
 
 							// track element width changes any way we can
@@ -845,6 +846,8 @@
 
 							// allow a little time to place items before floating up
 							$timeout(function() {
+								resize();
+
 								scope.$watch('gridster.floating', function() {
 									gridster.floatItemsUp();
 								});
