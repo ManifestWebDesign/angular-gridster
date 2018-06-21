@@ -42,5 +42,8 @@
 		"type": "git",
 		"url": "git@github.com:ManifestWebDesign/angular-gridster.git"
 	},
-	"main": "dist/angular-gridster.min.js"
+	"main": "dist/angular-gridster.min.js",
+	"dependencies": {
+		"resize-observer-polyfill": "^1.5.0"
+	}
 }
