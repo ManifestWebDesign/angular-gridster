@@ -2,7 +2,7 @@ angular-gridster
 ================
 [![Build Status](https://travis-ci.org/ManifestWebDesign/angular-gridster.svg)](https://travis-ci.org/ManifestWebDesign/angular-gridster)
 
-An implementation of gridster-like widgets for Angular JS.  This is not a wrapper on the original gridster jQuery plugin (http://gridster.net/).  It is instead completely rewritten as Angular directives.  Rewriting allowed for some additional features and better use of Angular data binding.  Even more importantly, the original plugin had unpredictable behavior and crashed when wrapped with an Angular directive in my initial tests.
+An implementation of gridster-like widgets for Angular JS.  This is not a wrapper on the original gridster jQuery plugin (http://dsmorse.github.io/gridster.js/).  It is instead completely rewritten as Angular directives.  Rewriting allowed for some additional features and better use of Angular data binding.  Even more importantly, the original plugin had unpredictable behavior and crashed when wrapped with an Angular directive in my initial tests.
 
 ## Demo
 
