@@ -55,8 +55,8 @@
 		}
 	})
 
-	.controller('GridsterCtrl', ['gridsterConfig', '$timeout',
-		function(gridsterConfig, $timeout) {
+	.controller('GridsterCtrl', ['gridsterConfig', '$timeout', '$rootScope',
+		function(gridsterConfig, $timeout, $rootScope) {
 
 			var gridster = this;
 
@@ -68,6 +68,7 @@
 			this.resizable = angular.extend({}, gridsterConfig.resizable || {});
 			this.draggable = angular.extend({}, gridsterConfig.draggable || {});
 
+			gridster.initialSetupComplete = false;
 			var flag = false;
 			this.layoutChanged = function() {
 				if (flag) {
@@ -80,6 +81,13 @@
 						gridster.floatItemsUp();
 					}
 					gridster.updateHeight(gridster.movingItem ? gridster.movingItem.sizeY : 0);
+					var allItemsInGrid = gridster.grid.flat().filter(e=> e != undefined);
+					if(allItemsInGrid.length > 0 
+						&& allItemsInGrid.every(e => e.initialSetup) 
+						&& !gridster.initialSetupComplete){
+						$rootScope.$broadcast('gridster-setup-complete');
+						gridster.initialSetupComplete = true;
+					}
 				}, 30);
 			};
 
@@ -270,6 +278,7 @@
 					top <= item.row + item.sizeY - 1 &&
 					bottom >= item.row);
 			};
+
 
 
 			/**
@@ -532,6 +541,7 @@
 			 */
 			this.floatItemUp = function(item) {
 				if (this.floating === false) {
+					item.initialSetup = true;
 					return;
 				}
 				var colIndex = item.col,
@@ -552,6 +562,8 @@
 				}
 				if (bestRow !== null) {
 					this.putItem(item, bestRow, bestColumn);
+				} else {
+					item.initialSetup = true;
 				}
 			};
 
@@ -2104,6 +2116,7 @@
 							item[aspect] = val;
 						}
 					};
+					item.initialSetup = false;
 
 					for (var i = 0, l = aspects.length; i < l; ++i) {
 						aspectFn(aspects[i]);
@@ -2218,6 +2231,10 @@
 							gridster.removeItem(item);
 						} catch (e) {}
 
+						if(gridster.grid && gridster.grid.flat().filter(e=> e != undefined).length <= 0){
+							gridster.initialSetupComplete = false;
+						}
+						
 						try {
 							item.destroy();
 						} catch (e) {}
